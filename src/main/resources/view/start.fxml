@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<BorderPane fx:controller="org.swdc.note.app.ui.controller.StartController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="478.0" prefWidth="748.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640" prefWidth="1000" styleClass="root-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.StartController">
    <left>
-      <BorderPane prefHeight="800" prefWidth="600" BorderPane.alignment="CENTER" />
+      <BorderPane prefHeight="640.0" prefWidth="297.0" styleClass="left-pane" BorderPane.alignment="CENTER">
+         <right>
+            <ToolBar orientation="VERTICAL" prefHeight="640.0" prefWidth="50.0" styleClass="tool" BorderPane.alignment="CENTER">
+               <items>
+                  <ToggleButton mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="列表" />
+                  <ToggleButton mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="写作" />
+                  <ToggleButton mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="配置" />
+               </items>
+            </ToolBar>
+         </right>
+         <center>
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox prefHeight="57.0" prefWidth="240.0">
+                     <children>
+                        <TextField prefHeight="34.0" prefWidth="165.0" promptText="搜索" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="8.0" top="10.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button mnemonicParsing="false" prefHeight="33.0" prefWidth="55.0" text="搜索">
+                           <HBox.margin>
+                              <Insets left="4.0" right="8.0" top="10.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <TreeView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+         </center></BorderPane>
    </left>
 </BorderPane>

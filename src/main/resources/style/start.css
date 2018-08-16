@@ -1,0 +1,18 @@
+.root-pane{
+    -fx-background-size: cover;
+}
+.left-pane{
+    -fx-background-color: rgb(249,240,243);
+    -fx-effect: dropshadow(three-pass-box,#FFF,8,0,0,0);
+}
+.tool{
+    -fx-background-color:rgb(2,64,85);
+}
+.tool .toggle-button{
+    -fx-background-color: rgb(2,64,85);
+    -fx-text-fill: #FFFFFF;
+}
+.tool .toggle-button:selected{
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: rgb(2,64,85);
+}
