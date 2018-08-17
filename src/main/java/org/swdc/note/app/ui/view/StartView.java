@@ -2,6 +2,10 @@ package org.swdc.note.app.ui.view;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -11,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.ui.UIConfig;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 @FXMLView(value = "/view/start.fxml")
 public class StartView extends AbstractFxmlView {
@@ -31,23 +36,47 @@ public class StartView extends AbstractFxmlView {
             pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".css");
         }
 
-        BorderPane paneLeft = (BorderPane)pane.getLeft();
-        ToolBar tool = (ToolBar) paneLeft.getRight();
-        tool.getItems().forEach(toolItem->{
+        ToolBar tool = (ToolBar) getView().lookup(".tool");
 
-            ToggleButton btn = (ToggleButton)toolItem;
-            btn.setFont(UIConfig.getGLYPH_FONTAWESOME());
+        // 使用font-awsome的字体图标
+        Optional.ofNullable((ToggleButton) findById("list",tool.getItems()))
+                .ifPresent(btn-> {
+                    initToolBtn(btn,"list");
+                    btn.setSelected(true);
+                });
 
-            if(btn.getText().equals("列表")){
-                btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("list")));
-                btn.setSelected(true);
-            }else if (btn.getText().equals("写作")){
-                btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("file")));
-            }else if(btn.getText().equals("配置")){
-                btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("cog")));
+        Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
+                .ifPresent(btn-> initToolBtn(btn,"file"));
+        Optional.ofNullable((ToggleButton) findById("config",tool.getItems()))
+                .ifPresent(btn-> initToolBtn(btn,"cog"));
+
+        Button btnSearch = (Button) getView().lookup("#search");
+        btnSearch.setFont(UIConfig.getGLYPH_FONTAWESOME());
+        btnSearch.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("search")));
+    }
+
+    @PostConstruct
+    protected void initUIEvent(){
+        toolsGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                oldValue.setSelected(true);
             }
-            toolsGroup.getToggles().add(btn);
         });
+    }
+
+    private void initToolBtn(ToggleButton btn,String iconName){
+        btn.setFont(UIConfig.getGLYPH_FONTAWESOME());
+        btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get(iconName)));
+        toolsGroup.getToggles().add(btn);
+    }
+
+    private Node findById(String id, ObservableList<Node> list){
+        for (Node node:list) {
+            if(node.getId().equals(id)){
+                return node;
+            }
+        }
+        return null;
     }
 
 }
