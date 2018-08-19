@@ -23,14 +23,19 @@ import java.util.Map;
 public class UIConfig {
 
     @Getter
-    private static Font GLYPH_FONTAWESOME;
+    private static Font fontIcon;
+
+    @Getter
+    private static Font fontIconSmall;
 
     @Getter
     private static Map<String, Character> GLYPH_MAP;
 
     static {
         try{
-            GLYPH_FONTAWESOME = Font
+            fontIconSmall =  Font
+                    .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 14);
+            fontIcon = Font
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 18);
             GLYPH_MAP = new HashMap<String, Character>();
             GLYPH_MAP.put("fa_500px", '\uf26e');

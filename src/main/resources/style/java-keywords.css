@@ -1,0 +1,56 @@
+.md-keyword {
+    -fx-fill: rgb(159,240,72) !important;
+    -fx-font-weight: bold;
+}
+.md-sp{
+    -fx-fill: rgb(255,180,74) !important;
+}
+.md-list{
+    -fx-fill: rgb(255,149,219) !important;
+}
+.md-code{
+    -fx-fill: rgb(187,237,147) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.md-table{
+    -fx-fill: rgb(135,223,159) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    fx-font-weight: bold;
+}
+.semicolon {
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: rgb(255,154,181) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: rgb(113,227,142) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: rgb(111,188,228) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: rgb(219,247,183) !important;
+    -fx-effect: dropshadow(three-pass-box, #FFF, 16, 0, 0, 0);
+}
+.text{
+    -fx-fill:#FFF;
+}
+.comment {
+	-fx-fill: #999 !important;
+    -fx-effect: dropshadow(three-pass-box, #FFF, 16, 0, 0, 0);
+}
+.paragraph-box:has-caret {
+    -fx-background-color: rgba(0,0,0,0.2);
+}
+.lineno{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-fill: #FFF;
+}

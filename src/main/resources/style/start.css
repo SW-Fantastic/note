@@ -16,3 +16,67 @@
     -fx-background-color: #FFFFFF;
     -fx-text-fill: rgb(2,64,85);
 }
+.btn{
+    -fx-background-color: rgb(249,240,243);
+    -fx-text-fill: rgb(2,64,85);
+    -fx-border-width: 0 0 3.4 0;
+    -fx-border-color: rgb(2,64,85);
+    -fx-padding: 5.0;
+}
+.btn :pressed{
+    -fx-effect: dropshadow(three-pass-box, rgb(2,64,85), 10, 0, 0,0);
+}
+.txt{
+    -fx-background-color: rgb(249,240,243);
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: rgb(2,64,85);
+    -fx-prompt-text-fill: rgba(2,64,85,0.8);
+}
+.txt:focused{
+    -fx-prompt-text-fill: rgba(0,0,0,0);
+}
+.tree{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.tree .tree-cell{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.list-bg{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.list{
+    -fx-background-color: rgba(0,0,0,0.4);
+}
+.list .list-cell{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.code-area{
+    -fx-font-size: 16px;
+    -fx-background-color: rgba(0,0,0,0.68);
+}
+.code-tool{
+    -fx-background-color: rgba(8,17,38,0.6);
+}
+.code-tool .tool-bar{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.code-tool .tool-bar .button{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #FFFFFF;
+}
+.code-tool .tool-bar .button:hover{
+    -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
+}
+.btn-sel{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.btn-sel .arrow{
+    -fx-background-color: #FFFFFF;
+}
+.btn-sel .context-menu{
+    -fx-background-radius: 6px;
+    -fx-background-color: rgba(0,0,0,0.6);
+}
+.btn-sel .context-menu .menu-item:focused{
+    -fx-background-color: rgba(45,53,38,0.6);
+}

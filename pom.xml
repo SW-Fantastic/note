@@ -48,6 +48,12 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.fxmisc.richtext/richtextfx -->
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.8.1</version>
+        </dependency>
         <dependency>
             <groupId>de.roskenet</groupId>
             <artifactId>springboot-javafx-support</artifactId>
