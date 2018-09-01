@@ -1,33 +1,42 @@
 package org.swdc.note.app.ui.view;
 
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.profiles.pegdown.Extensions;
+import com.vladsch.flexmark.profiles.pegdown.PegdownOptionsAdapter;
+import com.vladsch.flexmark.util.options.DataHolder;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by lenovo on 2018/8/19.
+ * 编辑器的界面
+ * 子谦 2018 - 8 -22
  */
-@FXMLView(value = "/view/editView.fxml",css = "/style/java-keywords.css")
+@FXMLView(value = "/view/editView.fxml")
 public class StartEditView extends AbstractFxmlView{
 
     private static final String[] KEYWORDS = new String[] {
@@ -60,6 +69,13 @@ public class StartEditView extends AbstractFxmlView{
     // 匹配注释
     private static final String COMMENT_PATTERN = "([<][!][-]{2}[\\s\\S]*)|([-]{2}[>])";
 
+    static final DataHolder OPTIONS = PegdownOptionsAdapter.flexmarkOptions(
+            true,
+            Extensions.ALL
+    );
+    static final Parser PARSER = Parser.builder(OPTIONS).build();
+    static final HtmlRenderer RENDERER = HtmlRenderer.builder(OPTIONS).build();
+
     private static final Pattern PATTERN = Pattern.compile(
                       "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
                     + "|(?<PAREN>" + PAREN_PATTERN + ")"
@@ -78,27 +94,64 @@ public class StartEditView extends AbstractFxmlView{
     @Autowired
     private UIConfig config;
 
+    @Autowired
+    private ImageDialog dlg;
+
     @PostConstruct
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)this.getView();
+        UIUtil.configTheme(pane,config);
         CodeArea codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
         codeArea.getStyleClass().add("code-area");
-        pane.setCenter(codeArea);
+        codeArea.setWrapText(true);
+        SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
 
-        if(config.getTheme().equals("")||config.getTheme().equals("def")){
-            pane.getStylesheets().add(new ClassPathResource("style/start.css").getURL().toExternalForm());
-        }else{
-            pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".css");
-        }
+        BorderPane codePane = (BorderPane) findById("codeView",viewerPane.getItems());
+        codePane.setCenter(codeArea);
+
+        // javaFX SpringBoot Support库不能够在FXML中初始化webView。
+        Platform.runLater(()->{
+            WebView contentView = new WebView();
+            BorderPane paneWeb = (BorderPane)findById("contentView",viewerPane.getItems());
+            paneWeb.setCenter(contentView);
+            contentView.getEngine().getLoadWorker().stateProperty().addListener(((observable, oldValue, newValue) -> {
+                if(newValue.equals(Worker.State.SUCCEEDED)){
+                    // 计算当前行
+                    int currLine = codeArea.getText().substring(0,codeArea.getCaretPosition()).split("\n").length;
+                    // 总行数
+                    int lines = codeArea.getText().split("\n").length;
+                    double scrollPos = 1;
+                    // 计算滚动位置
+                    if(lines > 0 && currLine>0){
+                        scrollPos = Double.valueOf(currLine) / Double.valueOf(lines);
+                    }
+                    contentView.getEngine().executeScript("window.scrollTo(0, document.body.clientHeight * "+scrollPos+");");
+                }
+            }));
+            codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
+                StringBuilder sb = new StringBuilder();
+                sb.append("\r\n");
+                dlg.getImages().entrySet().forEach(ent->{
+                    sb.append("["+ent.getKey()+"]: data:image/png;base64,"+ent.getValue()+"\n");
+                });
+                String content = RENDERER.render(PARSER.parse(codeArea.getText()+"\n"+sb.toString()));
+                contentView.getEngine().loadContent("<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
+                        +"<body>"+content+"</body></html>");
+            }));
+        });
+
+
         initEditTool();
     }
 
     protected void initEditTool(){
-        ToolBar toolBar = (ToolBar) getView().lookup("#codeTool");
-        CodeArea code = (CodeArea)((BorderPane) getView()).getCenter();
+        SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
+        BorderPane pane = (BorderPane)findById("codeView",viewerPane.getItems());
+        ToolBar toolBar = (ToolBar) pane.getTop();
+        CodeArea code = (CodeArea)pane.getCenter();
         // 加粗按钮的处理
         initButton("big",toolBar.getItems(),"bold",e->{
             String sel = code.getSelectedText();
@@ -147,16 +200,37 @@ public class StartEditView extends AbstractFxmlView{
 
         });
         initButton("ul",toolBar.getItems(),"list_ul",e->{
-
+            String txt = code.getText();
+            if(txt == null || txt.equals("")){
+                code.appendText(" - 列表项a \n - 列表项b \n - 列表项c");
+                return;
+            }
+            List<String> list = Arrays.asList(txt.split("\n"));
+            StringBuilder sb = new StringBuilder();
+            list.forEach(str->sb.append("\n - " + str ));
+            code.replaceText(code.getSelection(),sb.toString());
         });
         initButton("img",toolBar.getItems(),"image",e->{
-
+            Stage stg = dlg.getStage();
+            if(!stg.isShowing()){
+                stg.showAndWait();
+            }
+            Optional.ofNullable(dlg.getSelectedImage()).ifPresent(img->{
+                code.appendText("![输入简介]["+img+"]");
+            });
         });
         initButton("task",toolBar.getItems(),"list_alt",e->{
 
         });
         initButton("code",toolBar.getItems(),"code",e->{
-
+            String sel = code.getSelectedText();
+            IndexRange range = code.getSelection();
+            if (sel == null|| sel.equals("")){
+                code.appendText("```language\n \\\\ 在这里编写代码 \n ```");
+                return;
+            }
+            sel = "```language\n"+sel+"\n```";
+            code.replaceText(range.getStart(),range.getEnd(),sel);
         });
     }
 
@@ -186,7 +260,8 @@ public class StartEditView extends AbstractFxmlView{
      */
     private void initHeaderMenu(MenuItem item){
         int level = Integer.valueOf(item.getId().replace("h",""));
-        CodeArea code = (CodeArea)((BorderPane) getView()).getCenter();
+        BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
+        CodeArea code = (CodeArea)pane.getCenter();
         item.setOnAction(act->{
             IndexRange range = code.getSelection();
             String sel = code.getSelectedText();
@@ -232,7 +307,7 @@ public class StartEditView extends AbstractFxmlView{
                     matcher.group("COMMENT") != null ? "comment":
                     matcher.group("SP") != null ? "md-sp":
                     matcher.group("TITLE") != null ? "md-keyword":
-                     "text"; /* never happens */ assert styleClass != null;
+                     "text-normal"; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();

@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
+import org.swdc.note.app.util.UIUtil;
 
+import javax.annotation.PostConstruct;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +33,10 @@ public class UIConfig {
 
     @Getter
     private static Map<String, Character> GLYPH_MAP;
+
+    @Getter
+    @Value("${app.mdStyle}")
+    private String mdStyle;
 
     static {
         try{
@@ -748,5 +755,20 @@ public class UIConfig {
     @Getter
     private String theme;
 
+    @Value("${app.keywords}")
+    @Getter
+    private String keywords;
+
+    @Getter
+    private String mdStyleContent;
+
+    @PostConstruct
+    private void init() throws Exception{
+        if (this.mdStyle == null|| this.mdStyle.equals("")){
+            mdStyleContent = UIUtil.readFile(new ClassPathResource("/style/markdown.css").getInputStream());
+        }else{
+            mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("file:config/"+theme+"/"+mdStyle));
+        }
+    }
 
 }

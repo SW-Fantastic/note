@@ -7,51 +7,60 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="573.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <VBox prefHeight="78.0" prefWidth="573.0" styleClass="code-tool" BorderPane.alignment="CENTER">
+      <VBox prefHeight="39.0" prefWidth="573.0" styleClass="code-tool" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" prefHeight="38.0" prefWidth="573.0">
                <children>
-                  <TextField prefHeight="30.0" prefWidth="573.0" HBox.hgrow="ALWAYS">
+                  <TextField prefHeight="30.0" prefWidth="573.0" promptText="这里是标题" styleClass="title-field" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="8.0" right="8.0" />
                      </HBox.margin>
                   </TextField>
                </children>
             </HBox>
-            <ToolBar id="codeTool" prefHeight="40.0" prefWidth="200.0">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <items>
-                  <Button id="big" mnemonicParsing="false" text="粗" />
-                  <Button id="italic" mnemonicParsing="false" text="斜" />
-                  <Button id="delLine" mnemonicParsing="false" text="删" />
-                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="5.0" />
-                  <MenuButton id="title" mnemonicParsing="false" prefHeight="23.0" prefWidth="45.0" styleClass="btn-sel" text="题">
-                     <items>
-                        <MenuItem id="h1" mnemonicParsing="false" text="H1 一级标题" />
-                        <MenuItem id="h2" mnemonicParsing="false" text="H2 二级标题" />
-                        <MenuItem id="h3" mnemonicParsing="false" text="H3 三级标题" />
-                        <MenuItem id="h4" mnemonicParsing="false" text="H4 四级标题" />
-                        <MenuItem id="h5" mnemonicParsing="false" text="H5 五级标题" />
-                        <MenuItem id="h6" mnemonicParsing="false" text="H6 六级标题" />
-                     </items>
-                  </MenuButton>
-                  <Button id="tab" mnemonicParsing="false" text="表" />
-                  <Button id="ol" mnemonicParsing="false" text="序" />
-                  <Button id="ul" mnemonicParsing="false" text="乱" />
-                  <Button id="img" mnemonicParsing="false" text="图" />
-                  <Button id="task" mnemonicParsing="false" text="任" />
-                  <Button id="code" mnemonicParsing="false" text="码" />
-                  <Separator orientation="VERTICAL" prefHeight="29.0" prefWidth="0.0" />
-               </items>
-               <padding>
-                  <Insets bottom="2.0" />
-               </padding></ToolBar>
          </children>
       </VBox>
    </top>
+   <center>
+      <SplitPane id="viewerPane" dividerPositions="0.6440677966101694" orientation="VERTICAL" prefHeight="400.0" prefWidth="573.0" styleClass="btn-sel" BorderPane.alignment="CENTER">
+         <items>
+            <BorderPane id="codeView" prefHeight="241.0" prefWidth="571.0" styleClass="code-tool">
+               <top>
+                  <ToolBar id="codeTool" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <items>
+                        <Button id="big" mnemonicParsing="false" text="粗" />
+                        <Button id="italic" mnemonicParsing="false" text="斜" />
+                        <Button id="delLine" mnemonicParsing="false" text="删" />
+                        <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="5.0" />
+                        <MenuButton id="title" mnemonicParsing="false" prefHeight="23.0" prefWidth="45.0" styleClass="btn-sel" text="题">
+                           <items>
+                              <MenuItem id="h1" mnemonicParsing="false" text="H1 一级标题" />
+                              <MenuItem id="h2" mnemonicParsing="false" text="H2 二级标题" />
+                              <MenuItem id="h3" mnemonicParsing="false" text="H3 三级标题" />
+                              <MenuItem id="h4" mnemonicParsing="false" text="H4 四级标题" />
+                              <MenuItem id="h5" mnemonicParsing="false" text="H5 五级标题" />
+                              <MenuItem id="h6" mnemonicParsing="false" text="H6 六级标题" />
+                           </items>
+                        </MenuButton>
+                        <Button id="tab" mnemonicParsing="false" text="表" />
+                        <Button id="ol" mnemonicParsing="false" text="序" />
+                        <Button id="ul" mnemonicParsing="false" text="乱" />
+                        <Button id="img" mnemonicParsing="false" text="图" />
+                        <Button id="task" mnemonicParsing="false" text="任" />
+                        <Button id="code" mnemonicParsing="false" text="码" />
+                        <Separator orientation="VERTICAL" prefHeight="29.0" prefWidth="0.0" />
+                     </items>
+                     <padding>
+                        <Insets bottom="2.0" />
+                     </padding>
+                  </ToolBar>
+               </top>
+            </BorderPane>
+            <BorderPane id="contentView" prefHeight="153.0" prefWidth="571.0" />
+         </items>
+      </SplitPane>
+   </center>
 </BorderPane>

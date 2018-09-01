@@ -54,6 +54,9 @@
     -fx-font-size: 16px;
     -fx-background-color: rgba(0,0,0,0.68);
 }
+.code-area .text{
+    -fx-fill: #FFF;
+}
 .code-tool{
     -fx-background-color: rgba(8,17,38,0.6);
 }
@@ -67,8 +70,11 @@
 .code-tool .tool-bar .button:hover{
     -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
 }
+.btn-sel *{
+    -fx-text-fill: #FFF;
+}
 .btn-sel{
-    -fx-background-color: rgba(0,0,0,0);
+    -fx-background-color: rgba(0,0,0,0)
 }
 .btn-sel .arrow{
     -fx-background-color: #FFFFFF;
@@ -79,4 +85,31 @@
 }
 .btn-sel .context-menu .menu-item:focused{
     -fx-background-color: rgba(45,53,38,0.6);
+}
+.split-pane{
+    -fx-background-color: rgba(0,0,0,0);
+}
+.title-field{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: rgba(255,255,255,0.8);
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 0 0 2 0;
+}
+.title-field :focused{
+    -fx-prompt-text-fill: rgba(0,0,0,0);
+}
+.btn-normal{
+    -fx-background-color: #2B3F52 ;
+    -fx-text-fill: #FFFFFF;
+}
+.list-img {
+}
+.list-img .list-cell{
+    -fx-text-fill: #000;
+    -fx-fill: #333333;
+}
+.list-img .list-cell:focused{
+    -fx-background-color: #2B3F52;
+    -fx-text-fill: #FFFFFF;
 }

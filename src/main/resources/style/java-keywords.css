@@ -40,8 +40,9 @@
     -fx-fill: rgb(219,247,183) !important;
     -fx-effect: dropshadow(three-pass-box, #FFF, 16, 0, 0, 0);
 }
-.text{
+.text-normal{
     -fx-fill:#FFF;
+    -fx-text-fill: #FFFFFF;
 }
 .comment {
 	-fx-fill: #999 !important;
@@ -52,5 +53,6 @@
 }
 .lineno{
     -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #FFF;
     -fx-fill: #FFF;
 }

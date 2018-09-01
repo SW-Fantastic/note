@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="left-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ImageDialogController">
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="600.0" BorderPane.alignment="TOP_LEFT">
+         <children>
+            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="29.0" prefWidth="77.0" styleClass="btn-normal" text="取消">
+               <HBox.margin>
+                  <Insets right="3.0" />
+               </HBox.margin></Button>
+            <Button mnemonicParsing="false" onAction="#removeSelected" prefHeight="30.0" prefWidth="77.0" styleClass="btn-normal" text="移除..">
+               <HBox.margin>
+                  <Insets right="3.0" />
+               </HBox.margin>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#openImage" prefHeight="29.0" prefWidth="79.0" styleClass="btn-normal" text="添加...">
+               <HBox.margin>
+                  <Insets right="3.0" />
+               </HBox.margin></Button>
+            <Button mnemonicParsing="false" onAction="#insertSelected" prefHeight="30.0" prefWidth="77.0" styleClass="btn-normal" text="插入此图片" />
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets right="8.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <center>
+      <ListView fx:id="listView" prefHeight="345.0" prefWidth="351.0" styleClass="list-img" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets right="8.0" top="6.0" />
+         </BorderPane.margin>
+      </ListView>
+   </center>
+   <left>
+      <ScrollPane fx:id="scrPane" fitToHeight="true" fitToWidth="true" prefHeight="356.0" prefWidth="272.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="6.0" top="6.0" />
+         </BorderPane.margin>
+      </ScrollPane>
+   </left>
+</BorderPane>
