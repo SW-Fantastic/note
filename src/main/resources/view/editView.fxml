@@ -11,11 +11,26 @@
          <children>
             <HBox alignment="CENTER" prefHeight="38.0" prefWidth="573.0">
                <children>
-                  <TextField prefHeight="30.0" prefWidth="573.0" promptText="这里是标题" styleClass="title-field" HBox.hgrow="ALWAYS">
+                  <TextField prefHeight="30.0" prefWidth="350.0" promptText="这里是标题" styleClass="title-field" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets left="8.0" right="8.0" />
                      </HBox.margin>
                   </TextField>
+                  <ComboBox prefHeight="30.0" prefWidth="105.0" promptText="选择分类" styleClass="comb" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </ComboBox>
+                  <Button id="addType" mnemonicParsing="false" prefHeight="29.0" prefWidth="35.0" text="加">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button id="savebtn" mnemonicParsing="false" prefHeight="29.0" prefWidth="32.0" text="存">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
          </children>
@@ -49,13 +64,16 @@
                         <Button id="ol" mnemonicParsing="false" text="序" />
                         <Button id="ul" mnemonicParsing="false" text="乱" />
                         <Button id="img" mnemonicParsing="false" text="图" />
-                        <Button id="task" mnemonicParsing="false" text="任" />
+                        <Button id="quote" mnemonicParsing="false" text="引" />
                         <Button id="code" mnemonicParsing="false" text="码" />
                         <Separator orientation="VERTICAL" prefHeight="29.0" prefWidth="0.0" />
                      </items>
                      <padding>
-                        <Insets bottom="2.0" />
+                        <Insets bottom="2.0" right="3.0" />
                      </padding>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
                   </ToolBar>
                </top>
             </BorderPane>

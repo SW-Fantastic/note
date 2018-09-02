@@ -6,6 +6,7 @@ import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 
@@ -21,11 +22,7 @@ public class StartListView extends AbstractFxmlView{
     @PostConstruct
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)this.getView();
-        if(config.getTheme().equals("")||config.getTheme().equals("def")){
-            pane.getStylesheets().add(new ClassPathResource("style/start.css").getURL().toExternalForm());
-        }else{
-            pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".css");
-        }
+        UIUtil.configTheme(pane,config);
     }
 
 }

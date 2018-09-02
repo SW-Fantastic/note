@@ -28,9 +28,14 @@ public class ImageDialog extends AbstractFxmlView {
 
     private Stage stage;
 
-    @Getter
     @Setter
     private String selectedImage;
+
+    public String getSelectedImage() {
+        String name = selectedImage;
+        selectedImage = null;
+        return name;
+    }
 
     @Getter
     private Map<String,String> images = new HashMap<>();

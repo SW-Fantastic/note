@@ -14,7 +14,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -69,12 +68,12 @@ public class StartEditView extends AbstractFxmlView{
     // 匹配注释
     private static final String COMMENT_PATTERN = "([<][!][-]{2}[\\s\\S]*)|([-]{2}[>])";
 
-    static final DataHolder OPTIONS = PegdownOptionsAdapter.flexmarkOptions(
+    private static final DataHolder OPTIONS = PegdownOptionsAdapter.flexmarkOptions(
             true,
             Extensions.ALL
     );
-    static final Parser PARSER = Parser.builder(OPTIONS).build();
-    static final HtmlRenderer RENDERER = HtmlRenderer.builder(OPTIONS).build();
+    private static final Parser PARSER = Parser.builder(OPTIONS).build();
+    private static final HtmlRenderer RENDERER = HtmlRenderer.builder(OPTIONS).build();
 
     private static final Pattern PATTERN = Pattern.compile(
                       "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -95,7 +94,10 @@ public class StartEditView extends AbstractFxmlView{
     private UIConfig config;
 
     @Autowired
-    private ImageDialog dlg;
+    private ImageDialog imageDialog;
+
+    @Autowired
+    private TableDialog tableDialog;
 
     @PostConstruct
     protected void initUI() throws Exception{
@@ -134,7 +136,7 @@ public class StartEditView extends AbstractFxmlView{
             codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
                 StringBuilder sb = new StringBuilder();
                 sb.append("\r\n");
-                dlg.getImages().entrySet().forEach(ent->{
+                imageDialog.getImages().entrySet().forEach(ent->{
                     sb.append("["+ent.getKey()+"]: data:image/png;base64,"+ent.getValue()+"\n");
                 });
                 String content = RENDERER.render(PARSER.parse(codeArea.getText()+"\n"+sb.toString()));
@@ -142,7 +144,6 @@ public class StartEditView extends AbstractFxmlView{
                         +"<body>"+content+"</body></html>");
             }));
         });
-
 
         initEditTool();
     }
@@ -157,7 +158,10 @@ public class StartEditView extends AbstractFxmlView{
             String sel = code.getSelectedText();
             IndexRange range = code.getSelection();
             if(sel==null||sel.equals("")){
-                code.appendText("**内容写在这里**");
+                // 获取光标位置
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                // 插入内容
+                code.replaceText(rgCurr,"**内容写在这里**");
                 return;
             }
             sel = reduceDesc(sel,"**");
@@ -168,7 +172,8 @@ public class StartEditView extends AbstractFxmlView{
             String sel = code.getSelectedText();
             IndexRange range = code.getSelection();
             if(sel==null||sel.equals("")){
-                code.appendText("*内容写在这里*");
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr,"*内容写在这里*");
                 return;
             }
             sel = reduceDesc(sel,"*");
@@ -179,7 +184,8 @@ public class StartEditView extends AbstractFxmlView{
             String sel = code.getSelectedText();
             IndexRange range = code.getSelection();
             if(sel==null||sel.equals("")){
-                code.appendText("~~内容写在这里~~");
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr,"~~内容写在这里~~");
                 return;
             }
            sel = reduceDesc(sel,"~~");
@@ -193,16 +199,44 @@ public class StartEditView extends AbstractFxmlView{
             btn.getItems().forEach(this::initHeaderMenu);
         });
 
-        initButton("tab",toolBar.getItems(),"table",e->{
+        Optional.ofNullable((Button)getView().lookup("#addType")).ifPresent(btn->{
+            btn.setFont(UIConfig.getFontIconSmall());
+            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("plus")));
+        });
 
+        Optional.ofNullable((Button)getView().lookup("#savebtn")).ifPresent(btn->{
+            btn.setFont(UIConfig.getFontIconSmall());
+            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("save")));
+        });
+
+        initButton("tab",toolBar.getItems(),"table",e->{
+            Stage stage = tableDialog.getStage();
+            if (!stage.isShowing()){
+                stage.showAndWait();
+            }
+            IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+            code.replaceText(rgCurr,"\n\n"+tableDialog.getTable());
         });
         initButton("ol",toolBar.getItems(),"list_ol",e->{
-
+            int idx = 1;
+            String txt = code.getText();
+            if(txt == null || txt.equals("")){
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr," 1. 列表项a \n 2. 列表项b \n 3. 列表项c");
+                return;
+            }
+            List<String> list = Arrays.asList(txt.split("\n"));
+            StringBuilder sb = new StringBuilder();
+            for (String str:list) {
+                sb.append("\n "+(idx++)+". " + str );
+            }
+            code.replaceText(code.getSelection(),sb.toString());
         });
         initButton("ul",toolBar.getItems(),"list_ul",e->{
             String txt = code.getText();
             if(txt == null || txt.equals("")){
-                code.appendText(" - 列表项a \n - 列表项b \n - 列表项c");
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr," - 列表项a \n - 列表项b \n - 列表项c");
                 return;
             }
             List<String> list = Arrays.asList(txt.split("\n"));
@@ -211,22 +245,35 @@ public class StartEditView extends AbstractFxmlView{
             code.replaceText(code.getSelection(),sb.toString());
         });
         initButton("img",toolBar.getItems(),"image",e->{
-            Stage stg = dlg.getStage();
+            Stage stg = imageDialog.getStage();
             if(!stg.isShowing()){
                 stg.showAndWait();
             }
-            Optional.ofNullable(dlg.getSelectedImage()).ifPresent(img->{
-                code.appendText("![输入简介]["+img+"]");
+            Optional.ofNullable(imageDialog.getSelectedImage()).ifPresent(img->{
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr,"![输入简介]["+img+"]");
             });
         });
-        initButton("task",toolBar.getItems(),"list_alt",e->{
-
+        initButton("quote",toolBar.getItems(),"quote_right",e->{
+            String text = code.getSelectedText();
+            if(text==null||text.equals("")){
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr,"\n> 输入引用的内容\n");
+                return;
+            }
+            StringBuilder sb = new StringBuilder("\n");
+            List<String> list = Arrays.asList(text.split("\n"));
+            for (String str:  list) {
+                sb.append("\n> "+str );
+            }
+            code.replaceText(code.getSelection(),sb.toString());
         });
         initButton("code",toolBar.getItems(),"code",e->{
             String sel = code.getSelectedText();
             IndexRange range = code.getSelection();
             if (sel == null|| sel.equals("")){
-                code.appendText("```language\n \\\\ 在这里编写代码 \n ```");
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
+                code.replaceText(rgCurr,"\n```language\n \\\\ 在这里编写代码 \n ```");
                 return;
             }
             sel = "```language\n"+sel+"\n```";
@@ -266,10 +313,11 @@ public class StartEditView extends AbstractFxmlView{
             IndexRange range = code.getSelection();
             String sel = code.getSelectedText();
             if(sel==null||sel.equals("")){
+                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
                 for (int idx = 0 ;idx <level;idx++){
                     sel = sel + "#";
                 }
-                code.appendText(sel + " 这里是标题");
+                code.replaceText(rgCurr,"\n"+sel+"  这里是标题");
                 return;
             }
             if(sel.contains("#")){
@@ -277,7 +325,7 @@ public class StartEditView extends AbstractFxmlView{
                 code.replaceText(range.getStart(),range.getEnd(),sel);
                 return;
             }
-            sel = " "+sel;
+            sel = "\n "+sel;
             for (int idx = 0 ;idx <level;idx++){
                 sel = "#" + sel ;
             }

@@ -63,18 +63,30 @@
 .code-tool .tool-bar{
     -fx-background-color: rgba(0,0,0,0);
 }
-.code-tool .tool-bar .button{
+.code-tool .button{
     -fx-background-color: rgba(0,0,0,0);
     -fx-text-fill: #FFFFFF;
 }
-.code-tool .tool-bar .button:hover{
+.code-tool .button:hover{
     -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
+}
+.comb{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 0 0 2 0;
+}
+.comb > *{
+    -fx-text-fill: #FFFFFF;
+}
+.comb .arrow{
+    -fx-background-color: #FFFFFF;
 }
 .btn-sel *{
     -fx-text-fill: #FFF;
 }
 .btn-sel{
-    -fx-background-color: rgba(0,0,0,0)
+    -fx-background-color: rgba(0,0,0,0);
 }
 .btn-sel .arrow{
     -fx-background-color: #FFFFFF;
