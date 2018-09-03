@@ -72,16 +72,12 @@
 }
 .comb{
     -fx-background-color: rgba(0,0,0,0);
+    -fx-prompt-text-fill: rgba(255,255,255,0.6);
     -fx-text-fill: #FFFFFF;
     -fx-border-color: #FFFFFF;
     -fx-border-width: 0 0 2 0;
 }
-.comb > *{
-    -fx-text-fill: #FFFFFF;
-}
-.comb .arrow{
-    -fx-background-color: #FFFFFF;
-}
+
 .btn-sel *{
     -fx-text-fill: #FFF;
 }

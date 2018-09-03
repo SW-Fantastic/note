@@ -99,6 +99,9 @@ public class StartEditView extends AbstractFxmlView{
     @Autowired
     private TableDialog tableDialog;
 
+    @Autowired
+    private TypeDialog typeDialog;
+
     @PostConstruct
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)this.getView();
@@ -202,6 +205,12 @@ public class StartEditView extends AbstractFxmlView{
         Optional.ofNullable((Button)getView().lookup("#addType")).ifPresent(btn->{
             btn.setFont(UIConfig.getFontIconSmall());
             btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("plus")));
+            btn.setOnAction(e->{
+                Stage stg = typeDialog.getStage();
+                if(!stg.isShowing()){
+                    stg.showAndWait();
+                }
+            });
         });
 
         Optional.ofNullable((Button)getView().lookup("#savebtn")).ifPresent(btn->{

@@ -13,14 +13,14 @@
                <children>
                   <TextField prefHeight="30.0" prefWidth="350.0" promptText="这里是标题" styleClass="title-field" HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets left="8.0" right="8.0" />
+                        <Insets left="8.0" right="6.0" />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox prefHeight="30.0" prefWidth="105.0" promptText="选择分类" styleClass="comb" HBox.hgrow="ALWAYS">
+                  <TextField editable="false" prefHeight="29.0" prefWidth="118.0" promptText="类型" styleClass="comb">
                      <HBox.margin>
-                        <Insets right="8.0" />
+                        <Insets right="3.0" />
                      </HBox.margin>
-                  </ComboBox>
+                  </TextField>
                   <Button id="addType" mnemonicParsing="false" prefHeight="29.0" prefWidth="35.0" text="加">
                      <HBox.margin>
                         <Insets right="8.0" />
