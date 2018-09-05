@@ -1,4 +1,4 @@
-package org.swdc.note.app.repository;
+package org.swdc.note.app.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,7 @@ public class ArtleType {
     @Setter
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @Getter
     @Setter
     private ArtleType parentType;
@@ -38,4 +38,8 @@ public class ArtleType {
     @Setter
     private List<Artle> artles;
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

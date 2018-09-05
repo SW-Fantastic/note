@@ -43,7 +43,7 @@
                         </Button>
                      </children>
                   </HBox>
-                  <TreeView prefHeight="200.0" prefWidth="200.0" styleClass="tree" VBox.vgrow="ALWAYS" />
+                  <TreeView fx:id="typeTreeView" prefHeight="200.0" prefWidth="200.0" styleClass="tree" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </center></BorderPane>

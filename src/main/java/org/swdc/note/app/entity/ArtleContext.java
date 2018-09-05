@@ -1,4 +1,4 @@
-package org.swdc.note.app.repository;
+package org.swdc.note.app.entity;
 
 import lombok.Getter;
 import lombok.Setter;
