@@ -72,7 +72,7 @@ public class StartView extends AbstractFxmlView {
 
         Button btnSearch = (Button) getView().lookup("#search");
         btnSearch.setFont(UIConfig.getFontIcon());
-        btnSearch.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("search")));
+        btnSearch.setText(String.valueOf(UIConfig.getAwesomeMap().get("search")));
     }
 
     @PostConstruct
@@ -95,7 +95,7 @@ public class StartView extends AbstractFxmlView {
 
     private void initToolBtn(ToggleButton btn,String iconName){
         btn.setFont(UIConfig.getFontIcon());
-        btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get(iconName)));
+        btn.setText(String.valueOf(UIConfig.getAwesomeMap().get(iconName)));
         toolsGroup.getToggles().add(btn);
     }
 

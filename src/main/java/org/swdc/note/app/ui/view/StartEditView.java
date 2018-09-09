@@ -204,18 +204,18 @@ public class StartEditView extends AbstractFxmlView{
         Optional.ofNullable(findById("title",toolBar.getItems())).ifPresent(item->{
             MenuButton btn = (MenuButton)item;
             btn.setFont(UIConfig.getFontIconSmall());
-            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("header")));
+            btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("header")));
             btn.getItems().forEach(this::initHeaderMenu);
         });
 
         Optional.ofNullable((Button)getView().lookup("#addType")).ifPresent(btn->{
             btn.setFont(UIConfig.getFontIconSmall());
-            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("plus")));
+            btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("plus")));
         });
 
         Optional.ofNullable((Button)getView().lookup("#savebtn")).ifPresent(btn->{
             btn.setFont(UIConfig.getFontIconSmall());
-            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("save")));
+            btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("save")));
         });
 
         initButton("tab",toolBar.getItems(),"table",e->{
@@ -313,7 +313,7 @@ public class StartEditView extends AbstractFxmlView{
         Optional.ofNullable(findById(id,list)).ifPresent(item->{
             Button btn = (Button) item;
             btn.setFont(UIConfig.getFontIconSmall());
-            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get(icon)));
+            btn.setText(String.valueOf(UIConfig.getAwesomeMap().get(icon)));
             btn.setOnAction(action);
         });
     }

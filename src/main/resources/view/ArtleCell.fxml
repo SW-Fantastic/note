@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="79.0" prefWidth="600.0" styleClass="listItem" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <StackPane alignment="TOP_CENTER" prefHeight="68.0" prefWidth="82.0" BorderPane.alignment="CENTER">
+         <children>
+            <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="89.0" prefWidth="6.0" styleClass="icon-bg" />
+            <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="82.0">
+               <children>
+                  <Label id="arrow" styleClass="arrow" text="     " />
+               </children>
+            </HBox>
+            <Button id="icon" mnemonicParsing="false" prefHeight="47.0" prefWidth="45.0" styleClass="icon-btn" visible="false">
+               <StackPane.margin>
+                  <Insets top="8.0" />
+               </StackPane.margin></Button>
+         </children>
+      </StackPane>
+   </left>
+   <center>
+      <VBox id="bg" prefHeight="68.0" prefWidth="472.0" styleClass="item-bg" visible="false" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets top="8.0" />
+         </BorderPane.margin>
+         <children>
+            <HBox prefHeight="42.0" prefWidth="518.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Label id="title" prefHeight="31.0" prefWidth="374.0" styleClass="title" text="title">
+                     <HBox.margin>
+                        <Insets left="18.0" top="6.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="41.0" prefWidth="518.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Label id="date" styleClass="date" text="Label">
+                     <HBox.margin>
+                        <Insets left="18.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+         </children></VBox>
+   </center>
+</BorderPane>

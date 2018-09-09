@@ -27,12 +27,12 @@ public class ArtleCellView extends AbstractFxmlView{
     protected void initUI(){
         Button btnIcon = (Button)getView().lookup("#icon");
         btnIcon.setFont(UIConfig.getFontIconSmall());
-        btnIcon.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("file")));
+        btnIcon.setText(String.valueOf(UIConfig.getAwesomeMap().get("file")));
         btnIcon.setVisible(true);
         VBox vbx = (VBox)getView().lookup("#bg");
         vbx.setVisible(true);
         Label lblArrow = (Label)getView().lookup("#arrow");
-        lblArrow.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("caret_left")));
+        lblArrow.setText(String.valueOf(UIConfig.getAwesomeMap().get("caret_left")));
         lblArrow.setFont(UIConfig.getFontIconLarge());
     }
 

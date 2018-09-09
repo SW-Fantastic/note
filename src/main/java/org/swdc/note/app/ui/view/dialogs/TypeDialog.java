@@ -47,11 +47,11 @@ public class TypeDialog extends AbstractFxmlView {
         });
         Optional.ofNullable((Button) pane.lookup("#btnAdd")).ifPresent(btn->{
             btn.setFont(UIConfig.getFontIconSmall());
-            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("plus")));
+            btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("plus")));
         });
         Optional.ofNullable((Button)pane.lookup("#btnDel")).ifPresent(btn->{
             btn.setFont(UIConfig.getFontIconSmall());
-            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("trash")));
+            btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("trash")));
         });
 
     }

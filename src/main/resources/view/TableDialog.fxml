@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="320.0" styleClass="left-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.TableDialogController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="320.0" styleClass="left-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.dialogs.TableDialogController">
    <children>
       <TextField fx:id="txtRows" layoutX="90.0" layoutY="14.0" prefHeight="33.0" prefWidth="193.0" promptText="行的数量" styleClass="txt" />
       <TextField fx:id="txtCols" layoutX="90.0" layoutY="54.0" prefHeight="33.0" prefWidth="193.0" promptText="列的数量" styleClass="txt" />
