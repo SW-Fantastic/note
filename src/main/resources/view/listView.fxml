@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ArtleViewController">
    <center>
-      <ListView prefHeight="200.0" prefWidth="200.0" styleClass="list" BorderPane.alignment="CENTER">
+      <ListView id="list" fx:id="artleListView" prefHeight="200.0" prefWidth="200.0" styleClass="list" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets left="8.0" />
          </BorderPane.margin>

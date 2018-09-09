@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * 文章模型
@@ -21,7 +22,12 @@ public class Artle {
     @Setter
     private String title;
 
-    @ManyToOne
+    @Getter
+    @Setter
+    @Column(columnDefinition = "date")
+    private Date createdDate;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "typeId")
     @Getter
     @Setter

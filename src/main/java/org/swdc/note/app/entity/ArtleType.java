@@ -28,7 +28,7 @@ public class ArtleType {
     @Setter
     private ArtleType parentType;
 
-    @OneToMany(mappedBy = "parentType")
+    @OneToMany(mappedBy = "parentType",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @Getter
     @Setter
     private Set<ArtleType> childType;

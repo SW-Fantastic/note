@@ -32,6 +32,10 @@ public class TypeService {
         return root;
     }
 
+    /**
+     * 构建树结构的递归方法
+     * @param item 文档的树节点
+     */
     private void childItem(TreeItem<ArtleType> item){
         if(item.getValue()==null){
             return;
@@ -39,7 +43,6 @@ public class TypeService {
         ArtleType type = typeRepository.getOne(item.getValue().getId());
         if(type.getChildType() != null ){
             type.getChildType().forEach(typeItem->item.getChildren().add(new TreeItem<>(typeItem)));
-            System.out.println("name is " + type.getName());
             item.getChildren().forEach(this::childItem);
         }
     }
@@ -51,8 +54,8 @@ public class TypeService {
      * 有添加的新类型，因为此时尚未提交。
      *
      * 事件发布放在了Aspect里面进行
-     * @param type
-     * @return
+     * @param type 文档类型
+     * @return 操作是否成功
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean addType(ArtleType type){
@@ -68,8 +71,32 @@ public class TypeService {
         return valid;
     }
 
+    /**
+     * 删除分类
+     * @param type 被删除分类
+     * @param direct 是否强制删除
+     * @return 成功或失败
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean delType(ArtleType type,boolean direct){
+        type = typeRepository.getOne(type.getId());
+        if(!direct && (type.getChildType() != null && type.getChildType().size() > 0
+                || type.getArtles() != null && type.getArtles().size() > 0)){
+            return false;
+        }else{
+            typeRepository.delete(type);
+            return true;
+        }
+    }
+
+    /**
+     * 验证分类
+     * 同一父分类下子分类不能重名
+     * @param type 类型
+     * @return 分类是否重复
+     */
     @Transactional(readOnly = true)
-    public boolean typeValid(ArtleType type){
+    private boolean typeValid(ArtleType type){
         ArtleType parentType = type.getParentType();
         boolean repeated = false;
         if(parentType == null){

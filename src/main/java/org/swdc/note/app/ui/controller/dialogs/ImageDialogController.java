@@ -1,4 +1,4 @@
-package org.swdc.note.app.ui.controller;
+package org.swdc.note.app.ui.controller.dialogs;
 
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.ui.view.ImageDialog;
+import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.util.UIUtil;
 
 import java.io.ByteArrayInputStream;

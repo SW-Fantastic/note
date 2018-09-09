@@ -1,8 +1,7 @@
-package org.swdc.note.app.ui.controller;
+package org.swdc.note.app.ui.controller.dialogs;
 
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -10,14 +9,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.annotation.ReadOnlyProperty;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.TypeRefreshEvent;
 import org.swdc.note.app.service.TypeService;
-import org.swdc.note.app.ui.view.TypeDialog;
+import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 
 import javax.annotation.PostConstruct;
 import java.net.URL;
@@ -51,13 +47,15 @@ public class TypeDialogController implements Initializable{
 
     @PostConstruct
     public void initTree(){
-        root.set(typeService.getTypes());
+        TreeItem<ArtleType> treeItem = typeService.getTypes();
+        treeItem.setExpanded(true);
+        root.set(treeItem);
+        treeView.setShowRoot(false);
         treeView.rootProperty().bind(root);
     }
 
     @FXML
     public void addNode(){
-
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
         alert.initOwner(typeDialog.getStage());
@@ -72,13 +70,45 @@ public class TypeDialogController implements Initializable{
             return;
         }
         type.setName(name);
-        if(nodeParent.getValue()!=null){
+        if(nodeParent!=null && nodeParent.getValue()!=null){
             type.setParentType(nodeParent.getValue());
         }
         if(!typeService.addType(type)){
             alert.setContentText("名称重复了，这是不可以的。");
             alert.showAndWait();
         }
+    }
+
+    @FXML
+    public void delNode(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.initOwner(typeDialog.getStage());
+        TreeItem<ArtleType> nodeSel = treeView.getSelectionModel().getSelectedItem();
+        if(nodeSel == null){
+            return;
+        }
+        if(!typeService.delType(nodeSel.getValue(),false)){
+            alert.setContentText("此分类下含有其他内容。");
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    public void selectType(){
+        TreeItem<ArtleType> nodeParent = treeView.getSelectionModel().getSelectedItem();
+        Optional.ofNullable(nodeParent).ifPresent(type -> {
+            if(type.getValue() == null){
+                return;
+            }
+            typeDialog.setArtleType(type.getValue());
+            typeDialog.getStage().close();
+        });
+    }
+
+    @FXML
+    public void cleanFocus(){
+        treeView.getSelectionModel().clearSelection();
     }
 
     @EventListener

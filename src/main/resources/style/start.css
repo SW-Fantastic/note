@@ -40,6 +40,18 @@
 }
 .tree .tree-cell{
     -fx-background-color: rgba(0,0,0,0);
+    -fx-font-size: 14px;
+}
+.tree .tree-cell:selected{
+    -fx-background-color: rgba(0,0,0,0.6);
+}
+.tree-border{
+    -fx-border-color: #2B3F52;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+}
+.tree-border .tree-cell{
+    -fx-background-color: rgb(249,242,243);
 }
 .list-bg{
     -fx-background-color: rgba(0,0,0,0);
@@ -120,4 +132,28 @@
 .list-img .list-cell:focused{
     -fx-background-color: #2B3F52;
     -fx-text-fill: #FFFFFF;
+}
+.listItem .icon-btn{
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 9999;
+}
+.listItem .icon-bg{
+    -fx-background-color: rgb(255,255,255);
+}
+.listItem .item-bg{
+    -fx-border-color: #FFF;
+    -fx-border-style: solid;
+    -fx-border-width: 0 0 0 4;
+    -fx-background-color: rgba(0,0,0,0.5);
+}
+.listItem .arrow{
+    -fx-text-fill: rgb(255,255,255);
+}
+.listItem .title{
+    -fx-text-fill: rgb(255,255,255);
+    -fx-font-size: 18px;
+}
+.listItem .date{
+    -fx-text-fill: #FCFCFC;
+    -fx-font-size: 14px;
 }

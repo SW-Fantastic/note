@@ -1,19 +1,21 @@
 package org.swdc.note.app.ui;
 
-/**
- * Created by lenovo on 2018/8/15.
- */
-
 import javafx.scene.text.Font;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +23,7 @@ import java.util.Map;
  * 配置和界面资源。
  * 提供各种资源供系统使用。
  */
-@Configuration
+@Component
 @PropertySource("file:configs/config.properties")
 public class UIConfig {
 
@@ -32,11 +34,17 @@ public class UIConfig {
     private static Font fontIconSmall;
 
     @Getter
+    private static Font fontIconLarge;
+
+    @Getter
     private static Map<String, Character> GLYPH_MAP;
 
     @Getter
     @Value("${app.mdStyle}")
     private String mdStyle;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     static {
         try{
@@ -44,7 +52,9 @@ public class UIConfig {
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 14);
             fontIcon = Font
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 18);
-            GLYPH_MAP = new HashMap<String, Character>();
+            fontIconLarge = Font
+                    .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 24);
+            GLYPH_MAP = new HashMap<>();
             GLYPH_MAP.put("fa_500px", '\uf26e');
             GLYPH_MAP.put("adjust", '\uf042');
             GLYPH_MAP.put("adn", '\uf170');
@@ -769,6 +779,18 @@ public class UIConfig {
         }else{
             mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("file:config/"+theme+"/"+mdStyle));
         }
+    }
+
+    public <T extends ApplicationEvent> void publishEvent (T event){
+        applicationContext.publishEvent(event);
+    }
+
+    public <T> T getComponent(Class<T> clazz){
+        Scope scope = clazz.getAnnotation(Scope.class);
+        if(scope.value().equals("prototype")){
+            return applicationContext.getBean(clazz);
+        }
+       throw new RuntimeException("此方法仅用于获取prototype的spring组件。");
     }
 
 }

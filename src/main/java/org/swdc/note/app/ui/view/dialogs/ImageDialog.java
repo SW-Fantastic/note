@@ -1,4 +1,4 @@
-package org.swdc.note.app.ui.view;
+package org.swdc.note.app.ui.view.dialogs;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;

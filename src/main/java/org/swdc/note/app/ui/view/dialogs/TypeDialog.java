@@ -1,21 +1,25 @@
-package org.swdc.note.app.ui.view;
+package org.swdc.note.app.ui.view.dialogs;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 import de.felixroske.jfxsupport.GUIState;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 /**
- * Created by lenovo on 2018/9/3.
+ * 分类编辑器视图
  */
 @FXMLView("/view/typeDialog.fxml")
 public class TypeDialog extends AbstractFxmlView {
@@ -26,6 +30,9 @@ public class TypeDialog extends AbstractFxmlView {
     @Autowired
     private UIConfig config;
 
+    @Setter
+    private ArtleType artleType;
+
     @PostConstruct
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)getView();
@@ -35,7 +42,24 @@ public class TypeDialog extends AbstractFxmlView {
             Scene sc = new Scene(pane);
             stage.setScene(sc);
             stage.initOwner(GUIState.getStage());
+            stage.setResizable(false);
+            stage.setTitle("分类管理");
         });
+        Optional.ofNullable((Button) pane.lookup("#btnAdd")).ifPresent(btn->{
+            btn.setFont(UIConfig.getFontIconSmall());
+            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("plus")));
+        });
+        Optional.ofNullable((Button)pane.lookup("#btnDel")).ifPresent(btn->{
+            btn.setFont(UIConfig.getFontIconSmall());
+            btn.setText(String.valueOf(UIConfig.getGLYPH_MAP().get("trash")));
+        });
+
+    }
+
+    public ArtleType getArtleType(){
+        ArtleType type = this.artleType;
+        this.artleType = null;
+        return type;
     }
 
 }
