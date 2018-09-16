@@ -8,12 +8,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.entity.ArtleContext;
 import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.event.ArtleEditEvent;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.view.StartEditView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
+import org.swdc.note.app.util.DataUtil;
 
 import java.net.URL;
 import java.util.Date;
@@ -78,20 +81,37 @@ public class EditViewController implements Initializable{
             alert.showAndWait();
             return;
         }
-        Artle artleCurr = artle;
-        ArtleContext context;
-        if(artle == null){
-            artleCurr = new Artle();
-            context = new ArtleContext();
-        }else{
-            context = artleService.loadContext(artleCurr);
+        // 封装数据
+        Artle artleCurr = new Artle();
+        ArtleContext context = new ArtleContext();
+        if(artle != null){
+            // 有artle对象，应该是在修改，先复制以前的数据
+            ArtleContext contextOld = artleService.loadContext(artle);
+            DataUtil.updateProperties(artle,artleCurr);
+            DataUtil.updateProperties(contextOld,context);
         }
+        // 写入新数据
         artleCurr.setCreatedDate(new Date());
         artleCurr.setType(currType);
         artleCurr.setTitle(txtTitle.getText());
         context.setContent(editView.getDocument());
         context.setImageRes(editView.getImageRes());
         artleService.saveArtle(artleCurr,context);
+    }
+
+    /**
+     * 用户点击了编辑
+     * @param event
+     */
+    @EventListener
+    public void onArtleEdit(ArtleEditEvent event){
+        Artle artle = event.getSource();
+        this.artle = artle;
+        this.currType = artle.getType();
+        this.txtType.setText(currType.getName());
+        this.txtTitle.setText(artle.getTitle());
+        ArtleContext context = artleService.loadContext(artle);
+        editView.setContext(context.getContent());
     }
 
 }

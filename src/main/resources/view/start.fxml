@@ -22,6 +22,7 @@
                <items>
                   <ToggleButton id="list" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="列表" />
                   <ToggleButton id="write" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="写作" />
+                  <ToggleButton id="read" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="阅读" />
                   <ToggleButton id="config" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="配置" />
                </items>
             </ToolBar>

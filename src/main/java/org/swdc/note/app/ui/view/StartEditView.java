@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.ui.view.dialogs.TableDialog;
-import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
@@ -75,8 +74,12 @@ public class StartEditView extends AbstractFxmlView{
             true,
             Extensions.ALL
     );
-    private static final Parser PARSER = Parser.builder(OPTIONS).build();
-    private static final HtmlRenderer RENDERER = HtmlRenderer.builder(OPTIONS).build();
+
+    @Autowired
+    private Parser parser;
+
+    @Autowired
+    private HtmlRenderer renderer;
 
     private static final Pattern PATTERN = Pattern.compile(
                       "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -101,9 +104,6 @@ public class StartEditView extends AbstractFxmlView{
 
     @Autowired
     private TableDialog tableDialog;
-
-    @Autowired
-    private TypeDialog typeDialog;
 
     @PostConstruct
     protected void initUI() throws Exception{
@@ -148,7 +148,7 @@ public class StartEditView extends AbstractFxmlView{
                             .append("]: data:image/png;base64,")
                             .append(ent.getValue())
                             .append("\n"));
-                String content = RENDERER.render(PARSER.parse(codeArea.getText()+"\n"+sb.toString()));
+                String content = renderer.render(parser.parse(codeArea.getText()+"\n"+sb.toString()));
                 contentView.getEngine().loadContent("<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
                         +"<body>"+content+"</body></html>");
             }));
@@ -398,6 +398,13 @@ public class StartEditView extends AbstractFxmlView{
 
     public Map<String,String> getImageRes(){
         return imageDialog.getImages();
+    }
+
+    public void setContext(String context){
+        BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
+        CodeArea code = (CodeArea)pane.getCenter();
+        code.clear();
+        code.appendText(context);
     }
 
 }

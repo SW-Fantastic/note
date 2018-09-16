@@ -9,6 +9,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.*;
+import org.springframework.context.event.EventListener;
+import org.swdc.note.app.entity.Artle;
+import org.swdc.note.app.entity.ArtleContext;
+import org.swdc.note.app.event.ArtleEditEvent;
+import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.util.UIUtil;
 
@@ -33,8 +39,11 @@ public class ImageDialogController implements Initializable{
     @FXML
     private ScrollPane scrPane;
 
+    @Autowired
+    private ArtleService artleService;
+
     @FXML
-    private void openImage() throws Exception{
+    protected void openImage() throws Exception{
         FileChooser chooser = new FileChooser();
         chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("图片",".jpg",".png",".bmp",".gif"));
         File file = chooser.showOpenDialog(dlg.getStage());
@@ -47,14 +56,14 @@ public class ImageDialogController implements Initializable{
     }
 
     @FXML
-    private void cancel(){
+    protected void cancel(){
         if(dlg.getStage().isShowing()){
             dlg.getStage().close();
         }
     }
 
     @FXML
-    private void removeSelected(){
+    protected void removeSelected(){
         Optional.ofNullable(listView.getSelectionModel().getSelectedItem()).ifPresent(name->{
             listView.getItems().remove(name);
             dlg.getImages().remove(name);
@@ -62,7 +71,7 @@ public class ImageDialogController implements Initializable{
     }
 
     @FXML
-    private void insertSelected(){
+    protected void insertSelected(){
         Optional.ofNullable(listView.getSelectionModel().getSelectedItem()).ifPresent(name->{
             dlg.setSelectedImage(name);
             dlg.getStage().close();
@@ -80,4 +89,14 @@ public class ImageDialogController implements Initializable{
             }
         }));
     }
+
+    @EventListener
+    public void onArtleEdit(ArtleEditEvent e){
+        Artle artle = e.getSource();
+        ArtleContext context = artleService.loadContext(artle);
+        dlg.setImages(context.getImageRes());
+        listView.getItems().clear();
+        listView.getItems().addAll(context.getImageRes().keySet());
+    }
+
 }

@@ -37,6 +37,7 @@ public class ArtleService {
     @Transactional
     public ArtleContext loadContext(Artle artle){
         artle = artleRepository.getOne(artle.getId());
+        Hibernate.initialize(artle.getContext());
         return artle.getContext();
     }
 
@@ -48,14 +49,15 @@ public class ArtleService {
             return;
         }
         Artle artleOld = artleRepository.getOne(artle.getId());
+        Hibernate.initialize(artleOld.getContext());
         ArtleContext contextOld = artleOld.getContext();
-
+        // 更新持久态对象
         contextOld = DataUtil.updateProperties(context,contextOld);
         artleOld = DataUtil.updateProperties(artle,artleOld);
         artleOld.setContext(contextOld);
-        artle.setType(typeRepository.getOne(artleOld.getType().getId()));
+        artleOld.setType(typeRepository.getOne(artle.getType().getId()));
 
-        artleRepository.save(artle);
+        artleRepository.save(artleOld);
     }
 
 }

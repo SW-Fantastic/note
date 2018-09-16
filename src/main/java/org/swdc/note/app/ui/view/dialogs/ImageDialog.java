@@ -38,6 +38,7 @@ public class ImageDialog extends AbstractFxmlView {
     }
 
     @Getter
+    @Setter
     private Map<String,String> images = new HashMap<>();
 
     @PostConstruct

@@ -18,23 +18,26 @@ public class DataUtil {
             fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
             clazz = clazz.getSuperclass();
         }
-        fields.forEach(field -> {
+        for(Field field : fields ) {
             try {
-                if(isProperties(src.getClass(),field.getName())){
+                if(isProperties(src.getClass(),field.getName())&&isProperties(target.getClass(),field.getName())){
                     PropertyDescriptor pds = new PropertyDescriptor(field.getName(),src.getClass());
+                    PropertyDescriptor targetPds = new PropertyDescriptor(field.getName(),target.getClass());
+                    Method targetReader = targetPds.getReadMethod();
+                    Method tatgetWriter = targetPds.getWriteMethod();
                     Method reader = pds.getReadMethod();
-                    Method writer = pds.getWriteMethod();
+                    //Method writer = pds.getWriteMethod();
                     Object val = reader.invoke(src);
-                    Object valCurr = reader.invoke(target);
+                    Object valCurr = targetReader.invoke(target);
                     if (val == null || val.equals("") || val.equals(valCurr)){
-                        return;
+                        continue;
                     }
-                    writer.invoke(target,val);
+                    tatgetWriter.invoke(target,val);
                 }
             }catch (Exception e){
                 throw new RuntimeException(e);
             }
-        });
+        }
         return target;
     }
 

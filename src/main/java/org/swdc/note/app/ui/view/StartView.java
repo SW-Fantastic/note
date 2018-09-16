@@ -11,7 +11,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
+import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.ui.UIConfig;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +32,9 @@ public class StartView extends AbstractFxmlView {
 
     @Autowired
     private StartEditView viewEdit;
+
+    @Autowired
+    private StartReadView viewRead;
 
     @PostConstruct
     protected void initUI() throws Exception{
@@ -67,6 +72,17 @@ public class StartView extends AbstractFxmlView {
                         }
                     }));
                 });
+
+        Optional.ofNullable((ToggleButton)findById("read",tool.getItems()))
+                .ifPresent(btn->{
+                    initToolBtn(btn,"book");
+                    btn.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                        if(newValue!=null && newValue){
+                            pane.setCenter(viewRead.getView());
+                        }
+                    });
+                });
+
         Optional.ofNullable((ToggleButton) findById("config",tool.getItems()))
                 .ifPresent(btn-> initToolBtn(btn,"cog"));
 
@@ -86,10 +102,12 @@ public class StartView extends AbstractFxmlView {
         pane.widthProperty().addListener(num->{
             ((BorderPane) viewList.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
             ((BorderPane) viewEdit.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+            ((BorderPane) viewRead.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
         });
         pane.heightProperty().addListener(num->{
             ((BorderPane) viewList.getView()).setPrefHeight(pane.getHeight());
             ((BorderPane) viewEdit.getView()).setPrefHeight(pane.getHeight());
+            ((BorderPane) viewRead.getView()).setPrefHeight(pane.getHeight());
         });
     }
 
@@ -106,6 +124,36 @@ public class StartView extends AbstractFxmlView {
             }
         }
         return null;
+    }
+
+    /**
+     * 界面需要发生变化
+     * @param e
+     */
+    @EventListener
+    public void onViewChange(ViewChangeEvent e){
+        BorderPane pane = (BorderPane) this.getView();
+        ToolBar tool = (ToolBar) getView().lookup(".tool");
+        if(e.getViewName().equals("EditView")){
+            Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
+                    .ifPresent(btn-> {
+                        toolsGroup.selectToggle(btn);
+                        pane.setCenter(viewEdit.getView());
+                    });
+        }else if(e.getViewName().equals("ListView")){
+            Optional.ofNullable((ToggleButton) findById("list",tool.getItems()))
+                    .ifPresent(btn-> {
+                        toolsGroup.selectToggle(btn);
+                        pane.setCenter(viewList.getView());
+                    });
+        }else if(e.getViewName().equals("ReadView")){
+            Optional.ofNullable((ToggleButton)findById("read",tool.getItems()))
+                    .ifPresent(btn->{
+                        toolsGroup.selectToggle(btn);
+                        pane.setCenter(viewRead.getView());
+                    });
+        }
+
     }
 
 }

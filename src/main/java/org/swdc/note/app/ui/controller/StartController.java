@@ -11,6 +11,7 @@ import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.ArtleListRefreshEvent;
 import org.swdc.note.app.event.TypeRefreshEvent;
+import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
 
@@ -40,6 +41,8 @@ public class StartController implements Initializable {
             if(newValue!=null && newValue.getValue()!=null){
                 // 选择的节点发生改变，发布事件要求刷新列表，读取新类别的list
                 config.publishEvent(new ArtleListRefreshEvent(newValue.getValue()));
+                // 切换到列表
+                config.publishEvent(new ViewChangeEvent("ListView"));
             }
         }));
     }

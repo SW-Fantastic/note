@@ -48,4 +48,31 @@
             </HBox>
          </children></VBox>
    </center>
+   <right>
+      <HBox id="editPane" alignment="TOP_RIGHT" prefHeight="71.0" prefWidth="184.0" styleClass="item-bg-without-border" BorderPane.alignment="CENTER">
+         <children>
+            <Button id="read" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="btn-card" text="Button">
+               <HBox.margin>
+                  <Insets right="4.0" />
+               </HBox.margin>
+            </Button>
+            <Button id="delete" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="btn-card" text="Button">
+               <HBox.margin>
+                  <Insets right="4.0" />
+               </HBox.margin>
+            </Button>
+            <Button id="edit" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="btn-card" text="Button">
+               <HBox.margin>
+                  <Insets right="8.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+         <BorderPane.margin>
+            <Insets top="8.0" />
+         </BorderPane.margin>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </HBox>
+   </right>
 </BorderPane>
