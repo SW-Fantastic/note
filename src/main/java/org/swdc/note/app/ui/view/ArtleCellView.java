@@ -2,7 +2,10 @@ package org.swdc.note.app.ui.view;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
+import de.felixroske.jfxsupport.GUIState;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -12,13 +15,12 @@ import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.event.ArtleEditEvent;
-import org.swdc.note.app.event.ArtleOpenEvent;
-import org.swdc.note.app.event.ViewChangeEvent;
+import org.swdc.note.app.event.*;
 import org.swdc.note.app.ui.UIConfig;
 
 import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 /**
  * 文档列表的单元格的视图
@@ -58,6 +60,22 @@ public class ArtleCellView extends AbstractFxmlView{
         btnDel.setTextFill(Color.DARKRED);
         btnDel.setFont(UIConfig.getFontIconSmall());
         btnDel.setText(String.valueOf(UIConfig.getAwesomeMap().get("trash")));
+        btnDel.setOnAction(e->{
+            if (artle != null){
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setHeaderText(null);
+                alert.initOwner(GUIState.getStage());
+                alert.setTitle("提示");
+                alert.setContentText("你确实要删除《"+artle.getTitle()+"》吗？");
+                Optional<ButtonType> result = alert.showAndWait();
+                result.ifPresent(btnType->{
+                    if(btnType.equals(ButtonType.OK)){
+                        // 发送删除事件，通知controller删除此文档
+                        config.publishEvent(new ArtleDeleteEvent(artle));
+                    }
+                });
+            }
+        });
         Button btnEdit = (Button)getView().lookup("#edit");
         btnEdit.setTextFill(Color.DARKBLUE);
         btnEdit.setFont(UIConfig.getFontIconSmall());
@@ -66,6 +84,18 @@ public class ArtleCellView extends AbstractFxmlView{
             if(artle != null){
                 // 发出事件，通知其他组件转到编辑状态
                 config.publishEvent(new ArtleEditEvent(artle));
+            }
+        });
+
+        Button btnOut = (Button)getView().lookup("#export");
+        btnOut.setTextFill(Color.FORESTGREEN);
+        btnOut.setFont(UIConfig.getFontIconSmall());
+        btnOut.setText(String.valueOf(UIConfig.getAwesomeMap().get("magic")));
+        btnOut.setOnAction(e->{
+            if(artle != null){
+                // 发送导出事件，要求导出文档。
+                ExportEvent exportEvent = new ExportEvent(artle);
+                config.publishEvent(exportEvent);
             }
         });
     }

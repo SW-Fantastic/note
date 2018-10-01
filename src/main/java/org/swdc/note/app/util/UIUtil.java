@@ -34,6 +34,16 @@ public class UIUtil {
        return bout.toByteArray();
     }
 
+    public static void processWriteFile(File file,String content){
+        try (FileOutputStream fos = new FileOutputStream(file)){
+            BufferedWriter bwr = new BufferedWriter(new OutputStreamWriter(fos));
+            bwr.write(content);
+            bwr.flush();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public static  void configTheme(Pane pane,UIConfig config) throws Exception{
         if(config.getTheme().equals("")||config.getTheme().equals("def")){
             pane.getStylesheets().add(new ClassPathResource("style/start.css").getURL().toExternalForm());

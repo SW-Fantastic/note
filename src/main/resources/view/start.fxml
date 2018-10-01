@@ -32,12 +32,12 @@
                <children>
                   <HBox prefHeight="57.0" prefWidth="240.0">
                      <children>
-                        <TextField prefHeight="34.0" prefWidth="165.0" promptText="搜索" styleClass="txt" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="txtSeach" prefHeight="34.0" prefWidth="165.0" promptText="搜索" styleClass="txt" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets left="8.0" top="10.0" />
                            </HBox.margin>
                         </TextField>
-                        <Button id="search" mnemonicParsing="false" prefHeight="33.0" prefWidth="39.0" styleClass="btn" text="搜索">
+                        <Button id="search" mnemonicParsing="false" onAction="#onSearch" prefHeight="33.0" prefWidth="39.0" styleClass="btn" text="搜索">
                            <HBox.margin>
                               <Insets right="8.0" top="10.0" />
                            </HBox.margin>

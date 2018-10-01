@@ -4,10 +4,7 @@ import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.ArtleType;
@@ -88,10 +85,28 @@ public class TypeDialogController implements Initializable{
         if(nodeSel == null){
             return;
         }
-        if(!typeService.delType(nodeSel.getValue(),false)){
-            alert.setContentText("此分类下含有其他内容。");
-            alert.showAndWait();
-        }
+        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+        alert.setContentText("删除分类，如果分类下含有其他数据，那么也会同时被删除，确定要这样做吗？");
+        alert.setTitle("提示");
+        Optional<ButtonType> btnResult = alert.showAndWait();
+        btnResult.ifPresent(btnSelType->{
+            if(btnSelType.equals(ButtonType.OK)){
+                if(!typeService.delType(nodeSel.getValue(),false)){
+                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("提示");
+                    alert.setContentText("此分类下含有其他分类，如果你依然需要删除，那么包括子分类下的所有数据都将会" +
+                            "被删除，依然要这样做吗？");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    result.ifPresent(btnType->{
+                        if(btnType.equals(ButtonType.OK)){
+                            // 强制删除
+                            typeService.delType(nodeSel.getValue(),true);
+                        }
+                    });
+                }
+            }
+        });
+
     }
 
     @FXML

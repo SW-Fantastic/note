@@ -1,16 +1,12 @@
 package org.swdc.note.app.ui.controller;
 
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.BorderPane;
 import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.ui.view.ArtleCellView;
 
 /**
- * 文档列表的单元格
+ * Created by lenovo on 2018/9/8.
  */
 public class ArtleCell extends ListCell<Artle> {
 

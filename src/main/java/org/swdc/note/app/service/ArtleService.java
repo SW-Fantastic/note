@@ -60,4 +60,15 @@ public class ArtleService {
         artleRepository.save(artleOld);
     }
 
+    @Transactional
+    public void deleteArtle(Artle artle){
+        artle = artleRepository.getOne(artle.getId());
+        artleRepository.delete(artle);
+    }
+
+    @Transactional
+    public List<Artle> searchArtleByTitle(String key){
+        return artleRepository.findByTitleContaining(key);
+    }
+
 }

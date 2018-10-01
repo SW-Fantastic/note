@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.entity.ArtleContext;
+import org.swdc.note.app.event.ArtleDeleteEvent;
 import org.swdc.note.app.event.ArtleOpenEvent;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.UIConfig;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
- * Created by lenovo on 2018/9/16.
+ * 阅读视图的控制器。
  */
 @FXMLController
 public class ReadViewController implements Initializable {

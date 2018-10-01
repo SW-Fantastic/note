@@ -61,6 +61,11 @@
                   <Insets right="4.0" />
                </HBox.margin>
             </Button>
+            <Button id="export" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="btn-card" text="Button">
+               <HBox.margin>
+                  <Insets right="4.0" />
+               </HBox.margin>
+            </Button>
             <Button id="edit" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="btn-card" text="Button">
                <HBox.margin>
                   <Insets right="8.0" />

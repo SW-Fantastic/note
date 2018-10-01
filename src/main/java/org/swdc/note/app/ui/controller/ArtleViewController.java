@@ -48,8 +48,12 @@ public class ArtleViewController implements Initializable {
     @EventListener
     public void onRefreshList(ArtleListRefreshEvent event){
         listItems.clear();
-        ArtleType type = event.getModifyedType();
-        listItems.addAll(artleService.loadArtles(type));
+        if(event.isTypeRefresh()){
+            ArtleType type = event.getModifyedType();
+            listItems.addAll(artleService.loadArtles(type));
+        }else if(event.isItemRefresh()){
+            listItems.addAll(event.getRefList());
+        }
     }
 
 }

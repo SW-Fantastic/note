@@ -90,7 +90,13 @@
     -fx-border-color: #FFFFFF;
     -fx-border-width: 0 0 2 0;
 }
-
+.comb-dark{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: rgb(2,64,85);
+    -fx-prompt-text-fill: rgba(2,64,85,0.8);
+    -fx-border-width: 0 0 2 0;
+}
 .btn-sel *{
     -fx-text-fill: #FFF;
 }

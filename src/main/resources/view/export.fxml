@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="221.0" prefWidth="441.0" styleClass="left-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.dialogs.ExportDialogController">
+   <children>
+      <Label layoutX="50.0" layoutY="32.0" text="导出格式：" />
+      <ComboBox id="formats" fx:id="combFormat" layoutX="120.0" layoutY="23.0" prefHeight="29.0" prefWidth="266.0" styleClass="comb-dark" />
+      <Label layoutX="50.0" layoutY="71.0" text="目标组：" />
+      <Label layoutX="50.0" layoutY="114.0" text="导出为：" />
+      <TextField fx:id="txtFileName" layoutX="120.0" layoutY="110.0" prefHeight="29.0" prefWidth="215.0" styleClass="txt" />
+      <Button id="open" layoutX="338.0" layoutY="110.0" mnemonicParsing="false" onAction="#onOpen" prefHeight="29.0" prefWidth="48.0" styleClass="btn-normal" text="开" />
+      <Button layoutX="51.0" layoutY="170.0" mnemonicParsing="false" onAction="#onExport" prefHeight="35.0" prefWidth="342.0" styleClass="btn-normal" text="导出" />
+      <TextField id="targetName" fx:id="txtTargetName" editable="false" layoutX="120.0" layoutY="69.0" prefHeight="29.0" prefWidth="266.0" styleClass="txt" />
+   </children>
+</Pane>

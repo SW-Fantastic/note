@@ -21,6 +21,7 @@ public class ArtleContext {
 
     @Getter
     @Setter
+    @Column(columnDefinition = "text")
     private String content;
 
     @OneToOne(mappedBy = "context")

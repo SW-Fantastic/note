@@ -12,9 +12,12 @@ import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.entity.ArtleContext;
 import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.event.ArtleDeleteEvent;
 import org.swdc.note.app.event.ArtleEditEvent;
+import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.view.StartEditView;
+import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.DataUtil;
 
@@ -23,7 +26,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 /**
- * 文档编辑视图控制器
+ * 文档编辑视图控制器.
  */
 @FXMLController
 public class EditViewController implements Initializable{
@@ -100,8 +103,8 @@ public class EditViewController implements Initializable{
     }
 
     /**
-     * 用户点击了编辑
-     * @param event
+     * 处理文档的编辑请求事件。
+     * @param event 编辑事件
      */
     @EventListener
     public void onArtleEdit(ArtleEditEvent event){
