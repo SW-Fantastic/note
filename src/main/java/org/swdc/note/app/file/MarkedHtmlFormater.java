@@ -21,7 +21,7 @@ import java.util.Map;
  * 写HTML，HTM文件。
  */
 @Component
-public class MarkedHtmlProcesser extends FileFormater {
+public class MarkedHtmlFormater extends FileFormater {
 
     @Autowired
     private ArtleService artleService;
@@ -41,8 +41,8 @@ public class MarkedHtmlProcesser extends FileFormater {
     }
 
     @Override
-    public <T> T processRead(File target) {
-        throw new RuntimeException("此格式不支持直接读取。");
+    public <T> T processRead(File target,Class<T> clazz) {
+        return null;
     }
 
     @Override
@@ -75,5 +75,15 @@ public class MarkedHtmlProcesser extends FileFormater {
     @Override
     public List<FileChooser.ExtensionFilter> getFilters() {
         return Arrays.asList(new FileChooser.ExtensionFilter("HTML格式","*.html","*.htm"));
+    }
+
+    @Override
+    public boolean canRead() {
+        return false;
+    }
+
+    @Override
+    public boolean canWrite() {
+        return true;
     }
 }

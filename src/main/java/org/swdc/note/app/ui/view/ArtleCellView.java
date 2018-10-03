@@ -7,7 +7,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -71,7 +70,7 @@ public class ArtleCellView extends AbstractFxmlView{
                 result.ifPresent(btnType->{
                     if(btnType.equals(ButtonType.OK)){
                         // 发送删除事件，通知controller删除此文档
-                        config.publishEvent(new ArtleDeleteEvent(artle));
+                        config.publishEvent(new DeleteEvent(artle));
                     }
                 });
             }
@@ -90,7 +89,7 @@ public class ArtleCellView extends AbstractFxmlView{
         Button btnOut = (Button)getView().lookup("#export");
         btnOut.setTextFill(Color.FORESTGREEN);
         btnOut.setFont(UIConfig.getFontIconSmall());
-        btnOut.setText(String.valueOf(UIConfig.getAwesomeMap().get("magic")));
+        btnOut.setText(String.valueOf(UIConfig.getAwesomeMap().get("sign_out")));
         btnOut.setOnAction(e->{
             if(artle != null){
                 // 发送导出事件，要求导出文档。

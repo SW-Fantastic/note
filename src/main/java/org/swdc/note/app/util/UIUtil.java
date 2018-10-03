@@ -45,7 +45,7 @@ public class UIUtil {
     }
 
     public static  void configTheme(Pane pane,UIConfig config) throws Exception{
-        if(config.getTheme().equals("")||config.getTheme().equals("def")){
+        if(config.getTheme().equals("")||config.getTheme().equals("default")){
             pane.getStylesheets().add(new ClassPathResource("style/start.css").getURL().toExternalForm());
             pane.getStylesheets().add(new ClassPathResource("style/java-keywords.css").getURL().toExternalForm());
         }else{

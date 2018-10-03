@@ -15,6 +15,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
@@ -36,18 +37,18 @@ public class StartView extends AbstractFxmlView {
     @Autowired
     private StartReadView viewRead;
 
+    @Autowired
+    private StartConfigView viewConfig;
+
     @PostConstruct
     protected void initUI() throws Exception{
         GUIState.getStage().setMinWidth(1020);
         GUIState.getStage().setMinHeight(680);
         BorderPane pane = (BorderPane) this.getView();
         pane.setCenter(viewList.getView());
-        pane.setStyle(pane.getStyle()+";-fx-background-image: url("+UIConfig.getConfigLocation()+config.getBackground()+");");
-        if(config.getTheme().equals("")||config.getTheme().equals("def")){
-            pane.getStylesheets().add(new ClassPathResource("style/start.css").getURL().toExternalForm());
-        }else{
-            pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".css");
-        }
+        pane.setStyle(pane.getStyle()+";-fx-background-image: url("+UIConfig.getConfigLocation()+"res/"+config.getBackground()+");");
+
+        UIUtil.configTheme(pane,config);
 
         ToolBar tool = (ToolBar) getView().lookup(".tool");
 
@@ -84,7 +85,14 @@ public class StartView extends AbstractFxmlView {
                 });
 
         Optional.ofNullable((ToggleButton) findById("config",tool.getItems()))
-                .ifPresent(btn-> initToolBtn(btn,"cog"));
+                .ifPresent(btn->{
+                    initToolBtn(btn,"cog");
+                    btn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                        if(newValue!=null && newValue){
+                            pane.setCenter(viewConfig.getView());
+                        }
+                    }));
+                });
 
         Button btnSearch = (Button) getView().lookup("#search");
         btnSearch.setFont(UIConfig.getFontIcon());
@@ -103,11 +111,13 @@ public class StartView extends AbstractFxmlView {
             ((BorderPane) viewList.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
             ((BorderPane) viewEdit.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
             ((BorderPane) viewRead.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+            ((BorderPane) viewConfig.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
         });
         pane.heightProperty().addListener(num->{
             ((BorderPane) viewList.getView()).setPrefHeight(pane.getHeight());
             ((BorderPane) viewEdit.getView()).setPrefHeight(pane.getHeight());
             ((BorderPane) viewRead.getView()).setPrefHeight(pane.getHeight());
+            ((BorderPane) viewConfig.getView()).setPrefHeight(pane.getHeight());
         });
     }
 

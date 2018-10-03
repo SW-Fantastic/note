@@ -35,7 +35,9 @@ public class ExportDialogController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        combFormat.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            txtFileName.setText("");
+        });
     }
 
     @FXML
@@ -72,13 +74,20 @@ public class ExportDialogController implements Initializable{
         }
         if(txtFileName.getText()==null||txtFileName.getText().equals("")){
             alert.setContentText("必须选择存储位置。");
+            alert.showAndWait();
             return;
         }
         File file = new File(txtFileName.getText());
-        desc.processWrite(file,dialog.getTargetArtle());
+        if(dialog.getTargetArtle()!=null){
+            desc.processWrite(file,dialog.getTargetArtle());
+        }else{
+            desc.processWrite(file,dialog.getTargetGroup());
+        }
         alert.setContentText("导出完毕。");
         alert.showAndWait();
         dialog.getStage().close();
+        this.txtFileName.setText("");
+        this.txtTargetName.setText("");
     }
 
 }

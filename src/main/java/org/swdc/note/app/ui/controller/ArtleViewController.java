@@ -42,7 +42,8 @@ public class ArtleViewController implements Initializable {
     }
 
     /**
-     * 选择的分类发生了改变 ，或者添加了新的文章
+     * 选择的分类发生了改变 ，或者添加了新的文章，或者
+     * 用户进行了搜索。
      * @param event 文档类型刷新事件
      */
     @EventListener

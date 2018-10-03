@@ -84,6 +84,11 @@ public class TypeService {
                 || type.getArtles() != null && type.getArtles().size() > 0)){
             return false;
         }else{
+            if(type.getParentType()!=null){
+                ArtleType parent = type.getParentType();
+                type.getChildType().remove(type);
+                typeRepository.save(parent);
+            }
             typeRepository.delete(type);
             return true;
         }

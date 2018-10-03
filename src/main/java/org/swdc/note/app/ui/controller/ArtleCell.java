@@ -6,7 +6,7 @@ import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.ui.view.ArtleCellView;
 
 /**
- * Created by lenovo on 2018/9/8.
+ * 文档列表的格子
  */
 public class ArtleCell extends ListCell<Artle> {
 

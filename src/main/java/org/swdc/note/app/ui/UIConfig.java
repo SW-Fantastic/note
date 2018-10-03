@@ -2,8 +2,9 @@ package org.swdc.note.app.ui;
 
 import javafx.scene.text.Font;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.PropertySource;
@@ -33,6 +34,7 @@ import java.util.Map;
  */
 @Component
 @PropertySource("file:configs/config.properties")
+@ConfigurationProperties(prefix = "app")
 public class UIConfig {
 
     @Getter
@@ -45,11 +47,10 @@ public class UIConfig {
     private static Font fontIconLarge;
 
     @Getter
-    private static Map<String, Character> awesomeMap;
+    private static Font fontIconVerySmall;
 
     @Getter
-    @Value("${app.mdStyle}")
-    private String mdStyle;
+    private static Map<String, Character> awesomeMap;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -62,6 +63,8 @@ public class UIConfig {
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 18);
             fontIconLarge = Font
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 24);
+            fontIconVerySmall = Font
+                    .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 12);
             awesomeMap = new HashMap<>();
             awesomeMap.put("fa_500px", '\uf26e');
             awesomeMap.put("adjust", '\uf042');
@@ -765,27 +768,28 @@ public class UIConfig {
     @Getter
     private static final String configLocation = "file:configs/";
 
-    @Value("${app.background}")
+//    @Getter
+//    @Setter
+//    private String mdStyle;
+
     @Getter
+    @Setter
     private String background;
 
-    @Value("${app.theme}")
     @Getter
+    @Setter
     private String theme;
 
-    @Value("${app.keywords}")
-    @Getter
-    private String keywords;
 
     @Getter
     private String mdStyleContent;
 
     @PostConstruct
     private void init() throws Exception{
-        if (this.mdStyle == null|| this.mdStyle.equals("")){
+        if (this.theme == null|| this.theme.equals("")||this.theme.equals("default")){
             mdStyleContent = UIUtil.readFile(new ClassPathResource("/style/markdown.css").getInputStream());
         }else{
-            mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("file:config/"+theme+"/"+mdStyle));
+            mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("file:config/"+theme+"/"+theme+".keyword.css"));
         }
     }
 

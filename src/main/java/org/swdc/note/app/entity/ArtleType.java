@@ -28,12 +28,12 @@ public class ArtleType {
     @Setter
     private ArtleType parentType;
 
-    @OneToMany(mappedBy = "parentType",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parentType",cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
     @Getter
     @Setter
     private Set<ArtleType> childType;
 
-    @OneToMany(mappedBy = "type",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "type",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     @Getter
     @Setter
     private List<Artle> artles;

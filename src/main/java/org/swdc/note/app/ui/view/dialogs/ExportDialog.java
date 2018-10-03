@@ -21,6 +21,7 @@ import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 导出对话框的view界面。
@@ -53,12 +54,13 @@ public class ExportDialog extends AbstractFxmlView{
             stage.initOwner(GUIState.getStage());
             stage.setTitle("导出");
             stage.setScene(new Scene(pane));
+            stage.setResizable(false);
         });
         Button btnOpen = (Button)getView().lookup("#open");
         btnOpen.setFont(UIConfig.getFontIconSmall());
         btnOpen.setText(String.valueOf(UIConfig.getAwesomeMap().get("folder_open")));
         ComboBox<FileFormater> combDescs = (ComboBox)getView().lookup("#formats");
-        combDescs.getItems().addAll(fileFormaters);
+        combDescs.getItems().addAll(fileFormaters.stream().filter(item->item.canWrite()).collect(Collectors.toList()));
     }
 
     public void initExport(ExportEvent exportEvent){

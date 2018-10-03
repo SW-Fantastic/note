@@ -20,7 +20,7 @@ public abstract class FileFormater {
      * 处理读取
      * @param target
      */
-    public abstract <T> T processRead(File target);
+    public abstract <T> T processRead(File target,Class<T> clazz);
 
     /**
      * 处理写入
@@ -29,6 +29,10 @@ public abstract class FileFormater {
     public abstract void processWrite(File target,Object targetObj);
 
     public abstract List<FileChooser.ExtensionFilter> getFilters();
+
+    public abstract boolean canRead();
+
+    public abstract boolean canWrite();
 
     public String toString(){
         return this.getFormatName();

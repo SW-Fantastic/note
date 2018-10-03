@@ -1,12 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane fx:controller="org.swdc.note.app.ui.controller.ReadViewController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="623.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="507.0" prefWidth="623.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ReadViewController">
    <padding>
       <Insets left="12.0" />
    </padding>
+   <top>
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" styleClass="code-tool" BorderPane.alignment="CENTER">
+        <items>
+            <Button id="import" fx:id="btnImport" mnemonicParsing="false" onAction="#onImport" text="存" />
+            <Button id="export" fx:id="btnExport" mnemonicParsing="false" onAction="#onExport" text="导" />
+          <Button id="open" mnemonicParsing="false" onAction="#onOpen" text="开" />
+            <TextField fx:id="txtTitle" alignment="CENTER_RIGHT" editable="false" prefHeight="27.0" prefWidth="226.0" styleClass="title-field" />
+            <Label text="标题：">
+               <padding>
+                  <Insets left="6.0" />
+               </padding>
+            </Label>
+        </items>
+      </ToolBar>
+   </top>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="26.0" prefWidth="611.0" styleClass="code-tool" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="lblDate" text="unknown" />
+         </children>
+         <BorderPane.margin>
+            <Insets right="8.0" />
+         </BorderPane.margin>
+      </HBox>
+   </bottom>
 </BorderPane>

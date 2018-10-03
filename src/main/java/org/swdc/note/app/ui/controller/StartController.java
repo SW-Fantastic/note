@@ -17,6 +17,7 @@ import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.view.TypeTreeCell;
 
 import javax.annotation.PostConstruct;
 import java.net.URL;
@@ -58,6 +59,7 @@ public class StartController implements Initializable {
                 config.publishEvent(new ViewChangeEvent("ListView"));
             }
         }));
+        typeTreeView.setCellFactory(view->config.getComponent(TypeTreeCell.class));
     }
 
     @FXML

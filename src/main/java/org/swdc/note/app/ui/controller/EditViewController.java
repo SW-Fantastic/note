@@ -12,12 +12,9 @@ import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.entity.ArtleContext;
 import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.event.ArtleDeleteEvent;
 import org.swdc.note.app.event.ArtleEditEvent;
-import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.view.StartEditView;
-import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.DataUtil;
 
@@ -116,5 +113,4 @@ public class EditViewController implements Initializable{
         ArtleContext context = artleService.loadContext(artle);
         editView.setContext(context.getContent());
     }
-
 }

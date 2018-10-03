@@ -42,6 +42,14 @@
     -fx-background-color: rgba(0,0,0,0);
     -fx-font-size: 14px;
 }
+.tree .tree-cell .button{
+    -fx-background-color: #2B3F52;
+    -fx-text-fill: rgba(218,249,202,1);
+}
+.tree .tree-cell:selected .button{
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #2B3F52;
+}
 .tree .tree-cell:selected{
     -fx-background-color: rgba(0,0,0,0.6);
     -fx-text-fill: #FFF;
@@ -83,6 +91,9 @@
 .code-tool .button:hover{
     -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
 }
+.code-tool .label{
+    -fx-text-fill: #FFF;
+}
 .comb{
     -fx-background-color: rgba(0,0,0,0);
     -fx-prompt-text-fill: rgba(255,255,255,0.6);
@@ -90,12 +101,20 @@
     -fx-border-color: #FFFFFF;
     -fx-border-width: 0 0 2 0;
 }
+.comb > *{
+    -fx-text-fill: #FFFFFF;
+}
 .comb-dark{
     -fx-background-color: rgba(0,0,0,0);
     -fx-text-fill: #FFFFFF;
     -fx-border-color: rgb(2,64,85);
     -fx-prompt-text-fill: rgba(2,64,85,0.8);
     -fx-border-width: 0 0 2 0;
+}
+.btn-ghost{
+    -fx-border-color: #FFF;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
 }
 .btn-sel *{
     -fx-text-fill: #FFF;
