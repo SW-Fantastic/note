@@ -51,6 +51,7 @@ public class ExportDialog extends AbstractFxmlView{
         UIUtil.configTheme(pane,config);
         Platform.runLater(()->{
             stage = new Stage();
+            stage.getIcons().addAll(UIConfig.getImageIcons());
             stage.initOwner(GUIState.getStage());
             stage.setTitle("导出");
             stage.setScene(new Scene(pane));

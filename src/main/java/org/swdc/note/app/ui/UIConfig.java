@@ -1,5 +1,6 @@
 package org.swdc.note.app.ui;
 
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,9 @@ import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,11 +55,20 @@ public class UIConfig {
     @Getter
     private static Map<String, Character> awesomeMap;
 
+    @Getter
+    private static List<Image> imageIcons ;
+
     @Autowired
     private ApplicationContext applicationContext;
 
     static {
         try{
+            imageIcons = Arrays.asList(new Image(new ClassPathResource("icon/book16.png").getInputStream()),
+                    new Image(new ClassPathResource("icon/book24.png").getInputStream()),
+                    new Image(new ClassPathResource("icon/book32.png").getInputStream()),
+                    new Image(new ClassPathResource("icon/book48.png").getInputStream()),
+                    new Image(new ClassPathResource("icon/book64.png").getInputStream()),
+                    new Image(new ClassPathResource("icon/book72.png").getInputStream()));
             fontIconSmall =  Font
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 14);
             fontIcon = Font
@@ -768,10 +780,6 @@ public class UIConfig {
     @Getter
     private static final String configLocation = "file:configs/";
 
-//    @Getter
-//    @Setter
-//    private String mdStyle;
-
     @Getter
     @Setter
     private String background;
@@ -779,7 +787,6 @@ public class UIConfig {
     @Getter
     @Setter
     private String theme;
-
 
     @Getter
     private String mdStyleContent;

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.DeleteEvent;
@@ -47,8 +48,8 @@ public class TypeDialogController implements Initializable{
 
     }
 
-    @PostConstruct
-    public void initTree(){
+    @EventListener
+    public void initTree(ApplicationStartedEvent event){
         TreeItem<ArtleType> treeItem = typeService.getTypes();
         treeItem.setExpanded(true);
         root.set(treeItem);

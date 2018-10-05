@@ -13,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
+import org.swdc.note.app.NoteApplication;
 import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
@@ -42,6 +43,7 @@ public class StartView extends AbstractFxmlView {
 
     @PostConstruct
     protected void initUI() throws Exception{
+        GUIState.getStage().setTitle("幻想笔记");
         GUIState.getStage().setMinWidth(1020);
         GUIState.getStage().setMinHeight(680);
         BorderPane pane = (BorderPane) this.getView();

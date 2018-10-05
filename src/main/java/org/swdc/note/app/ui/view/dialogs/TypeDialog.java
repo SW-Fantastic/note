@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
@@ -41,6 +42,7 @@ public class TypeDialog extends AbstractFxmlView {
             stage = new Stage();
             Scene sc = new Scene(pane);
             stage.setScene(sc);
+            stage.getIcons().addAll(UIConfig.getImageIcons());
             stage.initOwner(GUIState.getStage());
             stage.setResizable(false);
             stage.setTitle("分类管理");

@@ -43,7 +43,8 @@ public class TableDialog extends AbstractFxmlView {
             stage.setScene(sc);
             stage.initOwner(GUIState.getStage());
             stage.setResizable(false);
-            //stage.getIcons().add()
+            stage.getIcons().addAll(UIConfig.getImageIcons());
+            stage.setTitle("添加表格");
         });
     }
 

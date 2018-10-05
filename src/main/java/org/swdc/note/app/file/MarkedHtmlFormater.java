@@ -12,6 +12,7 @@ import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -62,12 +63,16 @@ public class MarkedHtmlFormater extends FileFormater {
                             .append(ent.getValue())
                             .append("\n"));
             String content = renderer.render(parser.parse(context.getContent()+"\n"+sb.toString()));
-            content = "<!doctype html><html><head><meta charset='UTF-8'><style>"+config.getMdStyleContent()+"</style></head>"
-                    +"<body ondragstart='return false;'>"+content+"</body></html>";
-            if(!extName[extName.length - 1].equals("html")&&!extName[extName.length - 1].equals("htm")){
-                target = new File(target.getAbsolutePath() + ".html");
+            try {
+                content = "<!doctype html><html><head><meta charset='UTF-8'><style>"+config.getMdStyleContent()+"</style></head>"
+                        +"<body ondragstart='return false;'>"+new String(content.getBytes(Charset.defaultCharset()),"utf8")+"</body></html>";
+                if(!extName[extName.length - 1].equals("html")&&!extName[extName.length - 1].equals("htm")){
+                    target = new File(target.getAbsolutePath() + ".html");
+                }
+                UIUtil.processWriteFile(target,content);
+            }catch (Exception e){
+                throw new RuntimeException(e);
             }
-            UIUtil.processWriteFile(target,content);
         }
 
     }

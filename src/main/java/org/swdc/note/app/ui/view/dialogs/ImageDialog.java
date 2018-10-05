@@ -48,6 +48,7 @@ public class ImageDialog extends AbstractFxmlView {
         Platform.runLater(()->{
             Scene sc = new Scene(pane);
             stage = new Stage();
+            stage.getIcons().addAll(UIConfig.getImageIcons());
             stage.setScene(sc);
             stage.setResizable(false);
             stage.setTitle("添加图片");

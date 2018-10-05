@@ -53,6 +53,7 @@ public class ArtleService {
         ArtleContext contextOld = artleOld.getContext();
         // 更新持久态对象
         contextOld = DataUtil.updateProperties(context,contextOld);
+        contextOld.setImageRes(context.getImageRes());
         artleOld = DataUtil.updateProperties(artle,artleOld);
         artleOld.setContext(contextOld);
         artleOld.setType(typeRepository.getOne(artle.getType().getId()));
