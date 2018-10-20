@@ -15,6 +15,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -29,6 +30,8 @@ public class SwMarkdownFormater extends FileFormater {
 
     @Autowired
     private TypeService typeService;
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private List<FileChooser.ExtensionFilter> filters = Arrays.asList(new FileChooser.ExtensionFilter("文档原始数据","*.mdxn"),
             new FileChooser.ExtensionFilter("原始数据集","*.mdzz"));
@@ -46,10 +49,9 @@ public class SwMarkdownFormater extends FileFormater {
             try {
                 String source = UIUtil.readFile((InputStream)new FileInputStream(target));
                 Map<String,String> result = (Map) JSON.parse(source);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Artle artle = new Artle();
                 artle.setTitle(result.get("artleTitle"));
-                artle.setCreatedDate(sdf.parse(result.get("artleDate")));
+                artle.setCreatedDate(dateFormat.parse(result.get("artleDate")));
                 ArtleContext context = new ArtleContext();
                 context.setImageRes((Map)JSON.parse(result.get("resource")));
                 context.setContent(result.get("artleContext"));
@@ -70,11 +72,10 @@ public class SwMarkdownFormater extends FileFormater {
             Artle artleTarget = (Artle)targetObj;
             ArtleContext context = artleService.loadContext(artleTarget);
             Map<String,String> output = new HashMap<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             output.put("artleTitle",artleTarget.getTitle());
             output.put("artleTypeName",artleTarget.getType().getName());
             output.put("artleContext",context.getContent());
-            output.put("artleDate",sdf.format(artleTarget.getCreatedDate()));
+            output.put("artleDate", dateFormat.format(artleTarget.getCreatedDate()));
             output.put("resource", JSON.toJSONString(context.getImageRes()));
             String result = JSON.toJSONString(output);
             if (!nameExt[nameExt.length - 1].equals("mdxn")){
@@ -95,10 +96,51 @@ public class SwMarkdownFormater extends FileFormater {
         }
     }
 
+    @Override
+    public <T> void processImport(File target, T targetObj) {
+        if(!(targetObj instanceof ArtleType)){
+            return;
+        }
+        ArtleType type = (ArtleType)targetObj;
+        try (ZipFile zipFile = new ZipFile(target)){
+            Enumeration<? extends ZipEntry> zipEnum = zipFile.entries();
+            while (zipEnum.hasMoreElements()){
+                ZipEntry ent = zipEnum.nextElement();
+                processImport(ent,type,zipFile);
+            }
+            typeService.addType(type);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public <T> void processImport(ZipEntry ent, ArtleType type,ZipFile zipFile) throws Exception{
+        if(ent.isDirectory() && !ent.getName().equals("source") && !ent.getName().equals(type.getName())){
+            ArtleType subType = new ArtleType();
+            subType.setName(ent.getName().split("[/\\\\]")[ent.getName().split("[/\\\\]").length - 1]);
+            subType.setParentType(type);
+            subType.setArtles(new ArrayList<>());
+            typeService.addType(subType);
+        }else{
+            InputStream in = zipFile.getInputStream(ent);
+            Artle artle = new Artle();
+            String source = UIUtil.readFile(in);
+            Map<String,String> result = (Map)JSON.parse(source);
+            artle.setTitle(result.get("artleTitle"));
+            artle.setCreatedDate(dateFormat.parse(result.get("artleDate")));
+            artle.setType(type);
+            ArtleContext context = new ArtleContext();
+            context.setImageRes((Map)JSON.parse(result.get("resource")));
+            context.setContent(result.get("artleContext"));
+            artle.setContext(context);
+            artleService.saveArtle(artle,context);
+        }
+
+    }
+
     private void writeType(ArtleType type, ZipOutputStream zout,String parentName) throws Exception{
         if(type.getChildType() != null && type.getChildType().size() > 0){
             try {
-                //zout.putNextEntry(new ZipEntry(parentName + "/" + type.getName()));
                 List<Artle> artles = artleService.loadArtles(type);
                 if(artles != null){
                     for (Artle elem:artles){

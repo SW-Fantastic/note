@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.ArtleListRefreshEvent;
+import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.TypeRefreshEvent;
 
 /**
@@ -33,6 +34,11 @@ public class RefresherAspect {
     @AfterReturning("execution(* org.swdc.note.app.service.TypeService.*Type(..))&&args(type,..)")
     public void afterType(ArtleType type) {
         context.publishEvent(new TypeRefreshEvent(type));
+    }
+
+    @AfterReturning("execution(* org.swdc.note.app.service.Artle*.del*(..))")
+    public void resetOnDel(){
+        context.publishEvent(new ResetEvent(""));
     }
 
     /**

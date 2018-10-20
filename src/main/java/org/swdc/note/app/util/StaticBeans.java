@@ -1,5 +1,7 @@
 package org.swdc.note.app.util;
 
+import com.overzealous.remark.Options;
+import com.overzealous.remark.Remark;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.profiles.pegdown.Extensions;
@@ -28,6 +30,11 @@ public class StaticBeans {
     @Bean
     public HtmlRenderer renderer(){
         return HtmlRenderer.builder(OPTIONS).build();
+    }
+
+    @Bean
+    public Remark remark(){
+        return new Remark(Options.markdown());
     }
 
 }

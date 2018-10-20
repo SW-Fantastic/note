@@ -18,6 +18,7 @@ import org.swdc.note.app.entity.ArtleContext;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.ArtleOpenEvent;
 import org.swdc.note.app.event.ExportEvent;
+import org.swdc.note.app.event.TypeImportEvent;
 import org.swdc.note.app.file.FileFormater;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.UIConfig;
@@ -27,10 +28,7 @@ import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -109,10 +107,8 @@ public class ReadViewController implements Initializable {
 
     @FXML
     protected void onOpen(){
-        List<FileChooser.ExtensionFilter> list = formaters.stream().filter(item->item.canRead()).map(item->item.getFilters()).reduce((lstA,lstB)->{
-           lstA.addAll(lstB);
-            return lstA;
-        }).get();
+        List<FileChooser.ExtensionFilter> list = new ArrayList<>();
+        formaters.stream().filter(item->item.canRead()).map(item->item.getFilters()).forEach(list::addAll);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("打开");
         fileChooser.getExtensionFilters().addAll(list);
@@ -121,6 +117,7 @@ public class ReadViewController implements Initializable {
         formaters.stream().filter(item->item.getFilters().contains(filter)).findFirst().ifPresent(target->{
             Artle artle = target.processRead(file,Artle.class);
             if(artle != null){
+                // 单个数据文件打开
                 ArtleContext context = artle.getContext();
                 Map<String,String> resource = context.getImageRes();
                 StringBuilder sb = new StringBuilder();
@@ -140,6 +137,10 @@ public class ReadViewController implements Initializable {
                 this.artle = artle;
                 btnExport.setVisible(false);
                 btnImport.setVisible(true);
+            }else {
+                // 数据合并导入
+                TypeImportEvent importEvent = new TypeImportEvent(file,target);
+                config.publishEvent(importEvent);
             }
         });
     }

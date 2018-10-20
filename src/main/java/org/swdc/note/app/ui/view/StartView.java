@@ -3,22 +3,25 @@ package org.swdc.note.app.ui.view;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 import de.felixroske.jfxsupport.GUIState;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.NoteApplication;
+import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
+import javax.swing.*;
 import java.util.Optional;
 
 @FXMLView(value = "/view/start.fxml")
@@ -41,6 +44,53 @@ public class StartView extends AbstractFxmlView {
     @Autowired
     private StartConfigView viewConfig;
 
+    /**
+     * 处理边栏的界面切换按钮
+     */
+    private class ViewToolButtonHandler implements ChangeListener<Boolean>{
+
+        /**
+         * 切换的目标视图
+         */
+        private Node targetView;
+        /**
+         * 当前切换按钮
+         */
+        private ToggleButton obsButton;
+
+        protected ViewToolButtonHandler(ToggleButton btn,Node connectedView){
+            this.targetView = connectedView;
+            this.obsButton = btn;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            if(newValue!=null&&newValue){
+                BorderPane pane = (BorderPane) StartView.this.getView();
+                if(targetView!=viewEdit.getView() && pane.getCenter().equals(viewEdit.getView()) && !viewEdit.getDocument().trim().equals("")){
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setContentText("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？");
+                    alert.setTitle("提示");
+                    alert.initOwner(GUIState.getStage());
+                    alert.setHeaderText(null);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    result.ifPresent(btnSel->{
+                        if(btnSel.equals(ButtonType.OK)) {
+                            config.publishEvent(new ResetEvent(""));
+                            pane.setCenter(this.targetView);
+                            toolsGroup.setUserData(obsButton);
+                        }else if (toolsGroup.getUserData()!=null){
+                            toolsGroup.selectToggle((ToggleButton)toolsGroup.getUserData());
+                        }
+                    });
+                }else{
+                    pane.setCenter(targetView);
+                    toolsGroup.setUserData(obsButton);
+                }
+            }
+        }
+    }
+
     @PostConstruct
     protected void initUI() throws Exception{
         GUIState.getStage().setTitle("幻想笔记");
@@ -48,7 +98,8 @@ public class StartView extends AbstractFxmlView {
         GUIState.getStage().setMinHeight(680);
         BorderPane pane = (BorderPane) this.getView();
         pane.setCenter(viewList.getView());
-        pane.setStyle(pane.getStyle()+";-fx-background-image: url("+UIConfig.getConfigLocation()+"res/"+config.getBackground()+");");
+        String res = new StringBuilder(UIConfig.getConfigLocation()).append("res/").append(config.getBackground()).toString();
+        pane.setStyle(pane.getStyle()+";-fx-background-image: url("+res+");");
 
         UIUtil.configTheme(pane,config);
 
@@ -59,41 +110,26 @@ public class StartView extends AbstractFxmlView {
                 .ifPresent(btn-> {
                     initToolBtn(btn,"list");
                     btn.setSelected(true);
-                    btn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-                        if(newValue!=null&&newValue){
-                            pane.setCenter(viewList.getView());
-                        }
-                    }));
+                    toolsGroup.setUserData(btn);
+                    btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewList.getView()));
                 });
 
         Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
                 .ifPresent(btn-> {
                     initToolBtn(btn,"file");
-                    btn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-                        if(newValue!=null&&newValue){
-                            pane.setCenter(viewEdit.getView());
-                        }
-                    }));
+                    btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewEdit.getView()));
                 });
 
         Optional.ofNullable((ToggleButton)findById("read",tool.getItems()))
                 .ifPresent(btn->{
                     initToolBtn(btn,"book");
-                    btn.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                        if(newValue!=null && newValue){
-                            pane.setCenter(viewRead.getView());
-                        }
-                    });
+                    btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewRead.getView()));
                 });
 
         Optional.ofNullable((ToggleButton) findById("config",tool.getItems()))
                 .ifPresent(btn->{
                     initToolBtn(btn,"cog");
-                    btn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-                        if(newValue!=null && newValue){
-                            pane.setCenter(viewConfig.getView());
-                        }
-                    }));
+                    btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewConfig.getView()));
                 });
 
         Button btnSearch = (Button) getView().lookup("#search");
@@ -146,6 +182,9 @@ public class StartView extends AbstractFxmlView {
     public void onViewChange(ViewChangeEvent e){
         BorderPane pane = (BorderPane) this.getView();
         ToolBar tool = (ToolBar) getView().lookup(".tool");
+        if(pane == viewEdit.getView()){
+            System.out.println("prev - editing");
+        }
         if(e.getViewName().equals("EditView")){
             Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
                     .ifPresent(btn-> {

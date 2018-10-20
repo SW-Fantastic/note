@@ -79,6 +79,20 @@
             <artifactId>flexmark-all</artifactId>
             <version>0.34.46</version>
         </dependency>
+        <dependency>
+            <groupId>com.overzealous</groupId>
+            <artifactId>remark</artifactId>
+            <version>1.1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/remark-1.1.0.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/commons-lang3-3.8.1.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,6 +100,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -59,6 +59,11 @@ public class TypeService {
      */
     @Transactional(rollbackFor = Exception.class)
     public boolean addType(ArtleType type){
+        // 如果是已有类型就直接修改
+        if(type.getId() != null){
+            typeRepository.save(type);
+            return true;
+        }
         ArtleType parentType = type.getParentType();
         if(parentType != null){
             parentType = typeRepository.getOne(parentType.getId());
@@ -116,5 +121,4 @@ public class TypeService {
         }
         return !repeated;
     }
-
 }

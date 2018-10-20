@@ -28,6 +28,8 @@ public abstract class FileFormater {
      */
     public abstract void processWrite(File target,Object targetObj);
 
+    public abstract <T> void processImport(File target,T targetObj);
+
     public abstract List<FileChooser.ExtensionFilter> getFilters();
 
     public abstract boolean canRead();

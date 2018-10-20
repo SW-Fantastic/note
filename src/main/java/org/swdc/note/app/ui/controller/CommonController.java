@@ -7,12 +7,17 @@ import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
+import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.ExportEvent;
+import org.swdc.note.app.event.TypeImportEvent;
+import org.swdc.note.app.file.FileFormater;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
+import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 
+import java.io.File;
 import java.util.Optional;
 
 /**
@@ -29,6 +34,9 @@ public class CommonController {
 
     @Autowired
     private ExportDialog exportDialog;
+
+    @Autowired
+    private TypeDialog typeDialog;
 
     /**
      * 处理导出事件
@@ -86,6 +94,23 @@ public class CommonController {
                 }
             });
         }
+    }
+
+    @EventListener
+    public void onTypeImport(TypeImportEvent importEvent){
+        Stage stg = typeDialog.getStage();
+        if(stg.isShowing()){
+            stg.requestFocus();
+        }else{
+            stg.showAndWait();
+        }
+        ArtleType type = typeDialog.getArtleType();
+        if(type == null){
+            return;
+        }
+        File file = importEvent.getTargetFile();
+        FileFormater formater = importEvent.getFormatter();
+        formater.processImport(file,type);
     }
 
 }

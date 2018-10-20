@@ -50,6 +50,9 @@ public class ImageDialogController implements Initializable{
         Base64.Encoder enc = Base64.getEncoder();
         if(file!=null&& file.exists()){
             String res = enc.encodeToString(UIUtil.readFile(new FileInputStream(file)));
+            if(dlg.getImages().keySet().contains(file.getName())){
+                return;
+            }
             dlg.getImages().put(file.getName(),res);
             listView.getItems().add(file.getName());
         }

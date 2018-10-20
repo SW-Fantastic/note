@@ -13,6 +13,7 @@ import org.swdc.note.app.entity.Artle;
 import org.swdc.note.app.entity.ArtleContext;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.ArtleEditEvent;
+import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.service.ArtleService;
 import org.swdc.note.app.ui.view.StartEditView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
@@ -113,4 +114,15 @@ public class EditViewController implements Initializable{
         ArtleContext context = artleService.loadContext(artle);
         editView.setContext(context.getContent());
     }
+
+    @EventListener
+    public void onReset(ResetEvent resetEvent){
+
+        this.editView.reset();
+        this.txtType.setText(null);
+        this.currType = null;
+        this.artle = null;
+        this.txtTitle.setText(null);
+    }
+
 }

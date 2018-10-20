@@ -298,6 +298,12 @@ public class StartEditView extends AbstractFxmlView{
         });
     }
 
+    public void reset(){
+        BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
+        CodeArea code = (CodeArea)pane.getCenter();
+        code.replaceText(0,code.getText().length(),"");
+    }
+
     private String reduceDesc(String text,String prefix){
         Pattern pattern = Pattern.compile(DESC_PATTERN);
         if(pattern.matcher(text).matches()){
