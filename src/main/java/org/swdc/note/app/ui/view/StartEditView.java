@@ -7,6 +7,7 @@ import com.vladsch.flexmark.profiles.pegdown.PegdownOptionsAdapter;
 import com.vladsch.flexmark.util.options.DataHolder;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
+import de.felixroske.jfxsupport.GUIState;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -22,6 +23,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.ui.view.dialogs.TableDialog;
@@ -216,6 +218,20 @@ public class StartEditView extends AbstractFxmlView{
         Optional.ofNullable((Button)getView().lookup("#savebtn")).ifPresent(btn->{
             btn.setFont(UIConfig.getFontIconSmall());
             btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("save")));
+        });
+
+        initButton("create",toolBar.getItems(),"sticky_note",e->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("要放弃现在编辑的内容，开始新的创作吗？");
+            alert.setTitle("提示");
+            alert.initOwner(GUIState.getStage());
+            alert.setHeaderText(null);
+            Optional<ButtonType> result = alert.showAndWait();
+            result.ifPresent(btnSel->{
+                if(btnSel.equals(ButtonType.OK)) {
+                    config.publishEvent(new ResetEvent(""));
+                }
+            });
         });
 
         initButton("tab",toolBar.getItems(),"table",e->{
