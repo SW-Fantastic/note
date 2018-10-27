@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ResetEvent extends ApplicationEvent {
 
-    public ResetEvent(Object source) {
+    public ResetEvent(Class source) {
         super(source);
     }
 }

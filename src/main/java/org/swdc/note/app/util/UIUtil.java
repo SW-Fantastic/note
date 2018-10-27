@@ -1,12 +1,15 @@
 package org.swdc.note.app.util;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.ui.UIConfig;
 
 import java.io.*;
+import java.util.Properties;
 
 /**
  * Created by lenovo on 2018/8/26.
@@ -52,6 +55,25 @@ public class UIUtil {
             pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".css");
             pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".keyword.css");
         }
+    }
+
+    public static boolean isClassical(){
+        try{
+            Properties props = new Properties();
+            props.load(new FileInputStream("configs/config.properties"));
+            return props.get("app.mode").equals("classical");
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    public static Node findById(String id, ObservableList<Node> list){
+        for (Node node:list) {
+            if(node.getId().equals(id)){
+                return node;
+            }
+        }
+        return null;
     }
 
 }

@@ -1,7 +1,5 @@
 package org.swdc.note.app.ui.controller;
 
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
 import de.felixroske.jfxsupport.FXMLController;
 import de.felixroske.jfxsupport.GUIState;
 import javafx.fxml.FXML;
@@ -18,6 +16,7 @@ import org.swdc.note.app.entity.ArtleContext;
 import org.swdc.note.app.entity.ArtleType;
 import org.swdc.note.app.event.ArtleOpenEvent;
 import org.swdc.note.app.event.ExportEvent;
+import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.TypeImportEvent;
 import org.swdc.note.app.file.FileFormater;
 import org.swdc.note.app.service.ArtleService;
@@ -29,8 +28,6 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * 阅读视图的控制器。
@@ -58,12 +55,6 @@ public class ReadViewController implements Initializable {
     @Autowired
     private TypeDialog typeDialog;
 
-    @Autowired
-    private Parser parser;
-
-    @Autowired
-    private HtmlRenderer renderer;
-
     @FXML
     protected TextField txtTitle;
 
@@ -86,19 +77,7 @@ public class ReadViewController implements Initializable {
         Artle artle = e.getArtle();
         this.artle = artle;
         ArtleContext context = artleService.loadContext(artle);
-        Map<String,String> resource = context.getImageRes();
-        StringBuilder sb = new StringBuilder();
-        sb.append("\r\n");
-        resource.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey())
-                        .append("]: data:image/png;base64,")
-                        .append(ent.getValue())
-                        .append("\n"));
-        String content = renderer.render(parser.parse(context.getContent()+"\n"+sb.toString()));
-        content = "<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
-                    +"<body ondragstart='return false;'>"+content+"</body></html>";
-        readView.getWebView().getEngine().loadContent(content);
+        readView.getWebView().getEngine().loadContent(artleService.complie(context));
         txtTitle.setText(artle.getTitle());
         lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(artle.getCreatedDate()));
         btnExport.setVisible(true);
@@ -119,19 +98,7 @@ public class ReadViewController implements Initializable {
             if(artle != null){
                 // 单个数据文件打开
                 ArtleContext context = artle.getContext();
-                Map<String,String> resource = context.getImageRes();
-                StringBuilder sb = new StringBuilder();
-                sb.append("\r\n");
-                resource.entrySet().forEach(ent->
-                        sb.append("[")
-                                .append(ent.getKey())
-                                .append("]: data:image/png;base64,")
-                                .append(ent.getValue())
-                                .append("\n"));
-                String content = renderer.render(parser.parse(context.getContent()+"\n"+sb.toString()));
-                content = "<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
-                        +"<body ondragstart='return false;'>"+content+"</body></html>";
-                readView.getWebView().getEngine().loadContent(content);
+                readView.getWebView().getEngine().loadContent(artleService.complie(context));
                 txtTitle.setText(artle.getTitle());
                 lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(artle.getCreatedDate()));
                 this.artle = artle;
@@ -169,6 +136,19 @@ public class ReadViewController implements Initializable {
         if(this.artle!=null){
             ExportEvent exportEvent = new ExportEvent(artle);
             config.publishEvent(exportEvent);
+        }
+    }
+
+    @EventListener
+    protected void onReset(ResetEvent event){
+        if(event.getSource().equals(StartReadView.class) || event.getSource() == null){
+            if(readView.getStage()!=null && readView.getStage().isShowing()){
+                return;
+            }
+            this.artle = null;
+            readView.getWebView().getEngine().loadContent("");
+            lblDate.setText("");
+            txtTitle.setText("");
         }
     }
 

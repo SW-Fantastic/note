@@ -64,6 +64,7 @@ public class StartController implements Initializable {
 
     @FXML
     public void onSearch(){
+        System.out.println(txtSeach.getText());
         if (txtSeach.getText() == null || txtSeach.getText().trim().equals("")){
             return;
         }

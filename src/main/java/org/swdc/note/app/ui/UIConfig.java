@@ -789,6 +789,10 @@ public class UIConfig {
     private String theme;
 
     @Getter
+    @Setter
+    private String mode;
+
+    @Getter
     private String mdStyleContent;
 
     @PostConstruct

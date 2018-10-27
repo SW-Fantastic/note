@@ -5,10 +5,7 @@ import de.felixroske.jfxsupport.FXMLView;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.event.ArtleListRefreshEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 

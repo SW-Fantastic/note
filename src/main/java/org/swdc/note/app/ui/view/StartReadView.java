@@ -2,13 +2,16 @@ package org.swdc.note.app.ui.view;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
+import de.felixroske.jfxsupport.GUIState;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.ui.UIConfig;
@@ -27,6 +30,9 @@ public class StartReadView extends AbstractFxmlView{
 
     @Getter
     private WebView webView;
+
+    @Getter
+    private Stage stage;
 
     @PostConstruct
     protected void initUI() throws Exception {
@@ -48,6 +54,20 @@ public class StartReadView extends AbstractFxmlView{
         btnImport.setVisible(false);
         btnImport.setFont(UIConfig.getFontIconSmall());
         btnImport.setText(String.valueOf(UIConfig.getAwesomeMap().get("sign_in")));
+        if(UIUtil.isClassical()){
+            Platform.runLater(()->{
+                stage = new Stage();
+                stage.initOwner(GUIState.getStage());
+                Scene scene = new Scene(this.getView());
+                String res = new StringBuilder(UIConfig.getConfigLocation()).append("res/").append(config.getBackground()).toString();
+                this.getView().setStyle(this.getView().getStyle()+";-fx-background-image: url("+res+");");
+                stage.setScene(scene);
+                stage.setMinWidth(800);
+                stage.setMinHeight(600);
+                stage.getIcons().addAll(UIConfig.getImageIcons());
+                stage.setTitle("阅览");
+            });
+        }
     }
 
     private Node findById(String id, ObservableList<Node> list){

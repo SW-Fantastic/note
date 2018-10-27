@@ -55,6 +55,9 @@ public class EditViewController implements Initializable{
     @FXML
     public void selType() {
         Stage stg = typeDialog.getStage();
+        if(editView.getStage() != null && stg.getOwner() != editView.getStage()){
+            stg.initOwner(editView.getStage());
+        }
         if(stg.isShowing()){
             stg.requestFocus();
         }else{
@@ -117,12 +120,13 @@ public class EditViewController implements Initializable{
 
     @EventListener
     public void onReset(ResetEvent resetEvent){
-
-        this.editView.reset();
-        this.txtType.setText(null);
-        this.currType = null;
-        this.artle = null;
-        this.txtTitle.setText(null);
+        if(resetEvent.getSource().equals(StartEditView.class)||resetEvent.getSource() == null){
+            this.editView.reset();
+            this.txtType.setText(null);
+            this.currType = null;
+            this.artle = null;
+            this.txtTitle.setText(null);
+        }
     }
 
 }

@@ -1,29 +1,28 @@
 package org.swdc.note.app.ui.view;
 
+import static org.swdc.note.app.util.UIUtil.findById;
+
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 import de.felixroske.jfxsupport.GUIState;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.io.ClassPathResource;
-import org.swdc.note.app.NoteApplication;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.view.classes.NotViewClassicalCondition;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
-import javax.swing.*;
 import java.util.Optional;
 
+@Conditional(NotViewClassicalCondition.class)
 @FXMLView(value = "/view/start.fxml")
 public class StartView extends AbstractFxmlView {
 
@@ -58,7 +57,7 @@ public class StartView extends AbstractFxmlView {
          */
         private ToggleButton obsButton;
 
-        protected ViewToolButtonHandler(ToggleButton btn,Node connectedView){
+        ViewToolButtonHandler(ToggleButton btn,Node connectedView){
             this.targetView = connectedView;
             this.obsButton = btn;
         }
@@ -68,6 +67,7 @@ public class StartView extends AbstractFxmlView {
             if(newValue!=null&&newValue){
                 BorderPane pane = (BorderPane) StartView.this.getView();
                 if(targetView!=viewEdit.getView() && pane.getCenter().equals(viewEdit.getView()) && !viewEdit.getDocument().trim().equals("")){
+                    toolsGroup.getToggles().forEach(tog->tog.setSelected(false));
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setContentText("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？");
                     alert.setTitle("提示");
@@ -76,9 +76,10 @@ public class StartView extends AbstractFxmlView {
                     Optional<ButtonType> result = alert.showAndWait();
                     result.ifPresent(btnSel->{
                         if(btnSel.equals(ButtonType.OK)) {
-                            config.publishEvent(new ResetEvent(""));
+                            config.publishEvent(new ResetEvent(StartEditView.class));
                             pane.setCenter(this.targetView);
                             toolsGroup.setUserData(obsButton);
+                            toolsGroup.selectToggle(obsButton);
                         }else if (toolsGroup.getUserData()!=null){
                             toolsGroup.selectToggle((ToggleButton)toolsGroup.getUserData());
                         }
@@ -165,15 +166,6 @@ public class StartView extends AbstractFxmlView {
         toolsGroup.getToggles().add(btn);
     }
 
-    private Node findById(String id, ObservableList<Node> list){
-        for (Node node:list) {
-            if(node.getId().equals(id)){
-                return node;
-            }
-        }
-        return null;
-    }
-
     /**
      * 界面需要发生变化
      * @param e
@@ -182,29 +174,24 @@ public class StartView extends AbstractFxmlView {
     public void onViewChange(ViewChangeEvent e){
         BorderPane pane = (BorderPane) this.getView();
         ToolBar tool = (ToolBar) getView().lookup(".tool");
-        if(pane == viewEdit.getView()){
-            System.out.println("prev - editing");
-        }
         if(e.getViewName().equals("EditView")){
             Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
                     .ifPresent(btn-> {
                         toolsGroup.selectToggle(btn);
-                        pane.setCenter(viewEdit.getView());
+                       // pane.setCenter(viewEdit.getView());
                     });
         }else if(e.getViewName().equals("ListView")){
             Optional.ofNullable((ToggleButton) findById("list",tool.getItems()))
                     .ifPresent(btn-> {
                         toolsGroup.selectToggle(btn);
-                        pane.setCenter(viewList.getView());
+                      //  pane.setCenter(viewList.getView());
                     });
         }else if(e.getViewName().equals("ReadView")){
             Optional.ofNullable((ToggleButton)findById("read",tool.getItems()))
                     .ifPresent(btn->{
                         toolsGroup.selectToggle(btn);
-                        pane.setCenter(viewRead.getView());
+                       // pane.setCenter(viewRead.getView());
                     });
         }
-
     }
-
 }

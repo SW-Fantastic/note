@@ -14,10 +14,12 @@ import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import lombok.Getter;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -72,16 +74,14 @@ public class StartEditView extends AbstractFxmlView{
     // 匹配注释
     private static final String COMMENT_PATTERN = "([<][!][-]{2}[\\s\\S]*)|([-]{2}[>])";
 
-    private static final DataHolder OPTIONS = PegdownOptionsAdapter.flexmarkOptions(
-            true,
-            Extensions.ALL
-    );
-
     @Autowired
     private Parser parser;
 
     @Autowired
     private HtmlRenderer renderer;
+
+    @Getter
+    private Stage stage;
 
     private static final Pattern PATTERN = Pattern.compile(
                       "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -157,6 +157,19 @@ public class StartEditView extends AbstractFxmlView{
         });
 
         initEditTool();
+        if(UIUtil.isClassical()){
+            Platform.runLater(()->{
+                String res = new StringBuilder(UIConfig.getConfigLocation()).append("res/").append(config.getBackground()).toString();
+                this.getView().setStyle(pane.getStyle()+";-fx-background-image: url("+res+");");
+                stage = new Stage();
+                Scene scene = new Scene(this.getView());
+                stage.setScene(scene);
+                stage.setMinWidth(800);
+                stage.setMinHeight(600);
+                stage.getIcons().addAll(UIConfig.getImageIcons());
+                stage.setTitle("编辑");
+            });
+        }
     }
 
     private void initEditTool(){
@@ -229,7 +242,7 @@ public class StartEditView extends AbstractFxmlView{
             Optional<ButtonType> result = alert.showAndWait();
             result.ifPresent(btnSel->{
                 if(btnSel.equals(ButtonType.OK)) {
-                    config.publishEvent(new ResetEvent(""));
+                    config.publishEvent(new ResetEvent(StartEditView.class));
                 }
             });
         });
