@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.swdc.note.app.entity.Artle;
+import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.event.*;
 import org.swdc.note.app.ui.UIConfig;
 
@@ -27,12 +27,12 @@ import java.util.Optional;
  */
 @FXMLView("/view/artleCell.fxml")
 @Scope(value = "prototype")
-public class ArtleCellView extends AbstractFxmlView{
+public class ArticleCellView extends AbstractFxmlView{
 
     @Autowired
     private UIConfig config;
 
-    private Artle artle;
+    private Article article;
 
     @PostConstruct
     protected void initUI(){
@@ -50,9 +50,9 @@ public class ArtleCellView extends AbstractFxmlView{
         btnRead.setFont(UIConfig.getFontIconSmall());
         btnRead.setText(String.valueOf(UIConfig.getAwesomeMap().get("folder_open")));
         btnRead.setOnAction(e->{
-            if(artle!=null){
+            if(article !=null){
                 // 发出事件，通知其他组件打开此文档
-                config.publishEvent(new ArtleOpenEvent(artle));
+                config.publishEvent(new ArticleOpenEvent(article));
             }
         });
         Button btnDel = (Button)getView().lookup("#delete");
@@ -60,17 +60,17 @@ public class ArtleCellView extends AbstractFxmlView{
         btnDel.setFont(UIConfig.getFontIconSmall());
         btnDel.setText(String.valueOf(UIConfig.getAwesomeMap().get("trash")));
         btnDel.setOnAction(e->{
-            if (artle != null){
+            if (article != null){
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setHeaderText(null);
                 alert.initOwner(GUIState.getStage());
                 alert.setTitle("提示");
-                alert.setContentText("你确实要删除《"+artle.getTitle()+"》吗？");
+                alert.setContentText("你确实要删除《"+ article.getTitle()+"》吗？");
                 Optional<ButtonType> result = alert.showAndWait();
                 result.ifPresent(btnType->{
                     if(btnType.equals(ButtonType.OK)){
                         // 发送删除事件，通知controller删除此文档
-                        config.publishEvent(new DeleteEvent(artle));
+                        config.publishEvent(new DeleteEvent(article));
                     }
                 });
             }
@@ -80,9 +80,9 @@ public class ArtleCellView extends AbstractFxmlView{
         btnEdit.setFont(UIConfig.getFontIconSmall());
         btnEdit.setText(String.valueOf(UIConfig.getAwesomeMap().get("pencil")));
         btnEdit.setOnAction(e->{
-            if(artle != null){
+            if(article != null){
                 // 发出事件，通知其他组件转到编辑状态
-                config.publishEvent(new ArtleEditEvent(artle));
+                config.publishEvent(new ArticleEditEvent(article));
             }
         });
 
@@ -91,23 +91,23 @@ public class ArtleCellView extends AbstractFxmlView{
         btnOut.setFont(UIConfig.getFontIconSmall());
         btnOut.setText(String.valueOf(UIConfig.getAwesomeMap().get("sign_out")));
         btnOut.setOnAction(e->{
-            if(artle != null){
+            if(article != null){
                 // 发送导出事件，要求导出文档。
-                ExportEvent exportEvent = new ExportEvent(artle);
+                ExportEvent exportEvent = new ExportEvent(article);
                 config.publishEvent(exportEvent);
             }
         });
     }
 
-    public void setArtle(Artle artle){
-        this.artle = artle;
+    public void setArticle(Article article){
+        this.article = article;
         Button btnIcon = (Button)getView().lookup("#icon");
         VBox vbx = (VBox)getView().lookup("#bg");
         Label lblArrow = (Label)getView().lookup("#arrow");
         Label lblTitle = (Label)getView().lookup("#title");
         Label lblDate = (Label)getView().lookup("#date");
         HBox hbx = (HBox)getView().lookup("#editPane");
-        if(artle == null){
+        if(article == null){
            btnIcon.setVisible(false);
             vbx.setVisible(false);
             lblArrow.setVisible(false);
@@ -116,8 +116,8 @@ public class ArtleCellView extends AbstractFxmlView{
             lblDate.setText("");
             return;
         }
-        lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(artle.getCreatedDate()));
-        lblTitle.setText(artle.getTitle());
+        lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
+        lblTitle.setText(article.getTitle());
         btnIcon.setVisible(true);
         vbx.setVisible(true);
         lblArrow.setVisible(true);

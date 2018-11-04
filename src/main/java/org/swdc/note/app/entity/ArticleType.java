@@ -11,7 +11,7 @@ import java.util.Set;
  * 文章分类，树形结构的分类模型
  */
 @Entity
-public class ArtleType {
+public class ArticleType {
 
     @Id
     @GeneratedValue
@@ -26,17 +26,17 @@ public class ArtleType {
     @ManyToOne(fetch = FetchType.EAGER)
     @Getter
     @Setter
-    private ArtleType parentType;
+    private ArticleType parentType;
 
     @OneToMany(mappedBy = "parentType",cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
     @Getter
     @Setter
-    private Set<ArtleType> childType;
+    private Set<ArticleType> childType;
 
     @OneToMany(mappedBy = "type",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     @Getter
     @Setter
-    private List<Artle> artles;
+    private List<Article> articles;
 
     @Override
     public String toString() {

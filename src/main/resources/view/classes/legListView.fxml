@@ -4,12 +4,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="808.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ArtleViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="808.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ArticleViewController">
    <center>
       <SplitPane dividerPositions="0.6" orientation="VERTICAL" prefHeight="550.0" prefWidth="698.0" BorderPane.alignment="CENTER">
          <items>
             <BorderPane id="content" prefHeight="241.0" prefWidth="806.0" />
-            <TableView fx:id="artleTable" prefHeight="548.0" prefWidth="362.0">
+            <TableView fx:id="articleTable" prefHeight="548.0" prefWidth="362.0" styleClass="table">
                <columns>
                   <TableColumn id="id" prefWidth="69.0" text="id" />
                   <TableColumn id="title" prefWidth="303.0" text="标题" />

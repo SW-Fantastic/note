@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleContext;
-import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.service.ArtleService;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleContext;
+import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.util.UIUtil;
 
@@ -23,10 +23,10 @@ import java.util.zip.ZipOutputStream;
  *  此数据是json格式的数据，由本工程创建使用。
  */
 @Component
-public class SwMarkdownFormater extends FileFormater {
+public class SwMarkdownFormatter extends FileFormatter {
 
     @Autowired
-    private ArtleService artleService;
+    private ArticleService articleService;
 
     @Autowired
     private TypeService typeService;
@@ -45,18 +45,18 @@ public class SwMarkdownFormater extends FileFormater {
     public <T> T processRead(File target,Class<T> clazz) {
         String name = target.getAbsolutePath();
         String[] extName = name.split("[.]");
-        if(extName[extName.length - 1].equals("mdxn") && clazz.equals(Artle.class)){
+        if(extName[extName.length - 1].equals("mdxn") && clazz.equals(Article.class)){
             try {
                 String source = UIUtil.readFile((InputStream)new FileInputStream(target));
                 Map<String,String> result = (Map) JSON.parse(source);
-                Artle artle = new Artle();
-                artle.setTitle(result.get("artleTitle"));
-                artle.setCreatedDate(dateFormat.parse(result.get("artleDate")));
-                ArtleContext context = new ArtleContext();
+                Article article = new Article();
+                article.setTitle(result.get("artleTitle"));
+                article.setCreatedDate(dateFormat.parse(result.get("artleDate")));
+                ArticleContext context = new ArticleContext();
                 context.setImageRes((Map)JSON.parse(result.get("resource")));
                 context.setContent(result.get("artleContext"));
-                artle.setContext(context);
-                return (T)artle;
+                article.setContext(context);
+                return (T) article;
             }catch (Exception e){
                 throw new RuntimeException(e);
             }
@@ -68,25 +68,25 @@ public class SwMarkdownFormater extends FileFormater {
     public void processWrite(File target,Object targetObj) {
         String name = target.getName();
         String[] nameExt = name.split("[.]");
-        if(targetObj instanceof Artle){
-            Artle artleTarget = (Artle)targetObj;
-            ArtleContext context = artleService.loadContext(artleTarget);
+        if(targetObj instanceof Article){
+            Article articleTarget = (Article)targetObj;
+            ArticleContext context = articleService.loadContext(articleTarget);
             Map<String,String> output = new HashMap<>();
-            output.put("artleTitle",artleTarget.getTitle());
-            output.put("artleTypeName",artleTarget.getType().getName());
+            output.put("artleTitle", articleTarget.getTitle());
+            output.put("artleTypeName", articleTarget.getType().getName());
             output.put("artleContext",context.getContent());
-            output.put("artleDate", dateFormat.format(artleTarget.getCreatedDate()));
+            output.put("artleDate", dateFormat.format(articleTarget.getCreatedDate()));
             output.put("resource", JSON.toJSONString(context.getImageRes()));
             String result = JSON.toJSONString(output);
             if (!nameExt[nameExt.length - 1].equals("mdxn")){
                 target = new File(target.getAbsolutePath() + ".mdxn");
             }
             UIUtil.processWriteFile(target,result);
-        }else if(targetObj instanceof ArtleType){
+        }else if(targetObj instanceof ArticleType){
             if (!nameExt[nameExt.length - 1].equals("mdzz")){
                 target = new File(target.getAbsolutePath() + ".mdzz");
             }
-            ArtleType type = (ArtleType) targetObj;
+            ArticleType type = (ArticleType) targetObj;
             try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(target))){
                 writeType(type,zos,"source/"+type.getName());
                 zos.flush();
@@ -98,10 +98,10 @@ public class SwMarkdownFormater extends FileFormater {
 
     @Override
     public <T> void processImport(File target, T targetObj) {
-        if(!(targetObj instanceof ArtleType)){
+        if(!(targetObj instanceof ArticleType)){
             return;
         }
-        ArtleType type = (ArtleType)targetObj;
+        ArticleType type = (ArticleType)targetObj;
         try (ZipFile zipFile = new ZipFile(target)){
             Enumeration<? extends ZipEntry> zipEnum = zipFile.entries();
             while (zipEnum.hasMoreElements()){
@@ -114,50 +114,50 @@ public class SwMarkdownFormater extends FileFormater {
         }
     }
 
-    public <T> void processImport(ZipEntry ent, ArtleType type,ZipFile zipFile) throws Exception{
+    public <T> void processImport(ZipEntry ent, ArticleType type, ZipFile zipFile) throws Exception{
         if(ent.isDirectory() && !ent.getName().equals("source") && !ent.getName().equals(type.getName())){
-            ArtleType subType = new ArtleType();
+            ArticleType subType = new ArticleType();
             subType.setName(ent.getName().split("[/\\\\]")[ent.getName().split("[/\\\\]").length - 1]);
             subType.setParentType(type);
-            subType.setArtles(new ArrayList<>());
+            subType.setArticles(new ArrayList<>());
             typeService.addType(subType);
         }else{
             InputStream in = zipFile.getInputStream(ent);
-            Artle artle = new Artle();
+            Article article = new Article();
             String source = UIUtil.readFile(in);
             Map<String,String> result = (Map)JSON.parse(source);
-            artle.setTitle(result.get("artleTitle"));
-            artle.setCreatedDate(dateFormat.parse(result.get("artleDate")));
-            artle.setType(type);
-            ArtleContext context = new ArtleContext();
+            article.setTitle(result.get("artleTitle"));
+            article.setCreatedDate(dateFormat.parse(result.get("artleDate")));
+            article.setType(type);
+            ArticleContext context = new ArticleContext();
             context.setImageRes((Map)JSON.parse(result.get("resource")));
             context.setContent(result.get("artleContext"));
-            artle.setContext(context);
-            artleService.saveArtle(artle,context);
+            article.setContext(context);
+            articleService.saveArticle(article,context);
         }
 
     }
 
-    private void writeType(ArtleType type, ZipOutputStream zout,String parentName) throws Exception{
+    private void writeType(ArticleType type, ZipOutputStream zout, String parentName) throws Exception{
         if(type.getChildType() != null && type.getChildType().size() > 0){
             try {
-                List<Artle> artles = artleService.loadArtles(type);
-                if(artles != null){
-                    for (Artle elem:artles){
+                List<Article> articles = articleService.loadArticles(type);
+                if(articles != null){
+                    for (Article elem: articles){
                         zout.putNextEntry(new ZipEntry(parentName + "/" + elem.getTitle()));
                         String result = writeArtleJSON(elem);
                         zout.write(result.getBytes("utf8"));
                     }
                 }
-                for(ArtleType typeElem:type.getChildType()){
+                for(ArticleType typeElem:type.getChildType()){
                     writeType(typeElem,zout,parentName + "/" + typeElem.getName());
                 }
             }catch (Exception e){
 
             }
         }else{
-            List<Artle> artles = artleService.loadArtles(type);
-            for (Artle elem:artles){
+            List<Article> articles = articleService.loadArticles(type);
+            for (Article elem: articles){
                 zout.putNextEntry(new ZipEntry(parentName + "/" + elem.getTitle()));
                 String result = writeArtleJSON(elem);
                 zout.write(result.getBytes("utf8"));
@@ -165,14 +165,14 @@ public class SwMarkdownFormater extends FileFormater {
         }
     }
 
-    private String writeArtleJSON(Artle artle){
-        ArtleContext context = artleService.loadContext(artle);
+    private String writeArtleJSON(Article article){
+        ArticleContext context = articleService.loadContext(article);
         Map<String,String> output = new HashMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        output.put("artleTitle",artle.getTitle());
-        output.put("artleTypeName",artle.getType().getName());
+        output.put("artleTitle", article.getTitle());
+        output.put("artleTypeName", article.getType().getName());
         output.put("artleContext",context.getContent());
-        output.put("artleDate",sdf.format(artle.getCreatedDate()));
+        output.put("artleDate",sdf.format(article.getCreatedDate()));
         output.put("resource", JSON.toJSONString(context.getImageRes()));
         String result = JSON.toJSONString(output);
         return result;

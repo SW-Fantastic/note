@@ -6,6 +6,8 @@ import de.felixroske.jfxsupport.FXMLView;
 import de.felixroske.jfxsupport.GUIState;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -44,6 +46,24 @@ public class ClStartView extends AbstractFxmlView{
     @Autowired
     private UIConfig config;
 
+    private static class ToolHandler implements EventHandler<ActionEvent> {
+
+        private Stage stage;
+
+        public ToolHandler(Stage stg){
+            stage = stg;
+        }
+
+        @Override
+        public void handle(ActionEvent event) {
+            if(stage.isShowing()){
+                stage.requestFocus();
+            }else{
+                stage.show();
+            }
+        }
+    }
+
     @PostConstruct
     protected void initUI() throws Exception{
         GUIState.getStage().setTitle("幻想笔记");
@@ -61,26 +81,13 @@ public class ClStartView extends AbstractFxmlView{
         Optional.ofNullable((Button) findById("list",tool.getItems()))
                 .ifPresent(btn-> {
                     initToolBtn(btn,"plus");
-                    btn.setOnAction(e->{
-                        if(viewEdit.getStage().isShowing()){
-                            viewEdit.getStage().requestFocus();
-                        }else{
-                            viewEdit.getStage().show();
-                        }
-                    });
+                    btn.setOnAction(new ToolHandler(viewEdit.getStage()));
                 });
 
         Optional.ofNullable((Button) findById("write",tool.getItems()))
                 .ifPresent(btn-> {
                     initToolBtn(btn,"desktop");
-                    btn.setOnAction(e->{
-                        Stage stage = viewRead.getStage();
-                        if(stage.isShowing()){
-                            stage.requestFocus();
-                        }else{
-                            stage.show();
-                        }
-                    });
+                    btn.setOnAction(new ToolHandler(viewRead.getStage()));
                 });
 
         Optional.ofNullable((Button)findById("read",tool.getItems()))
@@ -91,6 +98,7 @@ public class ClStartView extends AbstractFxmlView{
         Optional.ofNullable((Button) findById("config",tool.getItems()))
                 .ifPresent(btn->{
                     initToolBtn(btn,"cog");
+                    btn.setOnAction(new ToolHandler(viewConfig.getStage()));
                 });
 
         Button btnSearch = (Button) getView().lookup("#search");
@@ -108,31 +116,6 @@ public class ClStartView extends AbstractFxmlView{
     private void initToolBtn(Button btn,String iconName){
         btn.setFont(UIConfig.getFontIcon());
         btn.setText(String.valueOf(UIConfig.getAwesomeMap().get(iconName)));
-    }
-
-    /**
-     * 界面需要发生变化
-     * @param e
-     */
-    @EventListener
-    public void onViewChange(ViewChangeEvent e){
-        ToolBar tool = (ToolBar) getView().lookup(".tool");
-
-        if(e.getViewName().equals("EditView")){
-            Optional.ofNullable((Button) findById("write",tool.getItems()))
-                    .ifPresent(btn-> {
-
-                    });
-        }else if(e.getViewName().equals("ListView")){
-            Optional.ofNullable((Button) findById("list",tool.getItems()))
-                    .ifPresent(btn-> {
-
-                    });
-        }else if(e.getViewName().equals("ReadView")){
-            Optional.ofNullable((Button)findById("read",tool.getItems()))
-                    .ifPresent(btn->{
-                    });
-        }
     }
 
 }

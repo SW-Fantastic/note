@@ -4,8 +4,8 @@ import javafx.scene.control.TreeItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.repository.ArtleTypeRepository;
+import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.repository.ArticleTypeRepository;
 
 import java.util.List;
 
@@ -16,14 +16,14 @@ import java.util.List;
 public class TypeService {
 
     @Autowired
-    private ArtleTypeRepository typeRepository;
+    private ArticleTypeRepository typeRepository;
 
     @Transactional(readOnly = true)
-    public TreeItem<ArtleType> getTypes(){
-        List<ArtleType> types = typeRepository.getTopLevelType();
-        TreeItem<ArtleType> root = new TreeItem<>();
+    public TreeItem<ArticleType> getTypes(){
+        List<ArticleType> types = typeRepository.getTopLevelType();
+        TreeItem<ArticleType> root = new TreeItem<>();
         types.forEach(item->{
-            TreeItem<ArtleType> typeItem = new TreeItem<>();
+            TreeItem<ArticleType> typeItem = new TreeItem<>();
             typeItem.setValue(item);
             typeItem.setExpanded(false);
             childItem(typeItem);
@@ -36,11 +36,11 @@ public class TypeService {
      * 构建树结构的递归方法
      * @param item 文档的树节点
      */
-    private void childItem(TreeItem<ArtleType> item){
+    private void childItem(TreeItem<ArticleType> item){
         if(item.getValue()==null){
             return;
         }
-        ArtleType type = typeRepository.getOne(item.getValue().getId());
+        ArticleType type = typeRepository.getOne(item.getValue().getId());
         if(type.getChildType() != null ){
             type.getChildType().forEach(typeItem->item.getChildren().add(new TreeItem<>(typeItem)));
             item.getChildren().forEach(this::childItem);
@@ -58,13 +58,13 @@ public class TypeService {
      * @return 操作是否成功
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean addType(ArtleType type){
+    public boolean addType(ArticleType type){
         // 如果是已有类型就直接修改
         if(type.getId() != null){
             typeRepository.save(type);
             return true;
         }
-        ArtleType parentType = type.getParentType();
+        ArticleType parentType = type.getParentType();
         if(parentType != null){
             parentType = typeRepository.getOne(parentType.getId());
         }
@@ -83,14 +83,14 @@ public class TypeService {
      * @return 成功或失败
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean delType(ArtleType type,boolean direct){
+    public boolean delType(ArticleType type, boolean direct){
         type = typeRepository.getOne(type.getId());
         if(!direct && (type.getChildType() != null && type.getChildType().size() > 0
-                || type.getArtles() != null && type.getArtles().size() > 0)){
+                || type.getArticles() != null && type.getArticles().size() > 0)){
             return false;
         }else{
             if(type.getParentType()!=null){
-                ArtleType parent = type.getParentType();
+                ArticleType parent = type.getParentType();
                 type.getChildType().remove(type);
                 typeRepository.save(parent);
             }
@@ -106,15 +106,15 @@ public class TypeService {
      * @return 分类是否重复
      */
     @Transactional(readOnly = true)
-    private boolean typeValid(ArtleType type){
-        ArtleType parentType = type.getParentType();
+    private boolean typeValid(ArticleType type){
+        ArticleType parentType = type.getParentType();
         boolean repeated = false;
         if(parentType == null){
             return true;
         }
         // 读取持久化对象
         parentType = typeRepository.getOne(parentType.getId());
-        for (ArtleType typeItem : parentType.getChildType()){
+        for (ArticleType typeItem : parentType.getChildType()){
             if(typeItem.getName().equals(type.getName())){
                 repeated = true;
             }

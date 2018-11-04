@@ -11,7 +11,7 @@ import java.util.Map;
  *  文章内容模型
  */
 @Entity
-public class ArtleContext {
+public class ArticleContext {
 
     @Id
     @GeneratedValue
@@ -27,7 +27,7 @@ public class ArtleContext {
     @OneToOne(mappedBy = "context")
     @Getter
     @Setter
-    private Artle artle;
+    private Article article;
 
     @Column(columnDefinition = "text")
     private String imageResources;

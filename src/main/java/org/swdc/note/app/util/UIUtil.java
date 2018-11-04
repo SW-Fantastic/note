@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * Created by lenovo on 2018/8/26.
+ * UI工具类
  */
 public class UIUtil {
 

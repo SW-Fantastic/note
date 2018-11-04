@@ -5,7 +5,8 @@ import de.felixroske.jfxsupport.FXMLView;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.entity.Artle;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
@@ -24,7 +25,7 @@ public class StartListView extends AbstractFxmlView{
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)this.getView();
         UIUtil.configTheme(pane,config);
-        ListView<Artle> listView = (ListView)getView().lookup("#list");
+        ListView<Article> listView = (ListView)getView().lookup("#list");
         pane.widthProperty().addListener((observable ->listView.setPrefWidth(pane.getWidth() - 32)));
     }
 

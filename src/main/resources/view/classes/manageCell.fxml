@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button id="edit" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="btn-card" text="修">
+         <HBox.margin>
+            <Insets right="2.0" />
+         </HBox.margin>
+      </Button>
+      <Button id="export" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="btn-card" text="导">
+         <HBox.margin>
+            <Insets right="2.0" />
+         </HBox.margin>
+      </Button>
+      <Button id="delete" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="btn-card" text="删" />
+   </children>
+</HBox>

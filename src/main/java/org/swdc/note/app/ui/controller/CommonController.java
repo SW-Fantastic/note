@@ -7,12 +7,12 @@ import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.event.TypeImportEvent;
-import org.swdc.note.app.file.FileFormater;
-import org.swdc.note.app.service.ArtleService;
+import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class CommonController {
 
     @Autowired
-    private ArtleService artleService;
+    private ArticleService articleService;
 
     @Autowired
     private TypeService typeService;
@@ -43,7 +43,7 @@ public class CommonController {
      * @param exportEvent 导出事件
      */
     @EventListener
-    public void onExportArtle(ExportEvent exportEvent){
+    public void onExportArticle(ExportEvent exportEvent){
         Stage stage = exportDialog.getStage();
         exportDialog.initExport(exportEvent);
         if(stage.isShowing()){
@@ -57,9 +57,9 @@ public class CommonController {
      * @param deleteEvent 删除事件
      */
     @EventListener
-    public void onDeleteArtle(DeleteEvent deleteEvent){
+    public void onDeleteArticle(DeleteEvent deleteEvent){
         if(deleteEvent.isArtleDel()){
-            artleService.deleteArtle(deleteEvent.getArtle());
+            articleService.deleteArticle(deleteEvent.getArtle());
         }
     }
 
@@ -104,13 +104,13 @@ public class CommonController {
         }else{
             stg.showAndWait();
         }
-        ArtleType type = typeDialog.getArtleType();
+        ArticleType type = typeDialog.getArticleType();
         if(type == null){
             return;
         }
         File file = importEvent.getTargetFile();
-        FileFormater formater = importEvent.getFormatter();
-        formater.processImport(file,type);
+        FileFormatter formatter = importEvent.getFormatter();
+        formatter.processImport(file,type);
     }
 
 }

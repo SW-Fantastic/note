@@ -9,12 +9,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.*;
 import org.springframework.context.event.EventListener;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleContext;
-import org.swdc.note.app.event.ArtleEditEvent;
-import org.swdc.note.app.service.ArtleService;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleContext;
+import org.swdc.note.app.event.ArticleEditEvent;
+import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.util.UIUtil;
 
@@ -40,7 +39,7 @@ public class ImageDialogController implements Initializable{
     private ScrollPane scrPane;
 
     @Autowired
-    private ArtleService artleService;
+    private ArticleService articleService;
 
     @FXML
     protected void openImage() throws Exception{
@@ -94,9 +93,9 @@ public class ImageDialogController implements Initializable{
     }
 
     @EventListener
-    public void onArtleEdit(ArtleEditEvent e){
-        Artle artle = e.getSource();
-        ArtleContext context = artleService.loadContext(artle);
+    public void onArtleEdit(ArticleEditEvent e){
+        Article article = e.getSource();
+        ArticleContext context = articleService.loadContext(article);
         dlg.setImages(context.getImageRes());
         listView.getItems().clear();
         listView.getItems().addAll(context.getImageRes().keySet());

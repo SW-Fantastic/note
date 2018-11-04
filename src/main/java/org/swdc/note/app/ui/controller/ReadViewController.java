@@ -11,15 +11,15 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleContext;
-import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.event.ArtleOpenEvent;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleContext;
+import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.event.ArticleOpenEvent;
 import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.TypeImportEvent;
-import org.swdc.note.app.file.FileFormater;
-import org.swdc.note.app.service.ArtleService;
+import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.StartReadView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
@@ -38,7 +38,7 @@ public class ReadViewController implements Initializable {
     /**
      * 当前读取的实体
      */
-    private Artle artle;
+    private Article article;
 
     @Autowired
     private StartReadView readView;
@@ -47,10 +47,10 @@ public class ReadViewController implements Initializable {
     private UIConfig config;
 
     @Autowired
-    private ArtleService artleService;
+    private ArticleService articleService;
 
     @Autowired
-    private List<FileFormater> formaters;
+    private List<FileFormatter> formaters;
 
     @Autowired
     private TypeDialog typeDialog;
@@ -73,13 +73,13 @@ public class ReadViewController implements Initializable {
     }
 
     @EventListener
-    public void onArtleOpen(ArtleOpenEvent e){
-        Artle artle = e.getArtle();
-        this.artle = artle;
-        ArtleContext context = artleService.loadContext(artle);
-        readView.getWebView().getEngine().loadContent(artleService.complie(context));
-        txtTitle.setText(artle.getTitle());
-        lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(artle.getCreatedDate()));
+    public void onArticleOpen(ArticleOpenEvent e){
+        Article article = e.getArticle();
+        this.article = article;
+        ArticleContext context = articleService.loadContext(article);
+        readView.getWebView().getEngine().loadContent(articleService.compile(context));
+        txtTitle.setText(article.getTitle());
+        lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
         btnExport.setVisible(true);
         btnImport.setVisible(false);
     }
@@ -94,14 +94,14 @@ public class ReadViewController implements Initializable {
         File file = fileChooser.showOpenDialog(GUIState.getStage());
         FileChooser.ExtensionFilter filter = fileChooser.getSelectedExtensionFilter();
         formaters.stream().filter(item->item.getFilters().contains(filter)).findFirst().ifPresent(target->{
-            Artle artle = target.processRead(file,Artle.class);
-            if(artle != null){
+            Article article = target.processRead(file,Article.class);
+            if(article != null){
                 // 单个数据文件打开
-                ArtleContext context = artle.getContext();
-                readView.getWebView().getEngine().loadContent(artleService.complie(context));
-                txtTitle.setText(artle.getTitle());
-                lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(artle.getCreatedDate()));
-                this.artle = artle;
+                ArticleContext context = article.getContext();
+                readView.getWebView().getEngine().loadContent(articleService.compile(context));
+                txtTitle.setText(article.getTitle());
+                lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
+                this.article = article;
                 btnExport.setVisible(false);
                 btnImport.setVisible(true);
             }else {
@@ -114,12 +114,12 @@ public class ReadViewController implements Initializable {
 
     @FXML
     protected void onImport(){
-        if(artle!=null){
+        if(article !=null){
             typeDialog.getStage().showAndWait();
-            ArtleType type = typeDialog.getArtleType();
+            ArticleType type = typeDialog.getArticleType();
             if(type != null){
-                artle.setType(type);
-                artleService.saveArtle(artle,artle.getContext());
+                article.setType(type);
+                articleService.saveArticle(article, article.getContext());
                 btnImport.setVisible(false);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText(null);
@@ -133,8 +133,8 @@ public class ReadViewController implements Initializable {
 
     @FXML
     protected void onExport(){
-        if(this.artle!=null){
-            ExportEvent exportEvent = new ExportEvent(artle);
+        if(this.article !=null){
+            ExportEvent exportEvent = new ExportEvent(article);
             config.publishEvent(exportEvent);
         }
     }
@@ -145,7 +145,7 @@ public class ReadViewController implements Initializable {
             if(readView.getStage()!=null && readView.getStage().isShowing()){
                 return;
             }
-            this.artle = null;
+            this.article = null;
             readView.getWebView().getEngine().loadContent("");
             lblDate.setText("");
             txtTitle.setText("");

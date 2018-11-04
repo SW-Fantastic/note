@@ -12,10 +12,10 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.ExportEvent;
-import org.swdc.note.app.file.FileFormater;
+import org.swdc.note.app.file.FileFormatter;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
@@ -37,13 +37,13 @@ public class ExportDialog extends AbstractFxmlView{
     private Stage stage;
 
     @Getter
-    private Artle targetArtle;
+    private Article targetArticle;
 
     @Getter
-    private ArtleType targetGroup;
+    private ArticleType targetGroup;
 
     @Autowired
-    private List<FileFormater> fileFormaters;
+    private List<FileFormatter> fileFormatters;
 
     @PostConstruct
     protected void initUI() throws Exception {
@@ -60,19 +60,19 @@ public class ExportDialog extends AbstractFxmlView{
         Button btnOpen = (Button)getView().lookup("#open");
         btnOpen.setFont(UIConfig.getFontIconSmall());
         btnOpen.setText(String.valueOf(UIConfig.getAwesomeMap().get("folder_open")));
-        ComboBox<FileFormater> combDescs = (ComboBox)getView().lookup("#formats");
-        combDescs.getItems().addAll(fileFormaters.stream().filter(item->item.canWrite()).collect(Collectors.toList()));
+        ComboBox<FileFormatter> combDescs = (ComboBox)getView().lookup("#formats");
+        combDescs.getItems().addAll(fileFormatters.stream().filter(item->item.canWrite()).collect(Collectors.toList()));
     }
 
     public void initExport(ExportEvent exportEvent){
-        this.targetArtle = null;
+        this.targetArticle = null;
         this.targetGroup = null;
         TextField txtName =(TextField) getView().lookup("#targetName");
         if(exportEvent.isArtleExport()){
-            this.targetArtle = exportEvent.getArtle();
-            txtName.setText(targetArtle.getTitle());
+            this.targetArticle = exportEvent.getArticle();
+            txtName.setText(targetArticle.getTitle());
         }else if(exportEvent.isTypeExport()){
-            this.targetGroup = exportEvent.getArtleType();
+            this.targetGroup = exportEvent.getArticleType();
             txtName.setText(targetGroup.getName());
         }
     }

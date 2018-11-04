@@ -26,7 +26,7 @@
                         <Insets right="8.0" />
                      </HBox.margin>
                   </Button>
-                  <Button id="savebtn" mnemonicParsing="false" onAction="#saveArtle" prefHeight="29.0" prefWidth="32.0" text="存">
+                  <Button id="savebtn" mnemonicParsing="false" onAction="#saveArticle" prefHeight="29.0" prefWidth="32.0" text="存">
                      <HBox.margin>
                         <Insets right="8.0" />
                      </HBox.margin>

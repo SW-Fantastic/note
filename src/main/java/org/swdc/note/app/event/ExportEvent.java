@@ -1,8 +1,8 @@
 package org.swdc.note.app.event;
 
 import org.springframework.context.ApplicationEvent;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleType;
 
 /**
  * 导出事件，文档或者分类的导出，会发送此事件。
@@ -14,23 +14,23 @@ public class ExportEvent extends ApplicationEvent{
     }
 
     public boolean isTypeExport(){
-        return source instanceof ArtleType;
+        return source instanceof ArticleType;
     }
 
     public boolean isArtleExport(){
-        return source instanceof Artle;
+        return source instanceof Article;
     }
 
-    public Artle getArtle(){
+    public Article getArticle(){
         if(isArtleExport()){
-            return  (Artle)source;
+            return  (Article)source;
         }
         return null;
     }
 
-    public ArtleType getArtleType(){
+    public ArticleType getArticleType(){
         if(isTypeExport()){
-            return (ArtleType)source;
+            return (ArticleType)source;
         }
         return null;
     }

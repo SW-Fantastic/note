@@ -2,30 +2,30 @@ package org.swdc.note.app.ui.controller;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.BorderPane;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.ui.view.ArtleCellView;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.ui.view.ArticleCellView;
 
 /**
  * 文档列表的格子
  */
-public class ArtleCell extends ListCell<Artle> {
+public class ArticleCell extends ListCell<Article> {
 
-    private ArtleCellView view;
+    private ArticleCellView view;
 
-    public ArtleCell(ArtleCellView parent) {
+    public ArticleCell(ArticleCellView parent) {
         this.view =  parent;
     }
 
     @Override
-    protected void updateItem(Artle item, boolean empty) {
+    protected void updateItem(Article item, boolean empty) {
         super.updateItem(item,empty);
         BorderPane pane = (BorderPane) view.getView();
         pane.prefWidthProperty().bind(getListView().prefWidthProperty());
         if(!empty){
-            view.setArtle(item);
+            view.setArticle(item);
             setGraphic(view.getView());
         }else{
-            view.setArtle(null);
+            view.setArticle(null);
             setGraphic(view.getView());
         }
     }

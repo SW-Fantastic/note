@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
@@ -31,7 +31,7 @@ public class TypeDialog extends AbstractFxmlView {
     private UIConfig config;
 
     @Setter
-    private ArtleType artleType;
+    private ArticleType articleType;
 
     @PostConstruct
     protected void initUI() throws Exception{
@@ -57,9 +57,9 @@ public class TypeDialog extends AbstractFxmlView {
 
     }
 
-    public ArtleType getArtleType(){
-        ArtleType type = this.artleType;
-        this.artleType = null;
+    public ArticleType getArticleType(){
+        ArticleType type = this.articleType;
+        this.articleType = null;
         return type;
     }
 

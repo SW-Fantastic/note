@@ -8,7 +8,7 @@ import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.TypeRefreshEvent;
 import org.swdc.note.app.service.TypeService;
@@ -33,7 +33,7 @@ public class TypeDialogController implements Initializable{
     private TypeService typeService;
 
     @FXML
-    private TreeView<ArtleType> treeView;
+    private TreeView<ArticleType> treeView;
 
     @FXML
     private TextField txtName;
@@ -41,7 +41,7 @@ public class TypeDialogController implements Initializable{
     @Autowired
     private UIConfig config;
 
-    private SimpleObjectProperty<TreeItem<ArtleType>> root = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<TreeItem<ArticleType>> root = new SimpleObjectProperty<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -50,7 +50,7 @@ public class TypeDialogController implements Initializable{
 
     @EventListener
     public void initTree(ApplicationStartedEvent event){
-        TreeItem<ArtleType> treeItem = typeService.getTypes();
+        TreeItem<ArticleType> treeItem = typeService.getTypes();
         treeItem.setExpanded(true);
         root.set(treeItem);
         treeView.setShowRoot(false);
@@ -63,8 +63,8 @@ public class TypeDialogController implements Initializable{
         alert.setHeaderText(null);
         alert.initOwner(typeDialog.getStage());
 
-        TreeItem<ArtleType> nodeParent = treeView.getSelectionModel().getSelectedItem();
-        ArtleType type = new ArtleType();
+        TreeItem<ArticleType> nodeParent = treeView.getSelectionModel().getSelectedItem();
+        ArticleType type = new ArticleType();
         String name = txtName.getText();
 
         if(name == null || name.equals("")){
@@ -87,7 +87,7 @@ public class TypeDialogController implements Initializable{
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
         alert.initOwner(typeDialog.getStage());
-        TreeItem<ArtleType> nodeSel = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<ArticleType> nodeSel = treeView.getSelectionModel().getSelectedItem();
         if(nodeSel == null){
             return;
         }
@@ -98,12 +98,12 @@ public class TypeDialogController implements Initializable{
 
     @FXML
     public void selectType(){
-        TreeItem<ArtleType> nodeParent = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<ArticleType> nodeParent = treeView.getSelectionModel().getSelectedItem();
         Optional.ofNullable(nodeParent).ifPresent(type -> {
             if(type.getValue() == null){
                 return;
             }
-            typeDialog.setArtleType(type.getValue());
+            typeDialog.setArticleType(type.getValue());
             typeDialog.getStage().close();
         });
     }
@@ -115,7 +115,7 @@ public class TypeDialogController implements Initializable{
 
     @EventListener
     public void onTypeRefEvent(TypeRefreshEvent event){
-        TreeItem<ArtleType> item = typeService.getTypes();
+        TreeItem<ArticleType> item = typeService.getTypes();
         item.setExpanded(true);
         root.set(item);
     }

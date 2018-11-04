@@ -8,7 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.file.FileFormater;
+import org.swdc.note.app.file.FileFormatter;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 
 import java.io.File;
@@ -31,7 +31,7 @@ public class ExportDialogController implements Initializable{
     protected TextField txtFileName;
 
     @FXML
-    protected ComboBox<FileFormater> combFormat;
+    protected ComboBox<FileFormatter> combFormat;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -44,7 +44,7 @@ public class ExportDialogController implements Initializable{
     protected void onOpen(){
         FileChooser fc = new FileChooser();
         fc.setTitle("导出文件");
-        FileFormater desc = combFormat.getSelectionModel().getSelectedItem();
+        FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
         if(desc == null){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText(null);
@@ -63,7 +63,7 @@ public class ExportDialogController implements Initializable{
 
     @FXML
     protected void onExport(){
-        FileFormater desc = combFormat.getSelectionModel().getSelectedItem();
+        FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
         alert.setContentText("必须选择导出的格式才可以导出。");
@@ -78,8 +78,8 @@ public class ExportDialogController implements Initializable{
             return;
         }
         File file = new File(txtFileName.getText());
-        if(dialog.getTargetArtle()!=null){
-            desc.processWrite(file,dialog.getTargetArtle());
+        if(dialog.getTargetArticle()!=null){
+            desc.processWrite(file,dialog.getTargetArticle());
         }else{
             desc.processWrite(file,dialog.getTargetGroup());
         }

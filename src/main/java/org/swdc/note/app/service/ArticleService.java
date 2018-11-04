@@ -4,15 +4,13 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleContext;
-import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.repository.ArtleContextRepository;
-import org.swdc.note.app.repository.ArtleRepository;
-import org.swdc.note.app.repository.ArtleTypeRepository;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleContext;
+import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.repository.ArticleRepository;
+import org.swdc.note.app.repository.ArticleTypeRepository;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
 
@@ -23,7 +21,7 @@ import java.util.Map;
  * 文章服务，提供关于文章的各种操作
  */
 @Service
-public class ArtleService {
+public class ArticleService {
 
     @Autowired
     private Parser parser;
@@ -35,57 +33,57 @@ public class ArtleService {
     private UIConfig config;
 
     @Autowired
-    private ArtleRepository artleRepository;
+    private ArticleRepository articleRepository;
 
     @Autowired
-    private ArtleTypeRepository typeRepository;
+    private ArticleTypeRepository typeRepository;
 
     @Transactional
-    public List<Artle> loadArtles(ArtleType type){
+    public List<Article> loadArticles(ArticleType type){
         type = typeRepository.getOne(type.getId());
-        Hibernate.initialize(type.getArtles());
-        return type.getArtles();
+        Hibernate.initialize(type.getArticles());
+        return type.getArticles();
     }
 
     @Transactional
-    public ArtleContext loadContext(Artle artle){
-        artle = artleRepository.getOne(artle.getId());
-        Hibernate.initialize(artle.getContext());
-        return artle.getContext();
+    public ArticleContext loadContext(Article article){
+        article = articleRepository.getOne(article.getId());
+        Hibernate.initialize(article.getContext());
+        return article.getContext();
     }
 
     @Transactional
-    public void saveArtle(Artle artle, ArtleContext context){
-        if(artle.getId() == null){
-            artle.setContext(context);
-            artleRepository.save(artle);
+    public void saveArticle(Article article, ArticleContext context){
+        if(article.getId() == null){
+            article.setContext(context);
+            articleRepository.save(article);
             return;
         }
-        Artle artleOld = artleRepository.getOne(artle.getId());
-        Hibernate.initialize(artleOld.getContext());
-        ArtleContext contextOld = artleOld.getContext();
+        Article articleOld = articleRepository.getOne(article.getId());
+        Hibernate.initialize(articleOld.getContext());
+        ArticleContext contextOld = articleOld.getContext();
         // 更新持久态对象
         contextOld = DataUtil.updateProperties(context,contextOld);
         contextOld.setImageRes(context.getImageRes());
-        artleOld = DataUtil.updateProperties(artle,artleOld);
-        artleOld.setContext(contextOld);
-        artleOld.setType(typeRepository.getOne(artle.getType().getId()));
+        articleOld = DataUtil.updateProperties(article, articleOld);
+        articleOld.setContext(contextOld);
+        articleOld.setType(typeRepository.getOne(article.getType().getId()));
 
-        artleRepository.save(artleOld);
+        articleRepository.save(articleOld);
     }
 
     @Transactional
-    public void deleteArtle(Artle artle){
-        artle = artleRepository.getOne(artle.getId());
-        artleRepository.delete(artle);
+    public void deleteArticle(Article article){
+        article = articleRepository.getOne(article.getId());
+        articleRepository.delete(article);
     }
 
     @Transactional
-    public List<Artle> searchArtleByTitle(String key){
-        return artleRepository.findByTitleContaining(key);
+    public List<Article> searchArticleByTitle(String key){
+        return articleRepository.findByTitleContaining(key);
     }
 
-    public String complie(ArtleContext context){
+    public String compile(ArticleContext context){
         Map<String,String> resource = context.getImageRes();
         StringBuilder sb = new StringBuilder();
         sb.append("\r\n");

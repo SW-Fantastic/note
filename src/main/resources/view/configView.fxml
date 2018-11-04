@@ -48,6 +48,13 @@
                   </Button>
                </children>
             </HBox>
+            <HBox alignment="CENTER" prefHeight="59.0" prefWidth="592.0">
+               <children>
+                  <Label text="外观选择：" />
+                  <RadioButton id="uiClassical" fx:id="radioUIClassical" mnemonicParsing="false" styleClass="radio" text="横版（简洁，多窗口）" />
+                  <RadioButton id="uiSimple" fx:id="radioUISimple" mnemonicParsing="false" styleClass="radio" text="纵版（单窗口，时间轴）" />
+               </children>
+            </HBox>
          </children>
       </VBox>
    </center>

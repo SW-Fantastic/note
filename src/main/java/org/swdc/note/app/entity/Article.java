@@ -10,7 +10,7 @@ import java.util.Date;
  * 文章模型
  */
 @Entity
-public class Artle {
+public class Article {
 
     @Id
     @GeneratedValue
@@ -31,12 +31,12 @@ public class Artle {
     @JoinColumn(name = "typeId")
     @Getter
     @Setter
-    private ArtleType type;
+    private ArticleType type;
 
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "contextId")
     @Getter
     @Setter
-    private ArtleContext context;
+    private ArticleContext context;
 
 }

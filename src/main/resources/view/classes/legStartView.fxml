@@ -17,7 +17,7 @@
                   <Button id="config" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0" text="Button" />
                </items>
             </ToolBar>
-            <TextField fx:id="txtSeach" prefHeight="42.0" prefWidth="317.0" styleClass="txt" HBox.hgrow="ALWAYS">
+            <TextField fx:id="txtSearch" prefHeight="42.0" prefWidth="317.0" styleClass="txt" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets bottom="4.0" left="4.0" top="4.0" />
                </HBox.margin>

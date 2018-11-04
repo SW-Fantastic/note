@@ -10,9 +10,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleContext;
-import org.swdc.note.app.service.ArtleService;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleContext;
+import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
@@ -30,10 +30,10 @@ import java.util.*;
  * 写HTML，HTM文件。
  */
 @Component
-public class MarkedHtmlFormater extends FileFormater {
+public class MarkedHtmlFormatter extends FileFormatter {
 
     @Autowired
-    private ArtleService artleService;
+    private ArticleService articleService;
 
     @Autowired
     private Parser parser;
@@ -98,15 +98,15 @@ public class MarkedHtmlFormater extends FileFormater {
                 }
             }
             String markdown = remark.convertFragment(source);
-            Artle artle = new Artle();
-            artle.setType(null);
-            artle.setTitle(doc.title());
-            artle.setCreatedDate(new Date());
-            ArtleContext context = new ArtleContext();
+            Article article = new Article();
+            article.setType(null);
+            article.setTitle(doc.title());
+            article.setCreatedDate(new Date());
+            ArticleContext context = new ArticleContext();
             context.setContent(markdown);
             context.setImageRes(resource);
-            artle.setContext(context);
-            return (T) artle;
+            article.setContext(context);
+            return (T) article;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -117,9 +117,9 @@ public class MarkedHtmlFormater extends FileFormater {
     public void processWrite(File target, Object targetObj) {
         String name = target.getAbsolutePath();
         String[] extName = name.split("[.]");
-        if(targetObj instanceof Artle){
-            Artle artle = (Artle)targetObj;
-            ArtleContext context = artleService.loadContext(artle);
+        if(targetObj instanceof Article){
+            Article article = (Article)targetObj;
+            ArticleContext context = articleService.loadContext(article);
             Map<String,String> resource = context.getImageRes();
             StringBuilder sb = new StringBuilder();
             sb.append("\r\n");

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 文件格式接口，用于导入导出数据
  */
-public abstract class FileFormater {
+public abstract class FileFormatter {
 
     /**
      * 被处理的文件的类型名

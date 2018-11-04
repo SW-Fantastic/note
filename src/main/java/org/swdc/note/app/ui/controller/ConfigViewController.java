@@ -3,7 +3,10 @@ package org.swdc.note.app.ui.controller;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
@@ -26,16 +29,38 @@ public class ConfigViewController implements Initializable {
     @FXML
     private ComboBox<String> combImg;
 
+    @FXML
+    private RadioButton radioUIClassical;
+
+    @FXML
+    private RadioButton radioUISimple;
+
+    private ToggleGroup radioGp = new ToggleGroup();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        radioUIClassical.setUserData("classical");
+        radioUISimple.setUserData("simple");
+        radioGp.getToggles().add(radioUIClassical);
+        radioGp.getToggles().add(radioUISimple);
+        if(config.getMode().equals("classical")){
+            radioUIClassical.setSelected(true);
+        }else{
+            radioUISimple.setSelected(true);
+        }
     }
 
     @FXML
     protected void onConfigSave() throws Exception{
         config.setTheme(combTheme.getSelectionModel().getSelectedItem());
         config.setBackground(combImg.getSelectionModel().getSelectedItem());
+        config.setMode(radioGp.getSelectedToggle().getUserData().toString());
         DataUtil.writeConfigProp(config);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText("设置已经更改，下次启动时会生效。");
+        alert.setHeaderText(null);
+        alert.setTitle("提示");
+        alert.showAndWait();
     }
 
 }

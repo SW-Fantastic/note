@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.event.ArtleListRefreshEvent;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.event.ArticleListRefreshEvent;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.TypeRefreshEvent;
 
@@ -32,22 +32,22 @@ public class RefresherAspect {
      * @param type 文档分类
      */
     @AfterReturning("execution(* org.swdc.note.app.service.TypeService.*Type(..))&&args(type,..)")
-    public void afterType(ArtleType type) {
+    public void afterType(ArticleType type) {
         context.publishEvent(new TypeRefreshEvent(type));
     }
 
-    @AfterReturning("execution(* org.swdc.note.app.service.Artle*.del*(..))")
+    @AfterReturning("execution(* org.swdc.note.app.service.Article*.del*(..))")
     public void resetOnDel(){
         context.publishEvent(new ResetEvent(null));
     }
 
     /**
      * 拦截artle结尾的方法，文章修改后可以及时刷新列表
-     * @param artle 文档对象
+     * @param article 文档对象
      */
-    @AfterReturning("execution(* org.swdc.note.app.service.ArtleService.*Artle(..))&&args(artle,..)")
-    public void afterArtleModify(Artle artle){
-        context.publishEvent(new ArtleListRefreshEvent(artle.getType()));
+    @AfterReturning("execution(* org.swdc.note.app.service.ArticleService.*Article(..))&&args(article,..)")
+    public void afterArtleModify(Article article){
+        context.publishEvent(new ArticleListRefreshEvent(article.getType()));
     }
 
 }

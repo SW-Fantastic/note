@@ -9,12 +9,12 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleType;
-import org.swdc.note.app.event.ArtleListRefreshEvent;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.event.ArticleListRefreshEvent;
 import org.swdc.note.app.event.TypeRefreshEvent;
 import org.swdc.note.app.event.ViewChangeEvent;
-import org.swdc.note.app.service.ArtleService;
+import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.TypeTreeCell;
@@ -31,21 +31,21 @@ import java.util.ResourceBundle;
 public class StartController implements Initializable {
 
     @FXML
-    private TreeView<ArtleType> typeTreeView;
+    private TreeView<ArticleType> typeTreeView;
 
     @Autowired
     private TypeService typeService;
 
     @Autowired
-    private ArtleService artleService;
+    private ArticleService articleService;
 
-    private SimpleObjectProperty<TreeItem<ArtleType>> root = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<TreeItem<ArticleType>> root = new SimpleObjectProperty<>();
 
     @Autowired
     private UIConfig config;
 
     @FXML
-    private TextField txtSeach;
+    private TextField txtSearch;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -54,7 +54,7 @@ public class StartController implements Initializable {
         typeTreeView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             if(newValue!=null && newValue.getValue()!=null){
                 // 选择的节点发生改变，发布事件要求刷新列表，读取新类别的list
-                config.publishEvent(new ArtleListRefreshEvent(newValue.getValue()));
+                config.publishEvent(new ArticleListRefreshEvent(newValue.getValue()));
                 // 切换到列表
                 config.publishEvent(new ViewChangeEvent("ListView"));
             }
@@ -64,15 +64,14 @@ public class StartController implements Initializable {
 
     @FXML
     public void onSearch(){
-        System.out.println(txtSeach.getText());
-        if (txtSeach.getText() == null || txtSeach.getText().trim().equals("")){
+        if (txtSearch.getText() == null || txtSearch.getText().trim().equals("")){
             return;
         }
         // 搜索标题并且发布事件，刷新列表。
-        List<Artle> list = artleService.searchArtleByTitle(txtSeach.getText());
-        ArtleListRefreshEvent event = new ArtleListRefreshEvent(list);
+        List<Article> list = articleService.searchArticleByTitle(txtSearch.getText());
+        ArticleListRefreshEvent event = new ArticleListRefreshEvent(list);
         config.publishEvent(event);
-        txtSeach.setText("");
+        txtSearch.setText("");
     }
 
     @PostConstruct

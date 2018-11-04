@@ -1,8 +1,9 @@
 package org.swdc.note.app.event;
 
 import org.springframework.context.ApplicationEvent;
-import org.swdc.note.app.entity.Artle;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.Article;
+import org.swdc.note.app.entity.ArticleType;
 
 /**
  *  文档删除事件，删除的时候，view会发布此事件，
@@ -10,32 +11,32 @@ import org.swdc.note.app.entity.ArtleType;
  */
 public class DeleteEvent extends ApplicationEvent {
 
-    public DeleteEvent(Artle source) {
+    public DeleteEvent(Article source) {
         super(source);
     }
 
-    public DeleteEvent(ArtleType type){
+    public DeleteEvent(ArticleType type){
         super(type);
     }
 
     public boolean isArtleDel(){
-        return source instanceof Artle;
+        return source instanceof Article;
     }
 
     public boolean isArtleTypeDel(){
-     return source instanceof ArtleType;
+     return source instanceof ArticleType;
     }
 
-    public Artle getArtle(){
+    public Article getArtle(){
         if(isArtleDel()){
-            return (Artle)source;
+            return (Article)source;
         }
         return null;
     }
 
-    public ArtleType getArtleType(){
+    public ArticleType getArtleType(){
         if(isArtleTypeDel()){
-            return (ArtleType)source;
+            return (ArticleType)source;
         }
         return null;
     }

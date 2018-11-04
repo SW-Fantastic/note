@@ -32,7 +32,7 @@
                <children>
                   <HBox prefHeight="57.0" prefWidth="240.0">
                      <children>
-                        <TextField fx:id="txtSeach" prefHeight="34.0" prefWidth="165.0" promptText="搜索" styleClass="txt" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="txtSearch" prefHeight="34.0" prefWidth="165.0" promptText="搜索" styleClass="txt" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets left="8.0" top="10.0" />
                            </HBox.margin>

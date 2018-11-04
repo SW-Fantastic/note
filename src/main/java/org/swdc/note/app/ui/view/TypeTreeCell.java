@@ -9,7 +9,7 @@ import javafx.scene.layout.Priority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.swdc.note.app.entity.ArtleType;
+import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.ui.UIConfig;
@@ -19,13 +19,13 @@ import org.swdc.note.app.ui.UIConfig;
  */
 @Scope(value = "prototype")
 @Component
-public class TypeTreeCell extends TreeCell<ArtleType> {
+public class TypeTreeCell extends TreeCell<ArticleType> {
 
     @Autowired
     private UIConfig config;
 
     @Override
-    protected void updateItem(ArtleType item, boolean empty) {
+    protected void updateItem(ArticleType item, boolean empty) {
         super.updateItem(item, empty);
         if(empty){
             setGraphic(null);
