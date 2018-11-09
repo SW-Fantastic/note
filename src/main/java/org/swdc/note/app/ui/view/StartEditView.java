@@ -13,9 +13,11 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.InputMethodRequests;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -107,11 +109,42 @@ public class StartEditView extends AbstractFxmlView{
     @Autowired
     private TableDialog tableDialog;
 
+    /**
+     * 如果inputRequest为null，那么MAC系统将会出现无法输入中文的问题。
+     */
+    private static class InputMethodRequestsObject implements InputMethodRequests {
+        @Override
+        public String getSelectedText() {
+            return "";
+        }
+
+        @Override
+        public int getLocationOffset(int x, int y) {
+            return 0;
+        }
+
+        @Override
+        public void cancelLatestCommittedText() {
+
+        }
+        @Override
+        public Point2D getTextLocation(int offset) {
+            return new Point2D(0, 0);
+        }
+    }
+
+
     @PostConstruct
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)this.getView();
         UIUtil.configTheme(pane,config);
         CodeArea codeArea = new CodeArea();
+        codeArea.setInputMethodRequests(new InputMethodRequestsObject());
+        codeArea.setOnInputMethodTextChanged(e->{
+            if(e.getCommitted() != null){
+                codeArea.insertText(codeArea.getCaretPosition(),e.getCommitted());
+            }
+        });
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
