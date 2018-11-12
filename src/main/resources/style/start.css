@@ -233,6 +233,6 @@
 .table .table-row-cell:empty{
     -fx-border-width: 0 0 0 0;
 }
-.radio {
+.radio,.check {
     -fx-text-fill: #FFFFFF;
 }

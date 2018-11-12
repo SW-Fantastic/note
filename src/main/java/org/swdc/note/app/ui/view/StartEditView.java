@@ -1,5 +1,6 @@
 package org.swdc.note.app.ui.view;
 
+import com.sun.javafx.scene.input.ExtendedInputMethodRequests;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.profiles.pegdown.Extensions;
@@ -13,11 +14,11 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.InputMethodRequests;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -112,10 +113,37 @@ public class StartEditView extends AbstractFxmlView{
     /**
      * 如果inputRequest为null，那么MAC系统将会出现无法输入中文的问题。
      */
-    private static class InputMethodRequestsObject implements InputMethodRequests {
+    private static class InputMethodRequestsObject implements ExtendedInputMethodRequests {
+
+        private CodeArea area;
+
+        InputMethodRequestsObject(CodeArea area){
+            this.area = area;
+        }
+
         @Override
-        public String getSelectedText() {
-            return "";
+        public int getInsertPositionOffset() {
+            return area.getCaretPosition();
+        }
+
+        @Override
+        public String getCommittedText(int begin, int end) {
+            return area.getText(begin,end);
+        }
+
+        @Override
+        public int getCommittedTextLength() {
+            return area.getText().length();
+        }
+
+        @Override
+        public Point2D getTextLocation(int offset) {
+            Optional<Bounds> bounds = area.getCaretBounds();
+            if (bounds.isPresent()){
+                Bounds pos = bounds.get();
+                return new Point2D(pos.getMinX(),pos.getMinY());
+            }
+            return new Point2D(0,0);
         }
 
         @Override
@@ -127,9 +155,10 @@ public class StartEditView extends AbstractFxmlView{
         public void cancelLatestCommittedText() {
 
         }
+
         @Override
-        public Point2D getTextLocation(int offset) {
-            return new Point2D(0, 0);
+        public String getSelectedText() {
+            return area.getSelectedText();
         }
     }
 
@@ -139,12 +168,14 @@ public class StartEditView extends AbstractFxmlView{
         BorderPane pane = (BorderPane)this.getView();
         UIUtil.configTheme(pane,config);
         CodeArea codeArea = new CodeArea();
-        codeArea.setInputMethodRequests(new InputMethodRequestsObject());
-        codeArea.setOnInputMethodTextChanged(e->{
-            if(e.getCommitted() != null){
-                codeArea.insertText(codeArea.getCaretPosition(),e.getCommitted());
-            }
-        });
+        if(!System.getProperty("os.name").toLowerCase().contains("win")){
+            codeArea.setInputMethodRequests(new InputMethodRequestsObject(codeArea));
+            codeArea.setOnInputMethodTextChanged(e->{
+                if(e.getCommitted() != null){
+                    codeArea.insertText(codeArea.getCaretPosition(),e.getCommitted());
+                }
+            });
+        }
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
@@ -201,6 +232,8 @@ public class StartEditView extends AbstractFxmlView{
                 stage.setMinHeight(600);
                 stage.getIcons().addAll(UIConfig.getImageIcons());
                 stage.setTitle("编辑");
+                imageDialog.getStage().initOwner(stage);
+                tableDialog.getStage().initOwner(stage);
             });
         }
     }
@@ -270,7 +303,11 @@ public class StartEditView extends AbstractFxmlView{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setContentText("要放弃现在编辑的内容，开始新的创作吗？");
             alert.setTitle("提示");
-            alert.initOwner(GUIState.getStage());
+            if(stage != null){
+                alert.initOwner(stage);
+            }else{
+                alert.initOwner(GUIState.getStage());
+            }
             alert.setHeaderText(null);
             Optional<ButtonType> result = alert.showAndWait();
             result.ifPresent(btnSel->{

@@ -2,11 +2,13 @@ package org.swdc.note.app.util;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
+import com.vladsch.flexmark.Extension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.profiles.pegdown.Extensions;
 import com.vladsch.flexmark.profiles.pegdown.PegdownOptionsAdapter;
 import com.vladsch.flexmark.util.options.DataHolder;
+import com.vladsch.flexmark.util.options.DataSet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,10 +18,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StaticBeans {
 
-    private static final DataHolder OPTIONS = PegdownOptionsAdapter.flexmarkOptions(
-            true,
-            Extensions.ALL
-    );
+    private static DataHolder OPTIONS ;
+
+    static {
+        OPTIONS = PegdownOptionsAdapter.flexmarkOptions(true,
+                Extensions.ALL_WITH_OPTIONALS
+        );
+    }
 
     @Bean
     public Parser parser(){

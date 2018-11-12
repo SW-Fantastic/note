@@ -93,6 +93,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/commons-lang3-3.8.1.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId> org.jb2011.lnf.beautyeye</groupId>
+            <artifactId>beautyeye</artifactId>
+            <scope>system</scope>
+            <version>0.0.1</version>
+            <systemPath>${project.basedir}/libs/beautyeye_lnf.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

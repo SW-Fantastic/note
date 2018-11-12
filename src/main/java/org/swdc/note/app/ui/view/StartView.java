@@ -5,6 +5,7 @@ import static org.swdc.note.app.util.UIUtil.findById;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 import de.felixroske.jfxsupport.GUIState;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;

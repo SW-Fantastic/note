@@ -32,7 +32,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="57.0" prefWidth="592.0">
+            <HBox alignment="CENTER" prefHeight="51.0" prefWidth="592.0">
                <children>
                   <Label text="背景图片：" />
                   <ComboBox id="cbxImg" fx:id="combImg" prefHeight="30.0" prefWidth="224.0" styleClass="comb" />
@@ -48,11 +48,17 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="59.0" prefWidth="592.0">
+            <HBox alignment="CENTER" prefHeight="43.0" prefWidth="592.0">
                <children>
                   <Label text="外观选择：" />
                   <RadioButton id="uiClassical" fx:id="radioUIClassical" mnemonicParsing="false" styleClass="radio" text="横版（简洁，多窗口）" />
                   <RadioButton id="uiSimple" fx:id="radioUISimple" mnemonicParsing="false" styleClass="radio" text="纵版（单窗口，时间轴）" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="43.0" prefWidth="592.0">
+               <children>
+                  <Label text="悬浮球：" />
+                  <CheckBox id="float" fx:id="cbxFloat" mnemonicParsing="false" styleClass="check" text="使用悬浮球（关闭悬浮球，那么窗口关闭后家就会退出）" />
                </children>
             </HBox>
          </children>

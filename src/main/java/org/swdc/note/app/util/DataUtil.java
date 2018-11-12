@@ -96,6 +96,7 @@ public class DataUtil {
         props.setProperty("app.theme",config.getTheme());
         props.setProperty("app.background",config.getBackground());
         props.setProperty("app.mode",config.getMode());
+        props.setProperty("app.use-float",config.getUseFloat().toString());
         props.store(new FileOutputStream("configs/config.properties"),"this is the configure file to keep users special state");
     }
 

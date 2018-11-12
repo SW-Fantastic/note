@@ -16,6 +16,21 @@ import java.util.Properties;
  */
 public class UIUtil {
 
+    private static boolean classical;
+
+    private static boolean useFloat;
+
+    static {
+        try{
+            Properties props = new Properties();
+            props.load(new FileInputStream("configs/config.properties"));
+            classical = props.get("app.mode").equals("classical");
+            useFloat = props.get("app.use-float").toString().toLowerCase().equals("true");
+        }catch (Exception e){
+            classical = false;
+        }
+    }
+
     public static String readFile(InputStream in) throws Exception{
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = reader.readLine();
@@ -58,13 +73,11 @@ public class UIUtil {
     }
 
     public static boolean isClassical(){
-        try{
-            Properties props = new Properties();
-            props.load(new FileInputStream("configs/config.properties"));
-            return props.get("app.mode").equals("classical");
-        }catch (Exception e){
-            return false;
-        }
+        return classical;
+    }
+
+    public static boolean isUseFloat(){
+        return useFloat;
     }
 
     public static Node findById(String id, ObservableList<Node> list){

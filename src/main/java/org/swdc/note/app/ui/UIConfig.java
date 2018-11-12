@@ -784,6 +784,13 @@ public class UIConfig {
     @Setter
     private String background;
 
+    /**
+     * 是否启用悬浮球
+     */
+    @Getter
+    @Setter
+    private Boolean useFloat;
+
     @Getter
     @Setter
     private String theme;

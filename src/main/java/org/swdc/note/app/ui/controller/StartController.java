@@ -1,6 +1,8 @@
 package org.swdc.note.app.ui.controller;
 
 import de.felixroske.jfxsupport.FXMLController;
+import de.felixroske.jfxsupport.GUIState;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,6 +20,7 @@ import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.TypeTreeCell;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.net.URL;
@@ -77,6 +80,12 @@ public class StartController implements Initializable {
     @PostConstruct
     public void initTypeTree(){
         root.set(typeService.getTypes());
+        GUIState.getStage().setOnCloseRequest(e->{
+            if(UIUtil.isClassical() && !UIUtil.isUseFloat()){
+                Platform.exit();
+                System.exit(0);
+            }
+        });
     }
 
     @EventListener

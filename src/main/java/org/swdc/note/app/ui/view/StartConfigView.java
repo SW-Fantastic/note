@@ -4,6 +4,7 @@ import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -19,7 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by lenovo on 2018/10/3.
+ * 配置面板
+ * 自定义用户自己的配置和喜好
  */
 @FXMLView("/view/configView.fxml")
 public class StartConfigView extends AbstractFxmlView{

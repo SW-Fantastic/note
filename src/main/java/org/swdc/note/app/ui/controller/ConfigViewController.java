@@ -3,10 +3,7 @@ package org.swdc.note.app.ui.controller;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
@@ -35,6 +32,9 @@ public class ConfigViewController implements Initializable {
     @FXML
     private RadioButton radioUISimple;
 
+    @FXML
+    private CheckBox cbxFloat;
+
     private ToggleGroup radioGp = new ToggleGroup();
 
     @Override
@@ -48,6 +48,7 @@ public class ConfigViewController implements Initializable {
         }else{
             radioUISimple.setSelected(true);
         }
+        cbxFloat.setSelected(config.getUseFloat());
     }
 
     @FXML
@@ -55,6 +56,7 @@ public class ConfigViewController implements Initializable {
         config.setTheme(combTheme.getSelectionModel().getSelectedItem());
         config.setBackground(combImg.getSelectionModel().getSelectedItem());
         config.setMode(radioGp.getSelectedToggle().getUserData().toString());
+        config.setUseFloat(cbxFloat.isSelected());
         DataUtil.writeConfigProp(config);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText("设置已经更改，下次启动时会生效。");
