@@ -13,6 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleContext;
 import org.swdc.note.app.event.ArticleEditEvent;
+import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.util.UIUtil;
@@ -93,12 +94,18 @@ public class ImageDialogController implements Initializable{
     }
 
     @EventListener
-    public void onArtleEdit(ArticleEditEvent e){
+    public void onArticleEdit(ArticleEditEvent e){
         Article article = e.getSource();
         ArticleContext context = articleService.loadContext(article);
         dlg.setImages(context.getImageRes());
         listView.getItems().clear();
         listView.getItems().addAll(context.getImageRes().keySet());
+    }
+
+    @EventListener
+    public void onReset(ResetEvent event){
+        dlg.getImages().clear();
+        listView.getItems().clear();
     }
 
 }

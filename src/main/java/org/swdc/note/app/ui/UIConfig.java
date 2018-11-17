@@ -807,7 +807,7 @@ public class UIConfig {
         if (this.theme == null|| this.theme.equals("")||this.theme.equals("default")){
             mdStyleContent = UIUtil.readFile(new ClassPathResource("/style/markdown.css").getInputStream());
         }else{
-            mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("file:config/"+theme+"/"+theme+".keyword.css"));
+            mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("./configs/theme/"+theme+"/"+theme+".md.css"));
         }
     }
 

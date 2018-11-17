@@ -53,11 +53,10 @@ public class ArticleService {
     }
 
     @Transactional
-    public void saveArticle(Article article, ArticleContext context){
+    public Article saveArticle(Article article, ArticleContext context){
         if(article.getId() == null){
             article.setContext(context);
-            articleRepository.save(article);
-            return;
+            return articleRepository.save(article);
         }
         Article articleOld = articleRepository.getOne(article.getId());
         Hibernate.initialize(articleOld.getContext());
@@ -69,7 +68,7 @@ public class ArticleService {
         articleOld.setContext(contextOld);
         articleOld.setType(typeRepository.getOne(article.getType().getId()));
 
-        articleRepository.save(articleOld);
+        return articleRepository.save(articleOld);
     }
 
     @Transactional

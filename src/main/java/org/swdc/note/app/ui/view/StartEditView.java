@@ -168,14 +168,12 @@ public class StartEditView extends AbstractFxmlView{
         BorderPane pane = (BorderPane)this.getView();
         UIUtil.configTheme(pane,config);
         CodeArea codeArea = new CodeArea();
-        if(!System.getProperty("os.name").toLowerCase().contains("win")){
-            codeArea.setInputMethodRequests(new InputMethodRequestsObject(codeArea));
-            codeArea.setOnInputMethodTextChanged(e->{
-                if(e.getCommitted() != null){
-                    codeArea.insertText(codeArea.getCaretPosition(),e.getCommitted());
-                }
-            });
-        }
+        codeArea.setInputMethodRequests(new InputMethodRequestsObject(codeArea));
+        codeArea.setOnInputMethodTextChanged(e->{
+            if(e.getCommitted() != null){
+                codeArea.insertText(codeArea.getCaretPosition(),e.getCommitted());
+            }
+        });
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
@@ -219,6 +217,40 @@ public class StartEditView extends AbstractFxmlView{
                         +"<body>"+content+"</body></html>");
             }));
         });
+
+        ContextMenu menu = new ContextMenu();
+        MenuItem itemCopy = new MenuItem("复制 (Ctrl/Command + C)");
+        MenuItem itemPaste = new MenuItem("黏贴 (Ctrl/Command + V)");
+        MenuItem itemUndo = new MenuItem("撤销 (Ctrl/Command + Z)");
+        MenuItem itemRedo = new MenuItem("重做 (Ctrl/(Command + Shift) + Y/Z)");
+
+        menu.getItems().add(itemCopy);
+        menu.getItems().add(itemPaste);
+        menu.getItems().add(itemUndo);
+        menu.getItems().add(itemRedo);
+
+        itemCopy.setOnAction(e->codeArea.copy());
+        itemPaste.setOnAction(e->codeArea.paste());
+        codeArea.undoAvailableProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null && newValue){
+                itemUndo.setDisable(false);
+            }else {
+                itemUndo.setDisable(true);
+            }
+        });
+        itemUndo.setOnAction(e->codeArea.undo());
+        codeArea.redoAvailableProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null && newValue){
+                itemRedo.setDisable(false);
+            }else{
+                itemRedo.setDisable(true);
+            }
+        });
+        itemRedo.setOnAction(e->codeArea.redo());
+
+        menu.getStyleClass().add("edit-menu");
+
+        codeArea.setContextMenu(menu);
 
         initEditTool();
         if(UIUtil.isClassical()){

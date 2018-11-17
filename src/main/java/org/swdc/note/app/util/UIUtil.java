@@ -26,6 +26,11 @@ public class UIUtil {
             props.load(new FileInputStream("configs/config.properties"));
             classical = props.get("app.mode").equals("classical");
             useFloat = props.get("app.use-float").toString().toLowerCase().equals("true");
+            String back = props.getProperty("app.background");
+            File file = new File("./configs/res/" + back);
+            if (!file.exists()){
+                UIUtil.writeFile(file,new FileInputStream("./configs/theme/"+props.getProperty("app.theme")+"/"+back));
+            }
         }catch (Exception e){
             classical = false;
         }
@@ -52,6 +57,21 @@ public class UIUtil {
        return bout.toByteArray();
     }
 
+    public static void writeFile(File file,InputStream in){
+        try (FileOutputStream fos = new FileOutputStream(file)){
+            DataOutputStream dos = new DataOutputStream(fos);
+            DataInputStream din = new DataInputStream(in);
+            byte[] buf = new byte[1024];
+            int length;
+            while ((length = din.read(buf)) > 0){
+                dos.write(buf,0,length);
+            }
+            dos.flush();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void processWriteFile(File file,String content){
         try (FileOutputStream fos = new FileOutputStream(file)){
             BufferedWriter bwr = new BufferedWriter(new OutputStreamWriter(fos));
@@ -68,7 +88,7 @@ public class UIUtil {
             pane.getStylesheets().add(new ClassPathResource("style/java-keywords.css").getURL().toExternalForm());
         }else{
             pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".css");
-            pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".keyword.css");
+            pane.getStylesheets().add("file:configs/theme/"+config.getTheme()+"/"+config.getTheme()+".keywords.css");
         }
     }
 

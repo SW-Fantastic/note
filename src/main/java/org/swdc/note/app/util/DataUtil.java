@@ -3,6 +3,7 @@ package org.swdc.note.app.util;
 import org.swdc.note.app.ui.UIConfig;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
@@ -10,6 +11,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
  * 提供数据更新的通用工具方法
@@ -93,6 +97,14 @@ public class DataUtil {
     public static void writeConfigProp(UIConfig config) throws Exception{
         Properties props = new Properties();
         props.load(new FileInputStream("configs/config.properties"));
+        Properties themeConfig = new Properties();
+        themeConfig.load(new FileInputStream("configs/theme/" + config.getTheme() + "/config.properties"));
+        if (!props.get("app.theme").toString().equals(config.getTheme())){
+            String themeBg = themeConfig.getProperty("app.background");
+            if (themeConfig.get("app.background") != null){
+                config.setBackground(themeBg);
+            }
+        }
         props.setProperty("app.theme",config.getTheme());
         props.setProperty("app.background",config.getBackground());
         props.setProperty("app.mode",config.getMode());

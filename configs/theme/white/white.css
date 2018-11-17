@@ -2,19 +2,22 @@
     -fx-background-size: cover;
 }
 .left-pane{
-    -fx-background-color: rgb(249,240,243);
+    -fx-background-color: rgb(218,249,202);
     -fx-effect: dropshadow(three-pass-box,#FFF,8,0,0,0);
 }
 .tool{
-    -fx-background-color:rgb(2,64,85);
+    -fx-background-color:rgba(86,163,108,0.8);
+    -fx-border-width: 0 0 0 2;
+    -fx-border-color: rgb(86,163,108);
+    -fx-border-style: dotted;
 }
 .tool .toggle-button{
-    -fx-background-color: rgb(2,64,85);
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color:rgba(86,163,108,0);
+    -fx-text-fill: rgb(253,255,223);
 }
 .tool .toggle-button:selected{
     -fx-background-color: #FFFFFF;
-    -fx-text-fill: rgb(2,64,85);
+    -fx-text-fill: rgb(126,175,103);
 }
 .tool .button{
     -fx-background-color: rgba(0,0,0,0);
@@ -24,20 +27,20 @@
     -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
 }
 .btn{
-    -fx-background-color: rgb(249,240,243);
-    -fx-text-fill: rgb(2,64,85);
+    -fx-background-color: rgb(218,249,202);
+    -fx-text-fill: rgb(86,163,108);
     -fx-border-width: 0 0 3.4 0;
-    -fx-border-color: rgb(2,64,85);
+    -fx-border-color: rgb(126,175,103);
     -fx-padding: 5.0;
 }
 .btn :pressed{
     -fx-effect: dropshadow(three-pass-box, rgb(2,64,85), 10, 0, 0,0);
 }
 .txt{
-    -fx-background-color: rgb(249,240,243);
+    -fx-background-color: rgb(218,249,202);
     -fx-border-width: 0 0 3 0;
-    -fx-border-color: rgb(2,64,85);
-    -fx-prompt-text-fill: rgba(2,64,85,0.8);
+    -fx-border-color: rgb(126,175,103);
+    -fx-prompt-text-fill:  rgba(86,163,108,0.8);
 }
 .txt:focused{
     -fx-prompt-text-fill: rgba(0,0,0,0);
@@ -54,62 +57,72 @@
     -fx-text-fill: rgba(218,249,202,1);
 }
 .tree .tree-cell:selected .button{
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #2B3F52;
+    -fx-background-color: rgb(86,163,108);
+    -fx-text-fill:  rgb(255,253,223);
+}
+.tree .tree-cell:selected * {
+    -fx-text-fill: #000;
 }
 .tree .tree-cell:selected{
-    -fx-background-color: rgba(0,0,0,0.6);
-    -fx-text-fill: #FFF;
+    -fx-background-color: rgba(255,253,223,0.6);
+    -fx-text-fill: #000;
 }
 .tree-border{
-    -fx-border-color: #2B3F52;
+    -fx-border-color: rgb(86,163,108);
     -fx-border-width: 1px;
     -fx-border-style: dashed;
 }
 .tree-border .tree-cell{
-    -fx-background-color: rgb(249,242,243);
+    -fx-background-color: rgb(218,249,202);
 }
 .list-bg{
     -fx-background-color: rgba(0,0,0,0);
 }
 .list{
-    -fx-background-color: rgba(0,0,0,0.4);
+    -fx-background-color: rgba(247,255,168,0.4);
 }
 .list .list-cell{
     -fx-background-color: rgba(0,0,0,0);
 }
 .code-area{
     -fx-font-size: 16px;
-    -fx-background-color: rgba(0,0,0,0.68);
-}
-.code-area .text{
-    -fx-fill: #FFF;
+    -fx-background-color: rgba(247,255,168,0.2);
 }
 .code-tool{
-    -fx-background-color: rgba(8,17,38,0.6);
+    -fx-background-color: rgba(247,255,168,0.5);
 }
 .code-tool .tool-bar{
     -fx-background-color: rgba(0,0,0,0);
 }
 .code-tool .button{
     -fx-background-color: rgba(0,0,0,0);
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: rgb(86,163,108);
 }
 .code-tool .button:hover{
-    -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
+    -fx-effect: dropshadow(three-pass-box,rgb(86,163,108), 18, 0, 0,0);
 }
 .code-tool .label{
-    -fx-text-fill: #FFF;
+    -fx-text-fill: rgb(86,163,108);
 }
 .comb{
     -fx-background-color: rgba(0,0,0,0);
-    -fx-prompt-text-fill: rgba(255,255,255,0.6);
-    -fx-text-fill: #FFFFFF;
-    -fx-border-color: #FFFFFF;
+    -fx-prompt-text-fill: rgba(86,163,108,0.8);
+    -fx-text-fill: rgb(86,163,108);
+    -fx-border-color: rgb(86,163,108);
     -fx-border-width: 0 0 2 0;
 }
 .comb > *{
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: rgb(86,163,108);
+}
+.comb .combo-box-popup,.comb .combo-box-popup .list-view{
+    -fx-background-color: rgba(253,255,223,0.8);
+}
+.comb .list-cell{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: rgb(86,163,108);
+}
+.comb .list-cell:hover{
+    -fx-background-color: #FFFFFF;
 }
 .comb-dark{
     -fx-background-color: rgba(0,0,0,0);
@@ -119,87 +132,91 @@
     -fx-border-width: 0 0 2 0;
 }
 .btn-ghost{
-    -fx-border-color: #FFF;
+    -fx-border-color: rgba(86,163,108,0.8);
     -fx-border-width: 1px;
     -fx-border-style: dashed;
 }
 .btn-sel *{
-    -fx-text-fill: #FFF;
+    -fx-text-fill: rgb(86,163,108);
 }
 .btn-sel{
     -fx-background-color: rgba(0,0,0,0);
 }
 .btn-sel .arrow{
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: rgb(86,163,108);
 }
 .btn-sel .context-menu{
     -fx-background-radius: 6px;
-    -fx-background-color: rgba(0,0,0,0.6);
+    -fx-background-color: rgba(247,255,168,0.6);
 }
 .btn-sel .context-menu .menu-item:focused{
-    -fx-background-color: rgba(45,53,38,0.6);
+    -fx-background-color: rgba(255,255,255,0.6);
 }
 .split-pane{
     -fx-background-color: rgba(0,0,0,0);
 }
 .title-field{
     -fx-background-color: rgba(0,0,0,0);
-    -fx-text-fill: #FFFFFF;
-    -fx-prompt-text-fill: rgba(255,255,255,0.8);
-    -fx-border-color: #FFFFFF;
+    -fx-text-fill: rgb(86,163,108);
+    -fx-prompt-text-fill: rgba(86,163,108,0.8);
+    -fx-border-color: rgb(86,163,108);
     -fx-border-width: 0 0 2 0;
 }
 .title-field :focused{
     -fx-prompt-text-fill: rgba(0,0,0,0);
 }
 .btn-normal{
-    -fx-background-color: #2B3F52 ;
+    -fx-background-color: rgb(86,163,108) ;
     -fx-text-fill: #FFFFFF;
 }
 .list-img {
 }
 .list-img .list-cell{
     -fx-text-fill: #000;
-    -fx-fill: #333333;
 }
 .list-img .list-cell:focused{
-    -fx-background-color: #2B3F52;
+    -fx-background-color: rgb(86,163,108);
     -fx-text-fill: #FFFFFF;
 }
 .listItem .icon-btn{
-    -fx-background-color: #FFFFFF;
+    -fx-background-color:  rgba(16,34,43,0.95);
     -fx-background-radius: 9999;
+    -fx-text-fill: #FFFFFF;
 }
 .listItem .icon-bg{
-    -fx-background-color: rgb(255,255,255);
+    -fx-background-color: rgba(16,34,43,1);
 }
 .listItem .item-bg{
-    -fx-border-color: #FFF;
-    -fx-border-style: solid;
-    -fx-border-width: 0 0 0 4;
-    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-border-color: rgb(16,34,43);
+    -fx-border-width: 0.5 0 0.5 4;
+    -fx-border-style: dotted dotted dotted solid;
+    -fx-background-color: rgba(226,240,214,0.5);
 }
 .listItem .item-bg-without-border{
-    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-background-color: rgba(226,240,214,0.5);
+    -fx-border-color: rgb(16,34,43);
+    -fx-border-width: 0.5 0.5 0.5 0;
+    -fx-border-radius: 0 12 12 0;
+    -fx-background-radius: 0 12 12 0;
 }
 .listItem .arrow{
-    -fx-text-fill: rgb(255,255,255);
+    -fx-text-fill: rgb(16,34,43);
 }
 .listItem .title{
-    -fx-text-fill: rgb(255,255,255);
+    -fx-text-fill: rgb(16,34,43);
     -fx-font-size: 18px;
 }
 .listItem .date{
-    -fx-text-fill: #FCFCFC;
+    -fx-text-fill: rgb(16,34,43);
     -fx-font-size: 14px;
 }
 .listItem .btn-card,.table .btn-card{
     -fx-background-color: rgba(255,253,223,0.6);
-    -fx-background-radius: 0;
+    -fx-background-radius: 9999;
 }
 .listItem .btn-card:hover,.table .btn-card:hover{
     -fx-background-color: rgba(218,249,202,1);
-    -fx-background-radius: 0;
+    -fx-background-radius: 9999;
 }
 .table{
     -fx-background-color: rgba(0,0,0,0.8);
@@ -234,18 +251,40 @@
     -fx-border-width: 0 0 0 0;
 }
 .radio,.check {
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: rgb(86,163,108);
+}
+.radio .radio{
+    -fx-background-color: rgb(253,255,223);
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color:rgb(86,163,108);
+    -fx-border-radius: 9999;
+    -fx-background-radius: 9999;
+}
+.radio:selected .radio .dot{
+    -fx-background-color: rgb(158,175,130);
+}
+.check .box{
+    -fx-background-color: rgb(253,255,223);
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color:rgb(86,163,108);
+}
+.check:selected .box .mark{
+    fx-background-color: rgb(158,175,130);
+}
+.spl-pane .split-pane-divider{
+    -fx-background-color: rgb(157,175,130);
 }
 .edit-menu {
     -fx-background-radius: 0;
     -fx-background-color: rgba(247,255,168,0);
-    -fx-text-fill: #000;
+    -fx-text-fill: rgb(86,163,108);
 }
 .edit-menu .menu-item{
     -fx-font-size: 12px;
-    -fx-background-color: rgba(255,255,255,0.6);
+    -fx-background-color: rgba(247,255,168,0.8);
 }
 .edit-menu .menu-item:hover,.edit-menu .menu-item:selected{
-    -fx-background-color: rgb(0,0,0);
-    -fx-text-fill: #FFF;
+    -fx-background-color: rgb(253,255,223);
 }

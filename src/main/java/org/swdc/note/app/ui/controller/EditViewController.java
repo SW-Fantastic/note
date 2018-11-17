@@ -102,7 +102,7 @@ public class EditViewController implements Initializable{
         articleCurr.setTitle(txtTitle.getText());
         context.setContent(editView.getDocument());
         context.setImageRes(editView.getImageRes());
-        articleService.saveArticle(articleCurr,context);
+        this.article = articleService.saveArticle(articleCurr,context);
     }
 
     /**

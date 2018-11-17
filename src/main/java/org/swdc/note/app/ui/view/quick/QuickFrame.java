@@ -1,6 +1,5 @@
 package org.swdc.note.app.ui.view.quick;
 
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -74,8 +73,10 @@ public class QuickFrame extends JWindow {
 				})));
 
 		itemExit.addActionListener(e->{
-			Platform.exit();
-			System.exit(0);
+			Platform.runLater(()->{
+				Platform.exit();
+				System.exit(0);
+			});
 		});
 
 		menu.add(itemStage);
@@ -146,7 +147,7 @@ public class QuickFrame extends JWindow {
 		if (config.getTheme().equals("default")){
 			icon = new ImageIcon(ImageIO.read(new ClassPathResource("style/ico-s.png").getInputStream()));
 		}else {
-			icon = new ImageIcon(ImageIO.read(new File("config/"+config.getTheme()+"/icon.png")));
+			icon = new ImageIcon(ImageIO.read(new File("./configs/theme/"+config.getTheme()+"/icon.png")));
 		}
 		JLabel lblIco = new JLabel("");
 		lblIco.setIcon(icon);

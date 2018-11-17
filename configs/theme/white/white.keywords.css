@@ -1,0 +1,58 @@
+.md-keyword {
+    -fx-fill: rgb(126,175,103) !important;
+    -fx-font-weight: bold;
+}
+.md-sp{
+    -fx-fill: rgb(207,82,78) !important;
+}
+.md-list{
+    -fx-fill: rgb(141,47,68) !important;
+}
+.md-code{
+    -fx-fill: rgb(74,151,173) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(74,151,173), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.md-table{
+    -fx-fill: rgb(69,79,16) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(69,79,16), 16, 0, 0, 0);
+    fx-font-weight: bold;
+}
+.semicolon {
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: rgb(255,154,181) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: rgb(113,227,142) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: rgb(111,188,228) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(247,255,168), 16, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: rgb(255,136,51) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(255,136,51), 16, 0, 0, 0);
+}
+.text-normal{
+    -fx-fill:#000;
+    -fx-text-fill: #000;
+}
+.comment {
+	-fx-fill: rgb(113,47,255) !important;
+    -fx-effect: dropshadow(three-pass-box, rgb(113,47,255), 16, 0, 0, 0);
+}
+.paragraph-box:has-caret {
+    -fx-background-color: rgba(0,0,0,0.2);
+}
+.lineno{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #000;
+    -fx-fill: #000;
+}

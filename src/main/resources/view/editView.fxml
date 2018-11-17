@@ -37,11 +37,11 @@
       </VBox>
    </top>
    <center>
-      <SplitPane id="viewerPane" dividerPositions="0.6440677966101694" prefHeight="400.0" prefWidth="573.0" styleClass="btn-sel" BorderPane.alignment="CENTER">
+      <SplitPane id="viewerPane" dividerPositions="0.6440677966101694" prefHeight="400.0" prefWidth="573.0" styleClass="spl-pane" BorderPane.alignment="CENTER">
          <items>
             <BorderPane id="codeView" prefHeight="241.0" prefWidth="571.0" styleClass="code-tool">
                <top>
-                  <ToolBar id="codeTool" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <ToolBar id="codeTool" prefHeight="40.0" prefWidth="200.0" styleClass="btn-sel" BorderPane.alignment="CENTER">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>

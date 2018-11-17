@@ -38,7 +38,7 @@ public class RefresherAspect {
 
     @AfterReturning("execution(* org.swdc.note.app.service.Article*.del*(..))")
     public void resetOnDel(){
-        context.publishEvent(new ResetEvent(null));
+        context.publishEvent(new ResetEvent(Article.class));
     }
 
     /**

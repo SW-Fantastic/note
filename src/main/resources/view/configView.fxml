@@ -25,7 +25,7 @@
                <children>
                   <Label text="主题配色：" />
                   <ComboBox id="cbxTheme" fx:id="combTheme" prefHeight="29.0" prefWidth="297.0" styleClass="comb" />
-                  <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="69.0" styleClass="btn-ghost" text="添加主题">
+                  <Button mnemonicParsing="false" onAction="#onInstallTheme" prefHeight="29.0" prefWidth="69.0" styleClass="btn-ghost" text="添加主题">
                      <HBox.margin>
                         <Insets left="8.0" />
                      </HBox.margin>
@@ -36,12 +36,12 @@
                <children>
                   <Label text="背景图片：" />
                   <ComboBox id="cbxImg" fx:id="combImg" prefHeight="30.0" prefWidth="224.0" styleClass="comb" />
-                  <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" styleClass="btn-ghost" text="添加图片">
+                  <Button mnemonicParsing="false" onAction="#importBackground" prefHeight="30.0" prefWidth="76.0" styleClass="btn-ghost" text="添加图片">
                      <HBox.margin>
                         <Insets left="8.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="32.0" prefWidth="64.0" styleClass="btn-ghost" text="删除">
+                  <Button mnemonicParsing="false" onAction="#deleteBackground" prefHeight="32.0" prefWidth="64.0" styleClass="btn-ghost" text="删除">
                      <HBox.margin>
                         <Insets left="4.0" />
                      </HBox.margin>
