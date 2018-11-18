@@ -32,6 +32,7 @@ import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.ui.view.dialogs.TableDialog;
+import org.swdc.note.app.util.DataUtil;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
@@ -77,6 +78,8 @@ public class StartEditView extends AbstractFxmlView{
     // 匹配注释
     private static final String COMMENT_PATTERN = "([<][!][-]{2}[\\s\\S]*)|([-]{2}[>])";
 
+    private static final String FUNCTEX_PATTERN ="\\$\\$[\\s\\S]*\\$\\$";
+
     @Autowired
     private Parser parser;
 
@@ -98,6 +101,7 @@ public class StartEditView extends AbstractFxmlView{
                     + "|(?<TASK>" + TASK_PATTERN + ")"
                     + "|(?<SP>" + SP_PATTERN + ")"
                     + "|(?<DESC>" + DESC_PATTERN + ")"
+                    + "|(?<FUNCTEX>" + FUNCTEX_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<TITLE>" + TITLE_PATTERN + ")"
     );
@@ -204,6 +208,26 @@ public class StartEditView extends AbstractFxmlView{
                 }
             }));
             codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
+                String context = codeArea.getText();
+                // 匹配双$符，在这之间的是公式
+                Pattern pattern = Pattern.compile("\\$\\$[\\s\\S]*\\$\\$");
+                Matcher matcher = pattern.matcher(context);
+                Map<String,String> funcsMap = new HashMap<>();
+                // 匹配到了一个
+                while (matcher.find()){
+                    // 获取内容，转换为base64
+                    String result = matcher.group();
+                    result = result.substring(2,result.length() - 2);
+                    if (result.trim().equals("")){
+                        continue;
+                    }
+                    String funcData = DataUtil.compileFunc(result);
+                    if (funcData != null){
+                        // 准备图片
+                        funcsMap.put(result,funcData);
+                        context = context.replace("$$"+result+"$$","![func]["+result.trim()+"]");
+                    }
+                }
                 StringBuilder sb = new StringBuilder();
                 sb.append("\r\n");
                 imageDialog.getImages().entrySet().forEach(ent->
@@ -212,9 +236,15 @@ public class StartEditView extends AbstractFxmlView{
                             .append("]: data:image/png;base64,")
                             .append(ent.getValue())
                             .append("\n"));
-                String content = renderer.render(parser.parse(codeArea.getText()+"\n"+sb.toString()));
+                funcsMap.entrySet().forEach(ent->
+                        sb.append("[")
+                                .append(ent.getKey().trim())
+                                .append("]: data:image/png;base64,")
+                                .append(ent.getValue())
+                                .append("\n"));
+                String content = renderer.render(parser.parse(context+"\n"+sb.toString()));
                 contentView.getEngine().loadContent("<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
-                        +"<body>"+content+"</body></html>");
+                        +"<body ondragstart='return false;'>"+content+"</body></html>");
             }));
         });
 
@@ -501,6 +531,7 @@ public class StartEditView extends AbstractFxmlView{
                     matcher.group("BRACE") != null ? "brace" :
                     matcher.group("BRACKET") != null ? "bracket" :
                     matcher.group("CODE") != null ? "md-code":
+                    matcher.group("FUNCTEX") != null ? "md-code":
                     matcher.group("LIST") != null ? "md-list":
                     matcher.group("TASK") != null ? "md-keyword":
                     matcher.group("TABLE") != null ? "md-table":

@@ -1,8 +1,15 @@
 package org.swdc.note.app.util;
 
+import org.scilab.forge.jlatexmath.TeXConstants;
+import org.scilab.forge.jlatexmath.TeXFormula;
+import org.scilab.forge.jlatexmath.TeXIcon;
 import org.swdc.note.app.ui.UIConfig;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -110,6 +118,25 @@ public class DataUtil {
         props.setProperty("app.mode",config.getMode());
         props.setProperty("app.use-float",config.getUseFloat().toString());
         props.store(new FileOutputStream("configs/config.properties"),"this is the configure file to keep users special state");
+    }
+
+    /**
+     * LateXMath公式生成Base64图片
+     * @param funcStr 公式
+     * @return 字符串
+     * @throws Exception
+     */
+    public static String compileFunc(String funcStr) {
+        try {
+            TeXFormula formula = new TeXFormula(funcStr);
+            BufferedImage img = (BufferedImage) formula.createBufferedImage(funcStr, TeXConstants.STYLE_DISPLAY,18, Color.BLACK,Color.WHITE);
+            ByteArrayOutputStream bot = new ByteArrayOutputStream();
+            ImageIO.write(img,"PNG",bot);
+            byte[] buffer = bot.toByteArray();
+            return Base64.getEncoder().encodeToString(buffer);
+        }catch (Exception e){
+           return null;
+        }
     }
 
 }

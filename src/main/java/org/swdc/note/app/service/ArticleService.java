@@ -14,8 +14,11 @@ import org.swdc.note.app.repository.ArticleTypeRepository;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 文章服务，提供关于文章的各种操作
@@ -84,15 +87,43 @@ public class ArticleService {
 
     public String compile(ArticleContext context){
         Map<String,String> resource = context.getImageRes();
+        String contentStr = context.getContent();
+        // 渲染TeX公式
+        // 匹配双$符，在这之间的是公式
+        Pattern pattern = Pattern.compile("\\$\\$[\\s\\S]*\\$\\$");
+        Matcher matcher = pattern.matcher(contentStr);
+        Map<String,String> funcsMap = new HashMap<>();
+        // 匹配到了一个
+        while (matcher.find()){
+            // 获取内容，转换为base64
+            String result = matcher.group();
+            result = result.substring(2,result.length() - 2);
+            if (result.trim().equals("")){
+                continue;
+            }
+            String funcData = DataUtil.compileFunc(result);
+            if (funcData != null){
+                // 准备图片
+                funcsMap.put(result,funcData);
+                contentStr = contentStr.replace("$$"+result+"$$","\n![func]["+result.trim()+"]\n");
+            }
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("\r\n");
+        // 渲染图片资源
         resource.entrySet().forEach(ent->
                 sb.append("[")
                         .append(ent.getKey())
                         .append("]: data:image/png;base64,")
                         .append(ent.getValue())
                         .append("\n"));
-        String content = renderer.render(parser.parse(context.getContent()+"\n"+sb.toString()));
+        funcsMap.entrySet().forEach(ent->
+                sb.append("[")
+                        .append(ent.getKey().trim())
+                        .append("]: data:image/png;base64,")
+                        .append(ent.getValue())
+                        .append("\n"));
+        String content = renderer.render(parser.parse(contentStr+"\n"+sb.toString()));
         content = "<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
                 +"<body ondragstart='return false;'>"+content+"</body></html>";
         return content;
