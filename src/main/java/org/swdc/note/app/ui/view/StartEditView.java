@@ -70,7 +70,7 @@ public class StartEditView extends AbstractFxmlView{
     // 匹配列表
     private static final String LIST_PATTERN = "[0-9]([1-9])?[.]\\s|\\*[.]\\s";
     // 匹配表格
-    private static final String TABLE_PATTERN = "((\\|[\\s\\S]+\\|)([\\S]+[\\s\\S]?\\|)?)|(([\\S]+[\\S\\s]?\\|)+[\\S]+[\\S\\s]?)";
+    private static final String TABLE_PATTERN = "(\\|([ \\S\\|]*\\|))";
     // 匹配任务列表
     private static final String TASK_PATTERN = "[-]\\s\\[([x]?|[\\s]?)\\]";
     // 加粗，斜体，删除线
