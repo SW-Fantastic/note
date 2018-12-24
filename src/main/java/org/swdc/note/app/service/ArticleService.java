@@ -90,14 +90,14 @@ public class ArticleService {
         String contentStr = context.getContent();
         // 渲染TeX公式
         // 匹配双$符，在这之间的是公式
-        Pattern pattern = Pattern.compile("\\$\\$[\\s\\S]*\\$\\$");
+        Pattern pattern = Pattern.compile("\\$[^$]+\\$");
         Matcher matcher = pattern.matcher(contentStr);
         Map<String,String> funcsMap = new HashMap<>();
         // 匹配到了一个
         while (matcher.find()){
             // 获取内容，转换为base64
             String result = matcher.group();
-            result = result.substring(2,result.length() - 2);
+            result = result.substring(1,result.length() - 1);
             if (result.trim().equals("")){
                 continue;
             }
@@ -105,7 +105,7 @@ public class ArticleService {
             if (funcData != null){
                 // 准备图片
                 funcsMap.put(result,funcData);
-                contentStr = contentStr.replace("$$"+result+"$$","\n![func]["+result.trim()+"]\n");
+                contentStr = contentStr.replace("$"+result+"$","![func]["+result.trim()+"]");
             }
         }
         StringBuilder sb = new StringBuilder();
