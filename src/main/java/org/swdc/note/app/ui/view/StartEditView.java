@@ -23,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.Setter;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -88,6 +89,13 @@ public class StartEditView extends AbstractFxmlView{
 
     @Getter
     private Stage stage;
+
+    /**
+     * 编辑页面的内容是否已经经过保存
+     */
+    @Getter
+    @Setter
+    private boolean saved = false;
 
     private static final Pattern PATTERN = Pattern.compile(
                       "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -183,6 +191,9 @@ public class StartEditView extends AbstractFxmlView{
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
         codeArea.getStyleClass().add("code-area");
         codeArea.setWrapText(true);
+        codeArea.textProperty().addListener(((observable, oldValue, newValue) -> {
+            this.saved = false;
+        }));
         SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
 
         BorderPane codePane = (BorderPane) findById("codeView",viewerPane.getItems());

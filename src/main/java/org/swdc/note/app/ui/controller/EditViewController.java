@@ -6,7 +6,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +102,7 @@ public class EditViewController implements Initializable{
         context.setContent(editView.getDocument());
         context.setImageRes(editView.getImageRes());
         this.article = articleService.saveArticle(articleCurr,context);
+        editView.setSaved(true);
     }
 
     /**

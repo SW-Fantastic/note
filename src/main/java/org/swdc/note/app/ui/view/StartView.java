@@ -69,6 +69,14 @@ public class StartView extends AbstractFxmlView {
                 BorderPane pane = (BorderPane) StartView.this.getView();
                 if(targetView!=viewEdit.getView() && pane.getCenter().equals(viewEdit.getView()) && !viewEdit.getDocument().trim().equals("")){
                     toolsGroup.getToggles().forEach(tog->tog.setSelected(false));
+                    // 编辑页面的内容已经保存的时候，不在询问
+                    if (viewEdit.isSaved()) {
+                        config.publishEvent(new ResetEvent(StartEditView.class));
+                        pane.setCenter(this.targetView);
+                        toolsGroup.setUserData(obsButton);
+                        toolsGroup.selectToggle(obsButton);
+                        return;
+                    }
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setContentText("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？");
                     alert.setTitle("提示");
