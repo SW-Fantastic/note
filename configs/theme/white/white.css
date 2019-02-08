@@ -19,6 +19,12 @@
     -fx-background-color: #FFFFFF;
     -fx-text-fill: rgb(126,175,103);
 }
+.tool .circle-tog {
+    -fx-background-radius: 999px;
+}
+.tool .circle-tog:selected {
+    -fx-background-radius: 999px;
+}
 .tool .button{
     -fx-background-color: rgba(0,0,0,0);
     -fx-text-fill: #FFFFFF;

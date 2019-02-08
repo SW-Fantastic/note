@@ -10,7 +10,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.event.EventListener;
@@ -43,6 +46,11 @@ public class StartView extends AbstractFxmlView {
 
     @Autowired
     private StartConfigView viewConfig;
+
+    /**
+     * 左侧类型树
+     */
+    private VBox typeTreePanel;
 
     /**
      * 处理边栏的界面切换按钮
@@ -118,7 +126,7 @@ public class StartView extends AbstractFxmlView {
         // 使用font-awsome的字体图标
         Optional.ofNullable((ToggleButton) findById("list",tool.getItems()))
                 .ifPresent(btn-> {
-                    initToolBtn(btn,"list");
+                    initToolBtn(btn,"list", true);
                     btn.setSelected(true);
                     toolsGroup.setUserData(btn);
                     btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewList.getView()));
@@ -126,25 +134,39 @@ public class StartView extends AbstractFxmlView {
 
         Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
                 .ifPresent(btn-> {
-                    initToolBtn(btn,"file");
+                    initToolBtn(btn,"file", true);
                     btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewEdit.getView()));
                 });
 
         Optional.ofNullable((ToggleButton)findById("read",tool.getItems()))
                 .ifPresent(btn->{
-                    initToolBtn(btn,"book");
+                    initToolBtn(btn,"book", true);
                     btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewRead.getView()));
                 });
 
         Optional.ofNullable((ToggleButton) findById("config",tool.getItems()))
                 .ifPresent(btn->{
-                    initToolBtn(btn,"cog");
+                    initToolBtn(btn,"cog", true);
                     btn.selectedProperty().addListener(new ViewToolButtonHandler(btn,viewConfig.getView()));
                 });
-
+        VBox option = (VBox) findById("option", tool.getItems());
+        Optional.ofNullable((ToggleButton)findById("tree", option.getChildren())).ifPresent(btn -> {
+            initToolBtn(btn, "tree", false);
+            btn.selectedProperty().addListener((observable, oldValue, newValue) -> {
+               Optional.ofNullable(newValue).ifPresent(val -> {
+                   if (val) {
+                       config.publishEvent(new ViewChangeEvent("ShowTree"));
+                   } else {
+                       config.publishEvent(new ViewChangeEvent("HideTree"));
+                   }
+               });
+            });
+        });
         Button btnSearch = (Button) getView().lookup("#search");
         btnSearch.setFont(UIConfig.getFontIcon());
         btnSearch.setText(String.valueOf(UIConfig.getAwesomeMap().get("search")));
+        BorderPane leftRoot = (BorderPane) this.getView().lookup("#leftRoot");
+        this.typeTreePanel = (VBox)leftRoot.getCenter();
     }
 
     @PostConstruct
@@ -156,10 +178,7 @@ public class StartView extends AbstractFxmlView {
         });
         BorderPane pane = (BorderPane) this.getView();
         pane.widthProperty().addListener(num->{
-            ((BorderPane) viewList.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
-            ((BorderPane) viewEdit.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
-            ((BorderPane) viewRead.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
-            ((BorderPane) viewConfig.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+            refreshWidths();
         });
         pane.heightProperty().addListener(num->{
             ((BorderPane) viewList.getView()).setPrefHeight(pane.getHeight());
@@ -169,10 +188,22 @@ public class StartView extends AbstractFxmlView {
         });
     }
 
-    private void initToolBtn(ToggleButton btn,String iconName){
-        btn.setFont(UIConfig.getFontIcon());
+    public void refreshWidths(){
+        BorderPane pane = (BorderPane) this.getView();
+        ((BorderPane) viewList.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+        ((BorderPane) viewEdit.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+        ((BorderPane) viewRead.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+        ((BorderPane) viewConfig.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+    }
+
+    private void initToolBtn(ToggleButton btn,String iconName, boolean single){
         btn.setText(String.valueOf(UIConfig.getAwesomeMap().get(iconName)));
-        toolsGroup.getToggles().add(btn);
+        if (single) {
+            toolsGroup.getToggles().add(btn);
+            btn.setFont(UIConfig.getFontIcon());
+        } else {
+            btn.setFont(UIConfig.getFontIconVerySmall());
+        }
     }
 
     /**
@@ -201,6 +232,16 @@ public class StartView extends AbstractFxmlView {
                         toolsGroup.selectToggle(btn);
                        // pane.setCenter(viewRead.getView());
                     });
+        } else if(e.getSource().equals("HideTree")) {
+            BorderPane leftRoot = (BorderPane) this.getView().lookup("#leftRoot");
+            leftRoot.setCenter(null);
+            leftRoot.setPrefWidth(60);
+            refreshWidths();
+        } else if (e.getSource().equals("ShowTree")) {
+            BorderPane leftRoot = (BorderPane) this.getView().lookup("#leftRoot");
+            leftRoot.setCenter(this.typeTreePanel);
+            leftRoot.setPrefWidth(297);
+           refreshWidths();
         }
     }
 }

@@ -23,6 +23,12 @@
 .tool .button:hover{
     -fx-effect: dropshadow(three-pass-box,#FFF, 18, 0, 0,0);
 }
+.tool .circle-tog {
+    -fx-background-radius: 999px;
+}
+.tool .circle-tog:selected {
+    -fx-background-radius: 999px;
+}
 .btn{
     -fx-background-color: rgb(249,240,243);
     -fx-text-fill: rgb(2,64,85);

@@ -16,7 +16,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640" prefWidth="1000" styleClass="root-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.StartController">
    <left>
-      <BorderPane prefHeight="640.0" prefWidth="297.0" styleClass="left-pane" BorderPane.alignment="CENTER">
+      <BorderPane id="leftRoot" prefHeight="640.0" prefWidth="297.0" styleClass="left-pane" BorderPane.alignment="CENTER">
          <right>
             <ToolBar orientation="VERTICAL" prefHeight="640.0" prefWidth="50.0" styleClass="tool" BorderPane.alignment="CENTER">
                <items>
@@ -24,11 +24,19 @@
                   <ToggleButton id="write" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="写作" />
                   <ToggleButton id="read" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="阅读" />
                   <ToggleButton id="config" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="配置" />
+                  <VBox id="option" alignment="CENTER" prefHeight="52.0" prefWidth="40.0">
+                     <children>
+                        <ToggleButton id="tree" mnemonicParsing="false" prefHeight="25.0" prefWidth="24.0" selected="true" styleClass="circle-tog" text="类型" />
+                     </children>
+                  </VBox>
                </items>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
             </ToolBar>
          </right>
          <center>
-            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <VBox id="treePane" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <children>
                   <HBox prefHeight="57.0" prefWidth="240.0">
                      <children>
