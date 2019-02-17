@@ -51,20 +51,4 @@ public class Article {
     @Setter
     private ArticleContext context;
 
-    /**
-     * 口令，用BCrypt加密存储
-     */
-    @Getter
-    @Setter
-    private String password;
-
-    /**
-     * 是否属于加密内容
-     * 如果属于，那么展示之前应该进行口令校对
-     * 然后用口令解码，使用AES配合口令加密。
-     */
-    @Getter
-    @Setter
-    private Boolean secret;
-
 }
