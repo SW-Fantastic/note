@@ -23,6 +23,7 @@ import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.StartReadView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
+import org.swdc.note.app.util.UIUtil;
 
 import java.io.File;
 import java.net.URL;
@@ -121,12 +122,7 @@ public class ReadViewController implements Initializable {
                 article.setType(type);
                 articleService.saveArticle(article, article.getContext());
                 btnImport.setVisible(false);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText(null);
-                alert.setTitle("提示");
-                alert.setContentText("文档已经成功导入系统。");
-                alert.initOwner(GUIState.getStage());
-                alert.showAndWait();
+                UIUtil.showAlertDialog("文档已经导入系统。", "提示", Alert.AlertType.INFORMATION);
             }
         }
     }

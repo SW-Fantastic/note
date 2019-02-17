@@ -69,11 +69,7 @@ public class ConfigViewController implements Initializable {
         config.setMode(radioGp.getSelectedToggle().getUserData().toString());
         config.setUseFloat(cbxFloat.isSelected());
         DataUtil.writeConfigProp(config);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("设置已经更改，下次启动时会生效。");
-        alert.setHeaderText(null);
-        alert.setTitle("提示");
-        alert.showAndWait();
+        UIUtil.showAlertDialog("设置已经更改，下次启动时会生效。", "提示", Alert.AlertType.INFORMATION);
     }
 
     @FXML
@@ -123,29 +119,18 @@ public class ConfigViewController implements Initializable {
                     .collect(Collectors.toList());
             combImg.getItems().addAll(lstImgs);
             combImg.getSelectionModel().select(config.getBackground());
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setHeaderText(null);
-            alert.setContentText("安装成功，请检查主题组合框。");
-            alert.setTitle("提示");
-            alert.showAndWait();
+            UIUtil.showAlertDialog("安装成功，请检查主题组合框。", "提示", Alert.AlertType.INFORMATION);
         }catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("错误");
-            alert.setHeaderText(null);
-            alert.setContentText("无法安装这个主题文件 " + e.getMessage() + e.getCause());
-            alert.show();
+            UIUtil.showAlertDialog("无法安装这个主题文件 " + e.getMessage() + e.getCause(),
+                    "错误", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     protected void deleteBackground(){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setHeaderText(null);
-        alert.initOwner(GUIState.getStage());
-        alert.setTitle("提示");
-        alert.setContentText("你确实要删除《"+ combImg.getSelectionModel().getSelectedItem()+"》吗？");
-        Optional<ButtonType> result = alert.showAndWait();
-        result.ifPresent(btnType->{
+        UIUtil.showAlertDialog("你确实要删除《"+
+                combImg.getSelectionModel().getSelectedItem()+"》吗？",
+                "提示", Alert.AlertType.CONFIRMATION).ifPresent(btnType->{
             if(btnType.equals(ButtonType.OK)){
                 File file = new File("./configs/res/"+combImg.getSelectionModel().getSelectedItem());
                 if (file.exists()){
@@ -174,11 +159,7 @@ public class ConfigViewController implements Initializable {
         try {
             UIUtil.writeFile(new File("./configs/res"+file.getName()),new FileInputStream(file));
         }catch (Exception e){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("失败");
-            alert.setHeaderText(null);
-            alert.setContentText("无法导入文件 " + e.getMessage() + e.getCause());
-            alert.show();
+            UIUtil.showAlertDialog("无法导入文件 " + e.getMessage() + e.getCause(), "异常", Alert.AlertType.ERROR);
         }
     }
 

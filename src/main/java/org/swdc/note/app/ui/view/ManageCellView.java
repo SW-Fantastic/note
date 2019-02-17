@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.event.ArticleEditEvent;
-import org.swdc.note.app.event.ArticleOpenEvent;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
@@ -41,12 +41,7 @@ public class ManageCellView extends AbstractFxmlView {
         btnDel.setText(String.valueOf(UIConfig.getAwesomeMap().get("trash")));
         btnDel.setOnAction(e->{
             if (article != null){
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setHeaderText(null);
-                alert.setTitle("提示");
-                alert.initOwner(GUIState.getStage());
-                alert.setContentText("你确实要删除《"+ article.getTitle()+"》吗？");
-                Optional<ButtonType> result = alert.showAndWait();
+                Optional<ButtonType> result = UIUtil.showAlertDialog("你确实要删除《"+ article.getTitle()+"》吗？", "删除", Alert.AlertType.CONFIRMATION);
                 result.ifPresent(btnType->{
                     if(btnType.equals(ButtonType.OK)){
                         // 发送删除事件，通知controller删除此文档

@@ -14,6 +14,7 @@ import org.swdc.note.app.event.TypeRefreshEvent;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.net.URL;
@@ -59,17 +60,13 @@ public class TypeDialogController implements Initializable{
 
     @FXML
     public void addNode(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.initOwner(typeDialog.getStage());
 
         TreeItem<ArticleType> nodeParent = treeView.getSelectionModel().getSelectedItem();
         ArticleType type = new ArticleType();
         String name = txtName.getText();
 
         if(name == null || name.equals("")){
-            alert.setContentText("请输入类别的名称");
-            alert.showAndWait();
+            UIUtil.showAlertWithOwner("请输入类别的名称", "提示", Alert.AlertType.INFORMATION, typeDialog.getStage());
             return;
         }
         type.setName(name);
@@ -77,16 +74,12 @@ public class TypeDialogController implements Initializable{
             type.setParentType(nodeParent.getValue());
         }
         if(!typeService.addType(type)){
-            alert.setContentText("名称重复了，这是不可以的。");
-            alert.showAndWait();
+            UIUtil.showAlertWithOwner("名称重复了，这样是不可以的", "提示", Alert.AlertType.ERROR, typeDialog.getStage());
         }
     }
 
     @FXML
     public void delNode(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.initOwner(typeDialog.getStage());
         TreeItem<ArticleType> nodeSel = treeView.getSelectionModel().getSelectedItem();
         if(nodeSel == null){
             return;

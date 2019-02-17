@@ -2,7 +2,6 @@ package org.swdc.note.app.ui.view;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
-import de.felixroske.jfxsupport.GUIState;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -16,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.event.*;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
@@ -61,12 +61,7 @@ public class ArticleCellView extends AbstractFxmlView{
         btnDel.setText(String.valueOf(UIConfig.getAwesomeMap().get("trash")));
         btnDel.setOnAction(e->{
             if (article != null){
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setHeaderText(null);
-                alert.initOwner(GUIState.getStage());
-                alert.setTitle("提示");
-                alert.setContentText("你确实要删除《"+ article.getTitle()+"》吗？");
-                Optional<ButtonType> result = alert.showAndWait();
+                Optional<ButtonType> result = UIUtil.showAlertDialog("你确实要删除《"+ article.getTitle()+"》吗？","删除", Alert.AlertType.CONFIRMATION);
                 result.ifPresent(btnType->{
                     if(btnType.equals(ButtonType.OK)){
                         // 发送删除事件，通知controller删除此文档

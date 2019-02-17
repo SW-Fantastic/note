@@ -85,22 +85,17 @@ public class StartView extends AbstractFxmlView {
                         toolsGroup.selectToggle(obsButton);
                         return;
                     }
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setContentText("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？");
-                    alert.setTitle("提示");
-                    alert.initOwner(GUIState.getStage());
-                    alert.setHeaderText(null);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    result.ifPresent(btnSel->{
-                        if(btnSel.equals(ButtonType.OK)) {
-                            config.publishEvent(new ResetEvent(StartEditView.class));
-                            pane.setCenter(this.targetView);
-                            toolsGroup.setUserData(obsButton);
-                            toolsGroup.selectToggle(obsButton);
-                        }else if (toolsGroup.getUserData()!=null){
-                            toolsGroup.selectToggle((ToggleButton)toolsGroup.getUserData());
-                        }
-                    });
+                    UIUtil.showAlertDialog("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？", "提示", Alert.AlertType.CONFIRMATION)
+                            .ifPresent(btnSel->{
+                                if(btnSel.equals(ButtonType.OK)) {
+                                    config.publishEvent(new ResetEvent(StartEditView.class));
+                                    pane.setCenter(this.targetView);
+                                    toolsGroup.setUserData(obsButton);
+                                    toolsGroup.selectToggle(obsButton);
+                                }else if (toolsGroup.getUserData()!=null){
+                                    toolsGroup.selectToggle((ToggleButton)toolsGroup.getUserData());
+                                }
+                            });
                 }else{
                     pane.setCenter(targetView);
                     toolsGroup.setUserData(obsButton);

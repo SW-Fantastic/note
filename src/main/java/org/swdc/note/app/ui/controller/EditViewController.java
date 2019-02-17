@@ -1,7 +1,6 @@
 package org.swdc.note.app.ui.controller;
 
 import de.felixroske.jfxsupport.FXMLController;
-import de.felixroske.jfxsupport.GUIState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,6 +18,7 @@ import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.view.StartEditView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.DataUtil;
+import org.swdc.note.app.util.UIUtil;
 
 import java.net.URL;
 import java.util.Date;
@@ -72,18 +72,13 @@ public class EditViewController implements Initializable{
 
     @FXML
     public void saveArticle(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setTitle("提示");
-        alert.initOwner(GUIState.getStage());
+
         if(currType == null){
-            alert.setContentText("请先选择分类");
-            alert.showAndWait();
+            UIUtil.showAlertDialog("请选择分类。", "提示", Alert.AlertType.ERROR);
             return;
         }
         if(txtTitle.getText() == null || txtTitle.getText().equals("")){
-            alert.setContentText("请输入标题");
-            alert.showAndWait();
+            UIUtil.showAlertDialog("请输入标题。", "提示", Alert.AlertType.ERROR);
             return;
         }
         // 封装数据

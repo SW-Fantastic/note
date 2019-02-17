@@ -1,6 +1,5 @@
 package org.swdc.note.app.ui.controller;
 
-import de.felixroske.jfxsupport.GUIState;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -16,6 +15,7 @@ import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
+import org.swdc.note.app.util.UIUtil;
 
 import java.io.File;
 import java.util.Optional;
@@ -70,22 +70,13 @@ public class CommonController {
     @EventListener
     public void onTypeDelete(DeleteEvent deleteEvent){
         if(deleteEvent.isArtleTypeDel()){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setAlertType(Alert.AlertType.CONFIRMATION);
-            alert.setContentText("删除分类，如果分类下含有其他数据，那么也会同时被删除，确定要这样做吗？");
-            alert.setTitle("提示");
-            alert.initOwner(GUIState.getStage());
-            alert.setHeaderText(null);
-            Optional<ButtonType> result = alert.showAndWait();
+            Optional<ButtonType> result =  UIUtil.showAlertDialog("删除分类，如果分类下含有其他数据，那么也会同时被删除，确定要这样做吗？", "提示", Alert.AlertType.CONFIRMATION);
             result.ifPresent(btnType->{
                 if(btnType.equals(ButtonType.OK)){
                     if(!typeService.delType(deleteEvent.getArtleType(),false)){
-                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("提示");
-                        alert.setContentText("此分类下含有其他数据，如果你依然需要删除，那么包括子分类下（如果有子分类的话）的所有数据都将会" +
-                                "被删除，依然要这样做吗？");
-                        Optional<ButtonType> resultRep = alert.showAndWait();
-                        resultRep.ifPresent(btn->{
+                        UIUtil.showAlertDialog("提示", "此分类下含有其他数据，如果你依然需要删除，那么" +
+                                "包括子分类下（如果有子分类的话）的所有数据都将会被删除，依然要这样做吗？",
+                                Alert.AlertType.CONFIRMATION).ifPresent(btn->{
                             if(btn.equals(ButtonType.OK)){
                                 typeService.delType(deleteEvent.getArtleType(),true);
                             }

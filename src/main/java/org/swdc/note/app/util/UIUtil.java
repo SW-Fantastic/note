@@ -1,14 +1,17 @@
 package org.swdc.note.app.util;
 
+import de.felixroske.jfxsupport.GUIState;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Pane;
-import org.springframework.beans.factory.annotation.Autowired;
+import javafx.stage.Window;
 import org.springframework.core.io.ClassPathResource;
 import org.swdc.note.app.ui.UIConfig;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -107,6 +110,24 @@ public class UIUtil {
             }
         }
         return null;
+    }
+
+    public static Optional<ButtonType> showAlertDialog(String content, String title, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setHeaderText(null);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.initOwner(GUIState.getStage());
+        return alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> showAlertWithOwner(String content, String title, Alert.AlertType type, Window owner) {
+        Alert alert = new Alert(type);
+        alert.setHeaderText(null);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.initOwner(owner);
+        return alert.showAndWait();
     }
 
 }

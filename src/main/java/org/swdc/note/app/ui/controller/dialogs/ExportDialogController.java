@@ -10,6 +10,7 @@ import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.file.FileFormatter;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
+import org.swdc.note.app.util.UIUtil;
 
 import java.io.File;
 import java.net.URL;
@@ -46,11 +47,7 @@ public class ExportDialogController implements Initializable{
         fc.setTitle("导出文件");
         FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
         if(desc == null){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setHeaderText(null);
-            alert.setContentText("请先选择导出格式。");
-            alert.initOwner(dialog.getStage());
-            alert.showAndWait();
+            UIUtil.showAlertDialog("请选择导出格式。", "提示", Alert.AlertType.ERROR);
             return;
         }
         fc.getExtensionFilters().addAll(desc.getFilters());
@@ -64,17 +61,13 @@ public class ExportDialogController implements Initializable{
     @FXML
     protected void onExport(){
         FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText("必须选择导出的格式才可以导出。");
-        alert.initOwner(dialog.getStage());
+
         if(desc == null){
-            alert.showAndWait();
+            UIUtil.showAlertWithOwner("必须选择导出的格式才可以导出。", "提示", Alert.AlertType.ERROR,dialog.getStage());
             return;
         }
         if(txtFileName.getText()==null||txtFileName.getText().equals("")){
-            alert.setContentText("必须选择存储位置。");
-            alert.showAndWait();
+            UIUtil.showAlertWithOwner("请选择存储位置。", "提示", Alert.AlertType.ERROR,dialog.getStage());
             return;
         }
         File file = new File(txtFileName.getText());
@@ -83,8 +76,7 @@ public class ExportDialogController implements Initializable{
         }else{
             desc.processWrite(file,dialog.getTargetGroup());
         }
-        alert.setContentText("导出完毕。");
-        alert.showAndWait();
+        UIUtil.showAlertWithOwner("文档导出完毕。", "提示", Alert.AlertType.INFORMATION,dialog.getStage());
         dialog.getStage().close();
         this.txtFileName.setText("");
         this.txtTargetName.setText("");

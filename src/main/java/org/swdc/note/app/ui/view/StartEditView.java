@@ -372,23 +372,14 @@ public class StartEditView extends AbstractFxmlView{
             btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("save")));
         });
 
-        initButton("create",toolBar.getItems(),"sticky_note",e->{
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setContentText("要放弃现在编辑的内容，开始新的创作吗？");
-            alert.setTitle("提示");
-            if(stage != null){
-                alert.initOwner(stage);
-            }else{
-                alert.initOwner(GUIState.getStage());
-            }
-            alert.setHeaderText(null);
-            Optional<ButtonType> result = alert.showAndWait();
-            result.ifPresent(btnSel->{
-                if(btnSel.equals(ButtonType.OK)) {
-                    config.publishEvent(new ResetEvent(StartEditView.class));
-                }
-            });
-        });
+        initButton("create",toolBar.getItems(),"sticky_note",e ->
+                UIUtil.showAlertWithOwner("要放弃现在编辑的内容，开始新的创作吗？", "提示", Alert.AlertType.CONFIRMATION,stage == null?GUIState.getStage():stage)
+                        .ifPresent(btnSel->{
+                            if(btnSel.equals(ButtonType.OK)) {
+                                config.publishEvent(new ResetEvent(StartEditView.class));
+                            }
+                        })
+        );
 
         initButton("tab",toolBar.getItems(),"table",e->{
             Stage stage = tableDialog.getStage();
