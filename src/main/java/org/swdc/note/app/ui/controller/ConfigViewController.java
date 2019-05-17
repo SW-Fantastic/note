@@ -82,7 +82,7 @@ public class ConfigViewController implements Initializable {
         config.setWindStyledPopup(cbxTrayWinLike.isSelected());
         config.setEditorFontSize(Double.valueOf(sldEditorFont.getValue()).intValue());
         DataUtil.writeConfigProp(config);
-        Optional<ButtonType> result = UIUtil.showAlertWithOwner("重新启动应用以使配置生效吗？", "提示", Alert.AlertType.CONFIRMATION,GUIState.getStage());
+        Optional<ButtonType> result = UIUtil.showAlertDialog("重新启动应用以使配置生效吗？", "提示", Alert.AlertType.CONFIRMATION,config);
         result.ifPresent(buttonType -> {
             if (buttonType.equals(ButtonType.OK)) {
                 config.publishEvent(new ReLaunchEvent(""));
@@ -137,10 +137,10 @@ public class ConfigViewController implements Initializable {
                     .collect(Collectors.toList());
             combImg.getItems().addAll(lstImgs);
             combImg.getSelectionModel().select(config.getBackground());
-            UIUtil.showAlertDialog("安装成功，请检查主题组合框。", "提示", Alert.AlertType.INFORMATION);
+            UIUtil.showAlertDialog("安装成功，请检查主题组合框。", "提示", Alert.AlertType.INFORMATION,config);
         }catch (Exception e) {
             UIUtil.showAlertDialog("无法安装这个主题文件 " + e.getMessage() + e.getCause(),
-                    "错误", Alert.AlertType.ERROR);
+                    "错误", Alert.AlertType.ERROR, config);
         }
     }
 
@@ -148,7 +148,7 @@ public class ConfigViewController implements Initializable {
     protected void deleteBackground(){
         UIUtil.showAlertDialog("你确实要删除《"+
                 combImg.getSelectionModel().getSelectedItem()+"》吗？",
-                "提示", Alert.AlertType.CONFIRMATION).ifPresent(btnType->{
+                "提示", Alert.AlertType.CONFIRMATION, config).ifPresent(btnType->{
             if(btnType.equals(ButtonType.OK)){
                 File file = new File("./configs/res/"+combImg.getSelectionModel().getSelectedItem());
                 if (file.exists()){
@@ -177,7 +177,7 @@ public class ConfigViewController implements Initializable {
         try {
             UIUtil.writeFile(new File("./configs/res"+file.getName()),new FileInputStream(file));
         }catch (Exception e){
-            UIUtil.showAlertDialog("无法导入文件 " + e.getMessage() + e.getCause(), "异常", Alert.AlertType.ERROR);
+            UIUtil.showAlertDialog("无法导入文件 " + e.getMessage() + e.getCause(), "异常", Alert.AlertType.ERROR, config);
         }
     }
 

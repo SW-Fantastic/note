@@ -112,13 +112,18 @@ public class UIUtil {
         return null;
     }
 
-    public static Optional<ButtonType> showAlertDialog(String content, String title, Alert.AlertType type) {
+    public static Optional<ButtonType> showAlertDialog(String content, String title, Alert.AlertType type, UIConfig config) {
         Alert alert = new Alert(type);
         alert.setHeaderText(null);
         alert.setTitle(title);
         alert.setContentText(content);
         alert.initOwner(GUIState.getStage());
-        return alert.showAndWait();
+        try {
+            UIUtil.configTheme(alert.getDialogPane(), config);
+            return alert.showAndWait();
+        }catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public static Optional<ButtonType> showAlertWithOwner(String content, String title, Alert.AlertType type, Window owner) {

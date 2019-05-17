@@ -13,6 +13,7 @@ import org.swdc.note.app.event.TypeImportEvent;
 import org.swdc.note.app.file.FileFormatter;
 import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
+import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.UIUtil;
@@ -37,6 +38,9 @@ public class CommonController {
 
     @Autowired
     private TypeDialog typeDialog;
+
+    @Autowired
+    private UIConfig config;
 
     /**
      * 处理导出事件
@@ -70,13 +74,13 @@ public class CommonController {
     @EventListener
     public void onTypeDelete(DeleteEvent deleteEvent){
         if(deleteEvent.isArtleTypeDel()){
-            Optional<ButtonType> result =  UIUtil.showAlertDialog("删除分类，如果分类下含有其他数据，那么也会同时被删除，确定要这样做吗？", "提示", Alert.AlertType.CONFIRMATION);
+            Optional<ButtonType> result =  UIUtil.showAlertDialog("删除分类，如果分类下含有其他数据，那么也会同时被删除，确定要这样做吗？", "提示", Alert.AlertType.CONFIRMATION, config);
             result.ifPresent(btnType->{
                 if(btnType.equals(ButtonType.OK)){
                     if(!typeService.delType(deleteEvent.getArtleType(),false)){
                         UIUtil.showAlertDialog("提示", "此分类下含有其他数据，如果你依然需要删除，那么" +
                                 "包括子分类下（如果有子分类的话）的所有数据都将会被删除，依然要这样做吗？",
-                                Alert.AlertType.CONFIRMATION).ifPresent(btn->{
+                                Alert.AlertType.CONFIRMATION, config).ifPresent(btn->{
                             if(btn.equals(ButtonType.OK)){
                                 typeService.delType(deleteEvent.getArtleType(),true);
                             }

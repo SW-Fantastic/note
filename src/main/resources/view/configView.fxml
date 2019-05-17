@@ -14,7 +14,7 @@
          <children>
             <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="592.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#onConfigSave" prefHeight="30.0" prefWidth="76.0" styleClass="btn-ghost" text="保存配置">
+                  <Button mnemonicParsing="false" onAction="#onConfigSave" prefHeight="30.0" prefWidth="82.0" styleClass="btn-ghost" text="保存配置">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
@@ -24,8 +24,8 @@
             <HBox alignment="CENTER" prefHeight="53.0" prefWidth="592.0">
                <children>
                   <Label text="主题配色：" />
-                  <ComboBox id="cbxTheme" fx:id="combTheme" prefHeight="29.0" prefWidth="297.0" styleClass="comb" />
-                  <Button mnemonicParsing="false" onAction="#onInstallTheme" prefHeight="29.0" prefWidth="69.0" styleClass="btn-ghost" text="添加主题">
+                  <ComboBox id="cbxTheme" fx:id="combTheme" prefHeight="29.0" prefWidth="288.0" styleClass="comb" />
+                  <Button mnemonicParsing="false" onAction="#onInstallTheme" prefHeight="29.0" prefWidth="76.0" styleClass="btn-ghost" text="添加主题">
                      <HBox.margin>
                         <Insets left="8.0" />
                      </HBox.margin>

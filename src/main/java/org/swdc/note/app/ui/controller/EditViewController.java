@@ -19,6 +19,7 @@ import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.ArticleEditEvent;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.service.ArticleService;
+import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.ui.view.StartEditView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
@@ -37,6 +38,9 @@ public class EditViewController implements Initializable{
 
     private ArticleType currType;
     private Article article;
+
+    @Autowired
+    private UIConfig config;
 
     @Autowired
     private MessageView messageView;
@@ -82,11 +86,11 @@ public class EditViewController implements Initializable{
     public void saveArticle(){
 
         if(currType == null){
-            UIUtil.showAlertDialog("请选择分类。", "提示", Alert.AlertType.ERROR);
+            UIUtil.showAlertDialog("请选择分类。", "提示", Alert.AlertType.ERROR, config);
             return;
         }
         if(txtTitle.getText() == null || txtTitle.getText().equals("")){
-            UIUtil.showAlertDialog("请输入标题。", "提示", Alert.AlertType.ERROR);
+            UIUtil.showAlertDialog("请输入标题。", "提示", Alert.AlertType.ERROR, config);
             return;
         }
         // 封装数据

@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.util.UIUtil;
 
@@ -24,6 +25,9 @@ public class ExportDialogController implements Initializable{
 
     @Autowired
     protected ExportDialog dialog;
+
+    @Autowired
+    private UIConfig config;
 
     @FXML
     protected TextField txtTargetName;
@@ -47,7 +51,7 @@ public class ExportDialogController implements Initializable{
         fc.setTitle("导出文件");
         FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
         if(desc == null){
-            UIUtil.showAlertDialog("请选择导出格式。", "提示", Alert.AlertType.ERROR);
+            UIUtil.showAlertDialog("请选择导出格式。", "提示", Alert.AlertType.ERROR, config);
             return;
         }
         fc.getExtensionFilters().addAll(desc.getFilters());

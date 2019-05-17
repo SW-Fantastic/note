@@ -41,7 +41,7 @@ public class ManageCellView extends AbstractFxmlView {
         btnDel.setText(String.valueOf(UIConfig.getAwesomeMap().get("trash")));
         btnDel.setOnAction(e->{
             if (article != null){
-                Optional<ButtonType> result = UIUtil.showAlertDialog("你确实要删除《"+ article.getTitle()+"》吗？", "删除", Alert.AlertType.CONFIRMATION);
+                Optional<ButtonType> result = UIUtil.showAlertDialog("你确实要删除《"+ article.getTitle()+"》吗？", "删除", Alert.AlertType.CONFIRMATION, config);
                 result.ifPresent(btnType->{
                     if(btnType.equals(ButtonType.OK)){
                         // 发送删除事件，通知controller删除此文档

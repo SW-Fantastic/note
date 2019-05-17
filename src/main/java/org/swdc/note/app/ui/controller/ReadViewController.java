@@ -122,7 +122,7 @@ public class ReadViewController implements Initializable {
                 article.setType(type);
                 articleService.saveArticle(article, article.getContext());
                 btnImport.setVisible(false);
-                UIUtil.showAlertDialog("文档已经导入系统。", "提示", Alert.AlertType.INFORMATION);
+                UIUtil.showAlertDialog("文档已经导入系统。", "提示", Alert.AlertType.INFORMATION, config);
             }
         }
     }

@@ -85,7 +85,7 @@ public class StartView extends AbstractFxmlView {
                         toolsGroup.selectToggle(obsButton);
                         return;
                     }
-                    UIUtil.showAlertDialog("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？", "提示", Alert.AlertType.CONFIRMATION)
+                    UIUtil.showAlertDialog("你正在离开编辑页面，这样会失去正在编辑的内容，确定要这样吗？", "提示", Alert.AlertType.CONFIRMATION, config)
                             .ifPresent(btnSel->{
                                 if(btnSel.equals(ButtonType.OK)) {
                                     config.publishEvent(new ResetEvent(StartEditView.class));
