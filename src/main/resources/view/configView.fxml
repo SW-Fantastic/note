@@ -57,8 +57,27 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="43.0" prefWidth="592.0">
                <children>
-                  <Label text="悬浮球：" />
-                  <CheckBox id="float" fx:id="cbxFloat" mnemonicParsing="false" styleClass="check" text="使用悬浮球（关闭悬浮球，那么窗口关闭后家就会退出）" />
+                  <Label text="选项：" />
+                  <CheckBox id="float" fx:id="cbxBackground" mnemonicParsing="false" styleClass="check" text="在后台运行(取消的话，在关闭的时候会退出)" />
+                  <CheckBox fx:id="cbxTrayWinLike" mnemonicParsing="false" styleClass="check" text="使用Windows风格的托盘菜单">
+                     <HBox.margin>
+                        <Insets left="8.0" />
+                     </HBox.margin>
+                  </CheckBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="592.0">
+               <children>
+                  <Label text="编辑器字体大小：">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets right="8.0" />
+                     </padding>
+                  </Label>
+                  <Slider id="editorFont" fx:id="sldEditorFont" blockIncrement="2.0" max="32.0" min="12.0" prefHeight="14.0" prefWidth="279.0" />
+                  <TextField id="txtEditSize" editable="false" prefHeight="23.0" prefWidth="50.0" styleClass="title-field" />
                </children>
             </HBox>
          </children>

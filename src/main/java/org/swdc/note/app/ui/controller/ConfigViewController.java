@@ -7,7 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.event.DeleteEvent;
+import org.swdc.note.app.event.ReLaunchEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
 import org.swdc.note.app.util.UIUtil;
@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  * 设置界面的控制器
@@ -44,7 +43,13 @@ public class ConfigViewController implements Initializable {
     private RadioButton radioUISimple;
 
     @FXML
-    private CheckBox cbxFloat;
+    private CheckBox cbxBackground;
+
+    @FXML
+    private CheckBox cbxTrayWinLike;
+
+    @FXML
+    private Slider sldEditorFont;
 
     private ToggleGroup radioGp = new ToggleGroup();
 
@@ -59,7 +64,13 @@ public class ConfigViewController implements Initializable {
         }else{
             radioUISimple.setSelected(true);
         }
-        cbxFloat.setSelected(config.getUseFloat());
+        cbxBackground.setSelected(config.getRunInBackground());
+        cbxTrayWinLike.setSelected(config.getWindStyledPopup());
+        String osName = System.getProperty("os.name");
+        if (osName != null && osName.toLowerCase().startsWith("win")) {
+            cbxTrayWinLike.setSelected(true);
+            cbxTrayWinLike.setDisable(true);
+        }
     }
 
     @FXML
@@ -67,9 +78,16 @@ public class ConfigViewController implements Initializable {
         config.setTheme(combTheme.getSelectionModel().getSelectedItem());
         config.setBackground(combImg.getSelectionModel().getSelectedItem());
         config.setMode(radioGp.getSelectedToggle().getUserData().toString());
-        config.setUseFloat(cbxFloat.isSelected());
+        config.setRunInBackground(cbxBackground.isSelected());
+        config.setWindStyledPopup(cbxTrayWinLike.isSelected());
+        config.setEditorFontSize(Double.valueOf(sldEditorFont.getValue()).intValue());
         DataUtil.writeConfigProp(config);
-        UIUtil.showAlertDialog("设置已经更改，下次启动时会生效。", "提示", Alert.AlertType.INFORMATION);
+        Optional<ButtonType> result = UIUtil.showAlertWithOwner("重新启动应用以使配置生效吗？", "提示", Alert.AlertType.CONFIRMATION,GUIState.getStage());
+        result.ifPresent(buttonType -> {
+            if (buttonType.equals(ButtonType.OK)) {
+                config.publishEvent(new ReLaunchEvent(""));
+            }
+        });
     }
 
     @FXML

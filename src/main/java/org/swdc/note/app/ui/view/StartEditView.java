@@ -24,8 +24,10 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,6 +192,8 @@ public class StartEditView extends AbstractFxmlView{
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
         codeArea.getStyleClass().add("code-area");
+
+        codeArea.setStyle(codeArea.getStyle() + "-fx-font-size: " + config.getEditorFontSize() + "px;");
         codeArea.setWrapText(true);
         codeArea.textProperty().addListener(((observable, oldValue, newValue) -> {
             this.saved = false;
@@ -197,8 +201,7 @@ public class StartEditView extends AbstractFxmlView{
         SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
 
         BorderPane codePane = (BorderPane) findById("codeView",viewerPane.getItems());
-        codePane.setCenter(codeArea);
-
+        codePane.setCenter(new VirtualizedScrollPane<>(codeArea));
         // javaFX SpringBoot Support库不能够在FXML中初始化webView。
         Platform.runLater(()->{
             WebView contentView = new WebView();
@@ -315,7 +318,7 @@ public class StartEditView extends AbstractFxmlView{
         SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
         BorderPane pane = (BorderPane)findById("codeView",viewerPane.getItems());
         ToolBar toolBar = (ToolBar) pane.getTop();
-        CodeArea code = (CodeArea)pane.getCenter();
+        CodeArea code = (CodeArea) ((VirtualizedScrollPane)pane.getCenter()).getContent();
         // 加粗按钮的处理
         initButton("big",toolBar.getItems(),"bold",e->{
             String sel = code.getSelectedText();
@@ -463,7 +466,7 @@ public class StartEditView extends AbstractFxmlView{
 
     public void reset(){
         BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
-        CodeArea code = (CodeArea)pane.getCenter();
+        CodeArea code = (CodeArea)((VirtualizedScrollPane)pane.getCenter()).getContent();
         code.replaceText(0,code.getText().length(),"");
     }
 
@@ -494,7 +497,7 @@ public class StartEditView extends AbstractFxmlView{
     private void initHeaderMenu(MenuItem item){
         int level = Integer.valueOf(item.getId().replace("h",""));
         BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
-        CodeArea code = (CodeArea)pane.getCenter();
+        CodeArea code = (CodeArea)((VirtualizedScrollPane)pane.getCenter()).getContent();
         item.setOnAction(act->{
             IndexRange range = code.getSelection();
             String sel = code.getSelectedText();
@@ -562,7 +565,7 @@ public class StartEditView extends AbstractFxmlView{
 
     public String getDocument(){
         BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
-        CodeArea code = (CodeArea)pane.getCenter();
+        CodeArea code = (CodeArea)((VirtualizedScrollPane)pane.getCenter()).getContent();
         return code.getText();
     }
 
@@ -572,7 +575,7 @@ public class StartEditView extends AbstractFxmlView{
 
     public void setContext(String context){
         BorderPane pane = (BorderPane)findById("codeView",((SplitPane)((BorderPane)getView()).getCenter()).getItems());
-        CodeArea code = (CodeArea)pane.getCenter();
+        CodeArea code = (CodeArea)((VirtualizedScrollPane)pane.getCenter()).getContent();
         code.clear();
         code.appendText(context);
     }

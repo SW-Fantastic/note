@@ -1,5 +1,6 @@
 .root-pane{
     -fx-background-size: cover;
+    -fx-font-family: "【嵐】西良文字改+";
 }
 .left-pane{
     -fx-background-color: rgb(218,249,202);
@@ -93,6 +94,9 @@
 .code-area{
     -fx-font-size: 16px;
     -fx-background-color: rgba(247,255,168,0.2);
+}
+.code-area > .virtualized-scroll-pane{
+    -fx-background-color: #000;
 }
 .code-tool{
     -fx-background-color: rgba(247,255,168,0.5);
@@ -293,4 +297,38 @@
 }
 .edit-menu .menu-item:hover,.edit-menu .menu-item:selected{
     -fx-background-color: rgb(253,255,223);
+}
+.slider .thumb{
+    -fx-background-color:rgb(208,242,179);
+    -fx-effect:dropshadow(three-pass-box,rgba(79,155,106, 1),10,0,0,0);
+}
+.slider .track {
+    -fx-background-color:rgb(253,255,223);
+    -fx-border-radius: 99;
+    -fx-border-width: 0.4px;
+    -fx-border-color:rgb(79,155,106);
+}
+.scroll-bar .thumb {
+    -fx-background-color:rgb(208,242,179);
+    -fx-effect:dropshadow(three-pass-box,rgba(79,155,106,1),10,0,0,0);
+}
+.scroll-bar {
+    -fx-background-color:rgb(253,255,223);
+}
+.scroll-bar .track {
+    -fx-background-color:rgb(253,255,223);
+    -fx-border-radius: 99;
+    -fx-border-width: 0.4px;
+    -fx-border-color:rgb(79,155,106);
+}
+.scroll-bar .decrement-arrow {
+    -fx-background-color: rgba(79,155,106, 1);
+}
+.scroll-bar .increment-arrow{
+    -fx-background-color: rgba(79,155,106, 1);
+}
+.message {
+    -fx-background-color: rgb(208,242,179);
+    -fx-effect:dropshadow(three-pass-box,rgba(79,155,106,1),10,0,0,0);
+    -fx-font-size: 16px;
 }

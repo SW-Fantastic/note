@@ -1,12 +1,16 @@
 package org.swdc.note.app.ui.controller;
 
 import de.felixroske.jfxsupport.FXMLController;
+import de.felixroske.jfxsupport.GUIState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Article;
@@ -15,6 +19,7 @@ import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.ArticleEditEvent;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.service.ArticleService;
+import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.ui.view.StartEditView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.DataUtil;
@@ -32,6 +37,9 @@ public class EditViewController implements Initializable{
 
     private ArticleType currType;
     private Article article;
+
+    @Autowired
+    private MessageView messageView;
 
     @FXML
     private TextField txtType;
@@ -98,6 +106,14 @@ public class EditViewController implements Initializable{
         context.setImageRes(editView.getImageRes());
         this.article = articleService.saveArticle(articleCurr,context);
         editView.setSaved(true);
+        messageView.setMessage("文档：" + txtTitle.getText() + "  已经保存。");
+        Notifications.create()
+                .hideCloseButton()
+                .graphic(messageView.getView())
+                .position(Pos.CENTER)
+                .owner(GUIState.getStage())
+                .hideAfter(new Duration(1200))
+                .show();
     }
 
     /**
@@ -113,6 +129,7 @@ public class EditViewController implements Initializable{
         this.txtTitle.setText(article.getTitle());
         ArticleContext context = articleService.loadContext(article);
         editView.setContext(context.getContent());
+        editView.setSaved(true);
         if(editView.getStage()!=null){
             Platform.runLater(()->{
                 if(editView.getStage().isShowing()){

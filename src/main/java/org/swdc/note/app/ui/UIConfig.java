@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +41,7 @@ import java.util.Map;
 @Component
 @PropertySource("file:configs/config.properties")
 @ConfigurationProperties(prefix = "app")
+@CommonsLog
 public class UIConfig {
 
     @Getter
@@ -58,6 +62,9 @@ public class UIConfig {
     @Getter
     private static List<Image> imageIcons ;
 
+    @Getter
+    private static BufferedImage trayImage;
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -69,6 +76,7 @@ public class UIConfig {
                     new Image(new ClassPathResource("icon/book48.png").getInputStream()),
                     new Image(new ClassPathResource("icon/book64.png").getInputStream()),
                     new Image(new ClassPathResource("icon/book72.png").getInputStream()));
+            trayImage = ImageIO.read(new ClassPathResource("icon/book16.png").getInputStream());
             fontIconSmall =  Font
                     .loadFont(new ClassPathResource("/style/fontawesome-webfont@4.5.0.ttf").getInputStream(), 14);
             fontIcon = Font
@@ -773,7 +781,6 @@ public class UIConfig {
             awesomeMap.put("youtube_play", '\uf16a');
             awesomeMap.put("youtube_square", '\uf166');
         }catch (Exception e){
-
         }
     }
 
@@ -781,15 +788,18 @@ public class UIConfig {
     private static final String configLocation = "file:configs/";
 
     @Getter
+    private java.awt.Font awtFont;
+
+    @Getter
     @Setter
     private String background;
 
     /**
-     * 是否启用悬浮球
+     * 是否启用后台运行
      */
     @Getter
     @Setter
-    private Boolean useFloat;
+    private Boolean runInBackground;
 
     @Getter
     @Setter
@@ -800,7 +810,15 @@ public class UIConfig {
     private String mode;
 
     @Getter
+    @Setter
+    private Integer editorFontSize;
+
+    @Getter
     private String mdStyleContent;
+
+    @Getter
+    @Setter
+    private Boolean windStyledPopup;
 
     @PostConstruct
     private void init() throws Exception{
@@ -808,6 +826,16 @@ public class UIConfig {
             mdStyleContent = UIUtil.readFile(new ClassPathResource("/style/markdown.css").getInputStream());
         }else{
             mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("./configs/theme/"+theme+"/"+theme+".md.css"));
+        }
+        File fontFile = new File("./configs/theme/"+theme+"/font.ttf");
+        if (fontFile.exists()) {
+            Font font = Font.loadFont(new FileInputStream("./configs/theme/"+theme+"/font.ttf"), 18);
+            awtFont = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new File("./configs/theme/"+theme+"/font.ttf"));
+            log.info("custom font " + font.getFamily() + " loaded");
+        }
+        String osName = System.getProperty("os.name");
+        if (osName != null && osName.toLowerCase().startsWith("win")) {
+            this.windStyledPopup = true;
         }
     }
 

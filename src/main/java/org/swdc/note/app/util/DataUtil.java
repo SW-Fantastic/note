@@ -2,7 +2,6 @@ package org.swdc.note.app.util;
 
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
-import org.scilab.forge.jlatexmath.TeXIcon;
 import org.swdc.note.app.ui.UIConfig;
 
 import javax.imageio.ImageIO;
@@ -10,7 +9,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
@@ -19,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  * 提供数据更新的通用工具方法
@@ -116,7 +111,9 @@ public class DataUtil {
         props.setProperty("app.theme",config.getTheme());
         props.setProperty("app.background",config.getBackground());
         props.setProperty("app.mode",config.getMode());
-        props.setProperty("app.use-float",config.getUseFloat().toString());
+        props.setProperty("app.run-in-background",config.getRunInBackground().toString());
+        props.setProperty("app.editor-font-size", config.getEditorFontSize() + "");
+        props.setProperty("app.win-styled-popup", config.getWindStyledPopup() + "");
         props.store(new FileOutputStream("configs/config.properties"),"this is the configure file to keep users special state");
     }
 

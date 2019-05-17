@@ -28,7 +28,7 @@ public class UIUtil {
             Properties props = new Properties();
             props.load(new FileInputStream("configs/config.properties"));
             classical = props.get("app.mode").equals("classical");
-            useFloat = props.get("app.use-float").toString().toLowerCase().equals("true");
+            useFloat = props.get("app.run-in-background").toString().toLowerCase().equals("true");
             String back = props.getProperty("app.background");
             File file = new File("./configs/res/" + back);
             if (!file.exists()){

@@ -6,6 +6,8 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -47,6 +49,10 @@ public class StartConfigView extends AbstractFxmlView{
         combImg.getItems().addAll(lstImgs);
         combTheme.getSelectionModel().select(config.getTheme());
         combImg.getSelectionModel().select(config.getBackground());
+        Slider slider = (Slider)getView().lookup("#editorFont");
+        slider.setValue(config.getEditorFontSize());
+        TextField txtFontSize = (TextField)getView().lookup("#txtEditSize");
+        txtFontSize.textProperty().bind(slider.valueProperty().asString());
         UIUtil.configTheme((Pane)getView(),config);
         if(UIUtil.isClassical()){
             Platform.runLater(()->{
