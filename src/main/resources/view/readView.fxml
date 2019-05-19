@@ -10,7 +10,7 @@
       <Insets left="12.0" />
    </padding>
    <top>
-      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0" styleClass="code-tool" BorderPane.alignment="CENTER">
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="29.0" prefWidth="611.0" styleClass="code-tool" BorderPane.alignment="CENTER">
         <items>
             <Button id="import" fx:id="btnImport" mnemonicParsing="false" onAction="#onImport" text="存" />
             <Button id="export" fx:id="btnExport" mnemonicParsing="false" onAction="#onExport" text="导" />
@@ -21,6 +21,9 @@
                   <Insets left="6.0" />
                </padding>
             </Label>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
+            <Button mnemonicParsing="false" onAction="#nextArticle" styleClass="btn-ghost" text="下一篇" />
+            <Button mnemonicParsing="false" onAction="#prevArticle" styleClass="btn-ghost" text="上一篇" />
         </items>
       </ToolBar>
    </top>

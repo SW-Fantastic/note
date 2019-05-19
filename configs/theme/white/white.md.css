@@ -1,12 +1,15 @@
+html{
+  padding: 64px;
+}
 body {
-  font-family: "Microsoft Yahei",'PingFang TC' , Helvetica, arial, sans-serif ;
-  font-size: 16px;
-  line-height: 1.6;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  font-family: "Microsoft Yahei",'PingFang TC',"【嵐】西良文字改+" , Helvetica, arial, sans-serif ;
+  font-size: 18px;
+  line-height: 2;
   background-color: white;
-  padding: 30px;
-  font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+  text-align: justify;
+  text-justify: newspaper;
+  word-break: break-all;
   max-width: 100%;
   overflow-x: hidden;
   color: #7EAF67;}

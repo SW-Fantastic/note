@@ -4,11 +4,14 @@ import de.felixroske.jfxsupport.FXMLController;
 import de.felixroske.jfxsupport.GUIState;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.entity.Article;
@@ -21,6 +24,7 @@ import org.swdc.note.app.event.TypeImportEvent;
 import org.swdc.note.app.file.FileFormatter;
 import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.ui.view.StartReadView;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.UIUtil;
@@ -43,6 +47,9 @@ public class ReadViewController implements Initializable {
 
     @Autowired
     private StartReadView readView;
+
+    @Autowired
+    private MessageView messageView;
 
     @Autowired
     private UIConfig config;
@@ -135,6 +142,16 @@ public class ReadViewController implements Initializable {
         }
     }
 
+    @FXML
+    protected void nextArticle() {
+        this.pageAction(false);
+    }
+
+    @FXML
+    protected void prevArticle() {
+        this.pageAction(true);
+    }
+
     @EventListener
     protected void onReset(ResetEvent event){
         if(event.getSource().equals(StartReadView.class) || event.getSource() == null){
@@ -145,6 +162,36 @@ public class ReadViewController implements Initializable {
             readView.getWebView().getEngine().loadContent("");
             lblDate.setText("");
             txtTitle.setText("");
+        }
+    }
+
+    private void pageAction (boolean turnPrev) {
+        boolean alert = false;
+        if (this.article == null) {
+            messageView.setMessage("你没有打开任何文档。");
+            alert = true;
+        } else {
+            Article article = null;
+            if (!turnPrev) {
+                article = articleService.nextArticleOnType(this.article);
+            } else {
+                article = articleService.prevArticleOnType(this.article);
+            }
+            if (article != null) {
+                config.publishEvent(new ArticleOpenEvent(article));
+            } else {
+                messageView.setMessage("此分类没有更多文档了。");
+                alert = true;
+            }
+        }
+        if (alert) {
+            Notifications.create()
+                    .hideCloseButton()
+                    .graphic(messageView.getView())
+                    .position(Pos.CENTER)
+                    .owner(GUIState.getStage())
+                    .hideAfter(new Duration(1600))
+                    .show();
         }
     }
 

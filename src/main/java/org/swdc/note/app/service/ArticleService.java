@@ -4,6 +4,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.swdc.note.app.entity.Article;
@@ -14,6 +15,7 @@ import org.swdc.note.app.repository.ArticleTypeRepository;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
 
+import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,9 @@ import java.util.regex.Pattern;
  */
 @Service
 public class ArticleService {
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private Parser parser;
@@ -83,6 +88,24 @@ public class ArticleService {
     @Transactional
     public List<Article> searchArticleByTitle(String key){
         return articleRepository.findByTitleContaining(key);
+    }
+
+    @Transactional
+    public Article nextArticleOnType(Article offsetFrom) {
+        try {
+            return articleRepository.findNext(entityManager, offsetFrom);
+        }catch (EmptyResultDataAccessException exception) {
+            return null;
+        }
+    }
+
+    @Transactional
+    public Article prevArticleOnType(Article offsetFrom) {
+        try {
+            return articleRepository.findPrev(entityManager, offsetFrom);
+        }catch (EmptyResultDataAccessException exception) {
+            return null;
+        }
     }
 
     public String compile(ArticleContext context){
