@@ -17,7 +17,7 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     List<Article> findByTitleContaining(String key);
 
     default Article findNext(EntityManager em, Article article) {
-        Query query = em.createQuery("FROM Article WHERE id > :id AND type = :typ ORDER BY id DESC");
+        Query query = em.createQuery("FROM Article WHERE id > :id AND type = :typ ORDER BY id ASC");
         query.setParameter("id", article.getId());
         query.setParameter("typ", article.getType());
         query.setMaxResults(1);
@@ -25,7 +25,7 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     }
 
     default Article findPrev(EntityManager em, Article article) {
-        Query query = em.createQuery("FROM Article WHERE id < :id AND type = :typ ORDER BY id ASC");
+        Query query = em.createQuery("FROM Article WHERE id < :id AND type = :typ ORDER BY id DESC");
         query.setParameter("id", article.getId());
         query.setParameter("typ", article.getType());
         query.setMaxResults(1);
