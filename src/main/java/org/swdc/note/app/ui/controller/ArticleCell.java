@@ -20,7 +20,8 @@ public class ArticleCell extends ListCell<Article> {
     protected void updateItem(Article item, boolean empty) {
         super.updateItem(item,empty);
         BorderPane pane = (BorderPane) view.getView();
-        pane.prefWidthProperty().bind(getListView().prefWidthProperty());
+        getListView().widthProperty().addListener((observable ->  pane.setPrefWidth(getListView().getWidth() - 64)));
+        pane.setPrefWidth(getListView().getWidth() - 64);
         if(!empty){
             view.setArticle(item);
             setGraphic(view.getView());

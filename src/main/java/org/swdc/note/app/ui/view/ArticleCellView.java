@@ -119,10 +119,4 @@ public class ArticleCellView extends AbstractFxmlView{
         hbx.setVisible(true);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        BorderPane pane = (BorderPane)this.getView();
-        pane.prefWidthProperty().unbind();
-    }
 }
