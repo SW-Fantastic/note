@@ -113,7 +113,7 @@ public class DataUtil {
         props.setProperty("app.mode",config.getMode());
         props.setProperty("app.run-in-background",config.getRunInBackground().toString());
         props.setProperty("app.editor-font-size", config.getEditorFontSize() + "");
-        props.setProperty("app.win-styled-popup", config.getWindStyledPopup() + "");
+        props.setProperty("app.win-styled-popup", config.getWinStyledPopup() + "");
         props.store(new FileOutputStream("configs/config.properties"),"this is the configure file to keep users special state");
     }
 

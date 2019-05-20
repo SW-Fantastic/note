@@ -1,7 +1,6 @@
 package org.swdc.note.app.ui.controller;
 
 import de.felixroske.jfxsupport.FXMLController;
-import de.felixroske.jfxsupport.GUIState;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -65,7 +64,7 @@ public class ConfigViewController implements Initializable {
             radioUISimple.setSelected(true);
         }
         cbxBackground.setSelected(config.getRunInBackground());
-        cbxTrayWinLike.setSelected(config.getWindStyledPopup());
+        cbxTrayWinLike.setSelected(config.getWinStyledPopup());
         String osName = System.getProperty("os.name");
         if (osName != null && osName.toLowerCase().startsWith("win")) {
             cbxTrayWinLike.setSelected(true);
@@ -79,7 +78,7 @@ public class ConfigViewController implements Initializable {
         config.setBackground(combImg.getSelectionModel().getSelectedItem());
         config.setMode(radioGp.getSelectedToggle().getUserData().toString());
         config.setRunInBackground(cbxBackground.isSelected());
-        config.setWindStyledPopup(cbxTrayWinLike.isSelected());
+        config.setWinStyledPopup(cbxTrayWinLike.isSelected());
         config.setEditorFontSize(Double.valueOf(sldEditorFont.getValue()).intValue());
         DataUtil.writeConfigProp(config);
         Optional<ButtonType> result = UIUtil.showAlertDialog("重新启动应用以使配置生效吗？", "提示", Alert.AlertType.CONFIRMATION,config);

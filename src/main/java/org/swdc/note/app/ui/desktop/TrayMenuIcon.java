@@ -25,6 +25,8 @@ public class TrayMenuIcon extends TrayIcon {
 
     private UIConfig config;
 
+    private PopupMenu awtMenu;
+
     @Autowired
     private StartEditView editView;
 
@@ -51,23 +53,45 @@ public class TrayMenuIcon extends TrayIcon {
         popupMenu.add(itemExit);
         popupMenu.setInvoker(popupMenu);
         popupMenu.addMouseListener((MouseExitedAdapter)this::onMenuMouseExited);
+
+        awtMenu = new PopupMenu();
+        MenuItem itemMenuOpen = new MenuItem("创建文档");
+        MenuItem itemMenuView = new MenuItem("打开主界面");
+        MenuItem itemMenuExit = new MenuItem("退出");
+
+        itemMenuOpen.addActionListener(this::createNewDoc);
+        itemMenuView.addActionListener(this::showMainView);
+        itemMenuExit.addActionListener(this::exit);
+
+        awtMenu.add(itemMenuOpen);
+        awtMenu.add(itemMenuView);
+        awtMenu.add(itemMenuExit);
     }
 
     private void onIconClick(MouseEvent event) {
-        if (isWindowsStyledPopup()) {
-            popupMenu.setLocation(event.getX(), event.getY() - (int)popupMenu.getPreferredSize().getHeight() / popupMenu.getComponents().length * popupMenu.getComponents().length + 1);
-        } else {
-            popupMenu.setLocation(event.getX(), event.getY());
-        }
-        if (event.getButton() == MouseEvent.BUTTON3) {
-            if (event.getClickCount() == 1) {
-                popupMenu.setVisible(true);
+        try {
+            if (isWindowsStyledPopup()) {
+                popupMenu.setLocation(event.getX(), event.getY() - (int)popupMenu.getPreferredSize().getHeight() / popupMenu.getComponents().length * popupMenu.getComponents().length + 1);
+            } else {
+                popupMenu.setLocation(event.getX(), event.getY());
             }
-        } else {
-            if (event.getClickCount() == 2) {
-                this.showMainView(null);
+            if (event.getButton() == MouseEvent.BUTTON3) {
+                if (event.getClickCount() == 1) {
+                    popupMenu.setVisible(true);
+                }
+            } else {
+                if (event.getClickCount() == 2 && config.getWinStyledPopup()) {
+                    this.showMainView(null);
+                } else {
+                    popupMenu.setVisible(true);
+                }
+            }
+        } catch (NullPointerException ex) {
+            if (this.getPopupMenu() == null) {
+                this.setPopupMenu(awtMenu);
             }
         }
+
     }
 
     private void onMenuMouseExited(MouseEvent event) {
@@ -134,7 +158,7 @@ public class TrayMenuIcon extends TrayIcon {
     }
 
     private boolean isWindowsStyledPopup() {
-       return this.config.getWindStyledPopup();
+       return this.config.getWinStyledPopup();
     }
 
 }

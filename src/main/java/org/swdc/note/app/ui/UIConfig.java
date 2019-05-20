@@ -818,7 +818,7 @@ public class UIConfig {
 
     @Getter
     @Setter
-    private Boolean windStyledPopup;
+    private Boolean winStyledPopup;
 
     @PostConstruct
     private void init() throws Exception{
@@ -835,7 +835,7 @@ public class UIConfig {
         }
         String osName = System.getProperty("os.name");
         if (osName != null && osName.toLowerCase().startsWith("win")) {
-            this.windStyledPopup = true;
+            this.winStyledPopup = true;
         }
     }
 
