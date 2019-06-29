@@ -47,7 +47,8 @@ public class SwMarkdownFormatter extends FileFormatter {
         String[] extName = name.split("[.]");
         if(extName[extName.length - 1].equals("mdxn") && clazz.equals(Article.class)){
             try {
-                String source = UIUtil.readFile((InputStream)new FileInputStream(target));
+                InputStream is = new FileInputStream(target);
+                String source = UIUtil.readFile(is);
                 Map<String,String> result = (Map) JSON.parse(source);
                 Article article = new Article();
                 article.setTitle(result.get("artleTitle"));
@@ -56,6 +57,7 @@ public class SwMarkdownFormatter extends FileFormatter {
                 context.setImageRes((Map)JSON.parse(result.get("resource")));
                 context.setContent(result.get("artleContext"));
                 article.setContext(context);
+                is.close();
                 return (T) article;
             }catch (Exception e){
                 throw new RuntimeException(e);
@@ -90,6 +92,7 @@ public class SwMarkdownFormatter extends FileFormatter {
             try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(target))){
                 writeType(type,zos,"source/"+type.getName());
                 zos.flush();
+                zos.close();
             }catch (Exception e){
 
             }
@@ -134,6 +137,7 @@ public class SwMarkdownFormatter extends FileFormatter {
             context.setContent(result.get("artleContext"));
             article.setContext(context);
             articleService.saveArticle(article,context);
+            in.close();
         }
 
     }

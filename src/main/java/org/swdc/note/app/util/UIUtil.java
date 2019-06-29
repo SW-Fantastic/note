@@ -70,6 +70,7 @@ public class UIUtil {
                 dos.write(buf,0,length);
             }
             dos.flush();
+            dos.close();
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -80,6 +81,7 @@ public class UIUtil {
             BufferedWriter bwr = new BufferedWriter(new OutputStreamWriter(fos));
             bwr.write(content);
             bwr.flush();
+            bwr.close();
         }catch (Exception e){
             throw new RuntimeException(e);
         }
