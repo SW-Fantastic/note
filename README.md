@@ -8,6 +8,12 @@
 this is a tool for write Markdown Format documents, implements by spring-boot javaFX 、 H2Database and flex-marker
 current version is not good at mac or linux OS
 
+### 运行截图 （Screen Shots）
+
+![主界面](https://s2.ax1x.com/2019/05/26/VEkoIU.png)
+
+![编辑界面](https://s2.ax1x.com/2019/05/26/VEkjqx.png)
+
 ### 开发进程（Development Progress）
 
 * [x] 基础编辑器的实现 （Base Editor）
