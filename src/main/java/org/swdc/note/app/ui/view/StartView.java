@@ -5,14 +5,13 @@ import static org.swdc.note.app.util.UIUtil.findById;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 import de.felixroske.jfxsupport.GUIState;
-import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -75,12 +74,15 @@ public class StartView extends AbstractFxmlView {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
             if(newValue!=null&&newValue){
                 BorderPane pane = (BorderPane) StartView.this.getView();
+                SplitPane splitPane = (SplitPane)pane.getCenter();
+                BorderPane content = (BorderPane) findById("content", splitPane.getItems());
+
                 if(targetView!=viewEdit.getView() && pane.getCenter().equals(viewEdit.getView()) && !viewEdit.getDocument().trim().equals("")){
                     toolsGroup.getToggles().forEach(tog->tog.setSelected(false));
                     // 编辑页面的内容已经保存的时候，不在询问
                     if (viewEdit.isSaved()) {
                         config.publishEvent(new ResetEvent(StartEditView.class));
-                        pane.setCenter(this.targetView);
+                        content.setCenter(this.targetView);
                         toolsGroup.setUserData(obsButton);
                         toolsGroup.selectToggle(obsButton);
                         return;
@@ -89,7 +91,7 @@ public class StartView extends AbstractFxmlView {
                             .ifPresent(btnSel->{
                                 if(btnSel.equals(ButtonType.OK)) {
                                     config.publishEvent(new ResetEvent(StartEditView.class));
-                                    pane.setCenter(this.targetView);
+                                    content.setCenter(this.targetView);
                                     toolsGroup.setUserData(obsButton);
                                     toolsGroup.selectToggle(obsButton);
                                 }else if (toolsGroup.getUserData()!=null){
@@ -97,7 +99,7 @@ public class StartView extends AbstractFxmlView {
                                 }
                             });
                 }else{
-                    pane.setCenter(targetView);
+                    content.setCenter(targetView);
                     toolsGroup.setUserData(obsButton);
                 }
             }
@@ -110,13 +112,19 @@ public class StartView extends AbstractFxmlView {
         GUIState.getStage().setMinWidth(1020);
         GUIState.getStage().setMinHeight(680);
         BorderPane pane = (BorderPane) this.getView();
-        pane.setCenter(viewList.getView());
+        SplitPane splitPane = (SplitPane)pane.getCenter();
+
+        BorderPane content = (BorderPane) findById("content", splitPane.getItems());
+        content.setCenter(viewList.getView());
+
         String res = new StringBuilder(UIConfig.getConfigLocation()).append("res/").append(config.getBackground()).toString();
         pane.setStyle(pane.getStyle()+";-fx-background-image: url("+res+");");
 
         UIUtil.configTheme(pane,config);
 
-        ToolBar tool = (ToolBar) getView().lookup(".tool");
+        BorderPane leftPane = (BorderPane) findById("leftRoot", splitPane.getItems());
+
+        ToolBar tool = (ToolBar)leftPane.lookup(".tool");
 
         // 使用font-awsome的字体图标
         Optional.ofNullable((ToggleButton) findById("list",tool.getItems()))
@@ -157,11 +165,10 @@ public class StartView extends AbstractFxmlView {
                });
             });
         });
-        Button btnSearch = (Button) getView().lookup("#search");
+        Button btnSearch = (Button) leftPane.lookup("#search");
         btnSearch.setFont(UIConfig.getFontIcon());
         btnSearch.setText(String.valueOf(UIConfig.getAwesomeMap().get("search")));
-        BorderPane leftRoot = (BorderPane) this.getView().lookup("#leftRoot");
-        this.typeTreePanel = (VBox)leftRoot.getCenter();
+        this.typeTreePanel = (VBox)leftPane.getCenter();
     }
 
     @PostConstruct
@@ -171,24 +178,40 @@ public class StartView extends AbstractFxmlView {
                 oldValue.setSelected(true);
             }
         });
-        BorderPane pane = (BorderPane) this.getView();
-        pane.widthProperty().addListener(num->{
-            refreshWidths();
-        });
-        pane.heightProperty().addListener(num->{
-            ((BorderPane) viewList.getView()).setPrefHeight(pane.getHeight());
-            ((BorderPane) viewEdit.getView()).setPrefHeight(pane.getHeight());
-            ((BorderPane) viewRead.getView()).setPrefHeight(pane.getHeight());
-            ((BorderPane) viewConfig.getView()).setPrefHeight(pane.getHeight());
-        });
+        bindSizes();
     }
 
-    public void refreshWidths(){
+    public void bindSizes(){
         BorderPane pane = (BorderPane) this.getView();
-        ((BorderPane) viewList.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
-        ((BorderPane) viewEdit.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
-        ((BorderPane) viewRead.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
-        ((BorderPane) viewConfig.getView()).setPrefWidth(pane.getWidth() - ((BorderPane)pane.getLeft()).getPrefWidth());
+        SplitPane splitPane = (SplitPane)pane.getCenter();
+        BorderPane content = (BorderPane) findById("content", splitPane.getItems());
+        BorderPane leftPane = (BorderPane) findById("leftRoot", splitPane.getItems());
+
+        SimpleDoubleProperty width = new SimpleDoubleProperty();
+        content.widthProperty().addListener(((observable, oldValue, newValue) -> {
+            width.setValue(newValue);
+        }));
+        splitPane.getDividers().get(0).positionProperty().addListener(((observable, oldValue, newValue) -> {
+            double widthFull = content.getWidth();
+            if (widthFull == content.getMinWidth()) {
+                width.set(content.getMinWidth());
+                return;
+            } else if (leftPane.getWidth() == leftPane.getMinWidth()) {
+                width.set(pane.getWidth() - leftPane.getMinWidth());
+                return;
+            }
+            widthFull = widthFull *(1 - newValue.doubleValue());
+            width.set(widthFull);
+        }));
+        ((BorderPane) viewList.getView()).prefWidthProperty().bind(width);
+        ((BorderPane) viewEdit.getView()).prefWidthProperty().bind(width);
+        ((BorderPane) viewRead.getView()).prefWidthProperty().bind(width);
+        ((BorderPane) viewConfig.getView()).prefWidthProperty().bind(width);
+
+        ((BorderPane) viewList.getView()).prefHeightProperty().bind(pane.heightProperty());
+        ((BorderPane) viewEdit.getView()).prefHeightProperty().bind(pane.heightProperty());
+        ((BorderPane) viewRead.getView()).prefHeightProperty().bind(pane.heightProperty());
+        ((BorderPane) viewConfig.getView()).prefHeightProperty().bind(pane.heightProperty());
     }
 
     private void initToolBtn(ToggleButton btn,String iconName, boolean single){
@@ -207,36 +230,34 @@ public class StartView extends AbstractFxmlView {
      */
     @EventListener
     public void onViewChange(ViewChangeEvent e){
-        BorderPane pane = (BorderPane) this.getView();
         ToolBar tool = (ToolBar) getView().lookup(".tool");
         if(e.getViewName().equals("EditView")){
             Optional.ofNullable((ToggleButton) findById("write",tool.getItems()))
                     .ifPresent(btn-> {
                         toolsGroup.selectToggle(btn);
-                       // pane.setCenter(viewEdit.getView());
                     });
         }else if(e.getViewName().equals("ListView")){
             Optional.ofNullable((ToggleButton) findById("list",tool.getItems()))
                     .ifPresent(btn-> {
                         toolsGroup.selectToggle(btn);
-                      //  pane.setCenter(viewList.getView());
                     });
         }else if(e.getViewName().equals("ReadView")){
             Optional.ofNullable((ToggleButton)findById("read",tool.getItems()))
                     .ifPresent(btn->{
                         toolsGroup.selectToggle(btn);
-                       // pane.setCenter(viewRead.getView());
                     });
         } else if(e.getSource().equals("HideTree")) {
             BorderPane leftRoot = (BorderPane) this.getView().lookup("#leftRoot");
             leftRoot.setCenter(null);
             leftRoot.setPrefWidth(60);
-            refreshWidths();
+            leftRoot.setMinWidth(60);
+            leftRoot.setMaxWidth(60);
         } else if (e.getSource().equals("ShowTree")) {
             BorderPane leftRoot = (BorderPane) this.getView().lookup("#leftRoot");
             leftRoot.setCenter(this.typeTreePanel);
+            leftRoot.setMaxWidth(Region.USE_COMPUTED_SIZE);
             leftRoot.setPrefWidth(297);
-           refreshWidths();
+            leftRoot.setMinWidth(245);
         }
     }
 }

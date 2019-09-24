@@ -15,46 +15,52 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640" prefWidth="1000" styleClass="root-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.StartController">
-   <left>
-      <BorderPane id="leftRoot" prefHeight="640.0" prefWidth="297.0" styleClass="left-pane" BorderPane.alignment="CENTER">
-         <right>
-            <ToolBar orientation="VERTICAL" prefHeight="640.0" prefWidth="50.0" styleClass="tool" BorderPane.alignment="CENTER">
-               <items>
-                  <ToggleButton id="list" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="列表" />
-                  <ToggleButton id="write" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="写作" />
-                  <ToggleButton id="read" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="阅读" />
-                  <ToggleButton id="config" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="配置" />
-                  <VBox id="option" alignment="CENTER" prefHeight="52.0" prefWidth="40.0">
+   <center>
+      <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" styleClass="spl-pane" BorderPane.alignment="CENTER">
+         <items>
+            <BorderPane id="leftRoot" minWidth="245.0" prefHeight="640.0" prefWidth="297.0" styleClass="left-pane">
+               <right>
+                  <ToolBar orientation="VERTICAL" prefHeight="640.0" prefWidth="50.0" styleClass="tool" BorderPane.alignment="CENTER">
+                     <items>
+                        <ToggleButton id="list" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="列表" />
+                        <ToggleButton id="write" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="写作" />
+                        <ToggleButton id="read" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="阅读" />
+                        <ToggleButton id="config" mnemonicParsing="false" prefHeight="37.0" prefWidth="40.0" text="配置" />
+                        <VBox id="option" alignment="CENTER" prefHeight="52.0" prefWidth="40.0">
+                           <children>
+                              <ToggleButton id="tree" mnemonicParsing="false" prefHeight="25.0" prefWidth="24.0" selected="true" styleClass="circle-tog" text="类型" />
+                           </children>
+                        </VBox>
+                     </items>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </ToolBar>
+               </right>
+               <center>
+                  <VBox id="treePane" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                      <children>
-                        <ToggleButton id="tree" mnemonicParsing="false" prefHeight="25.0" prefWidth="24.0" selected="true" styleClass="circle-tog" text="类型" />
+                        <HBox prefHeight="57.0" prefWidth="240.0">
+                           <children>
+                              <TextField fx:id="txtSearch" prefHeight="34.0" prefWidth="165.0" promptText="搜索" styleClass="txt" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets left="8.0" top="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <Button id="search" mnemonicParsing="false" onAction="#onSearch" prefHeight="33.0" prefWidth="39.0" styleClass="btn" text="搜索">
+                                 <HBox.margin>
+                                    <Insets right="8.0" top="10.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <TreeView fx:id="typeTreeView" prefHeight="200.0" prefWidth="200.0" styleClass="tree" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
-               </items>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-            </ToolBar>
-         </right>
-         <center>
-            <VBox id="treePane" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-               <children>
-                  <HBox prefHeight="57.0" prefWidth="240.0">
-                     <children>
-                        <TextField fx:id="txtSearch" prefHeight="34.0" prefWidth="165.0" promptText="搜索" styleClass="txt" HBox.hgrow="ALWAYS">
-                           <HBox.margin>
-                              <Insets left="8.0" top="10.0" />
-                           </HBox.margin>
-                        </TextField>
-                        <Button id="search" mnemonicParsing="false" onAction="#onSearch" prefHeight="33.0" prefWidth="39.0" styleClass="btn" text="搜索">
-                           <HBox.margin>
-                              <Insets right="8.0" top="10.0" />
-                           </HBox.margin>
-                        </Button>
-                     </children>
-                  </HBox>
-                  <TreeView fx:id="typeTreeView" prefHeight="200.0" prefWidth="200.0" styleClass="tree" VBox.vgrow="ALWAYS" />
-               </children>
-            </VBox>
-         </center></BorderPane>
-   </left>
+               </center>
+            </BorderPane>
+            <BorderPane id="content" minWidth="600.0" prefHeight="638.0" prefWidth="563.0" />
+         </items>
+      </SplitPane>
+   </center>
 </BorderPane>
