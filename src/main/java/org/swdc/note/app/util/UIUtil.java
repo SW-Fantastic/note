@@ -137,4 +137,12 @@ public class UIUtil {
         return alert.showAndWait();
     }
 
+    public static double getScreenX(Node node) {
+        return  node.localToScreen(0,0).getX();
+    }
+
+    public static double getScreenY(Node node) {
+        return node.localToScreen(0,0).getY();
+    }
+
 }

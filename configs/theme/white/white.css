@@ -344,3 +344,8 @@
     -fx-text-fill: rgb(253,255,223);
     -fx-font-size: 12px;
 }
+.rect-selector {
+    -c-background-color: #FFF;
+    -c-border-color: #999;
+    -c-fill-color: rgb(208,242,179);
+}

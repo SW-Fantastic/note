@@ -31,8 +31,11 @@ import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.swdc.note.app.NoteApplication;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.component.RectResult;
+import org.swdc.note.app.ui.component.RectSelector;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.ui.view.dialogs.TableDialog;
 import org.swdc.note.app.util.DataUtil;
@@ -124,6 +127,8 @@ public class StartEditView extends AbstractFxmlView{
     @Autowired
     private TableDialog tableDialog;
 
+    private RectSelector rectSelector;
+
     /**
      * 如果inputRequest为null，那么MAC系统将会出现无法输入中文的问题。
      */
@@ -204,6 +209,10 @@ public class StartEditView extends AbstractFxmlView{
         codePane.setCenter(new VirtualizedScrollPane<>(codeArea));
         // javaFX SpringBoot Support库不能够在FXML中初始化webView。
         Platform.runLater(()->{
+            try {
+                rectSelector = new RectSelector();
+                UIUtil.configTheme(rectSelector.getDialogPane(), config);
+            } catch (Exception ex) {}
             WebView contentView = new WebView();
             BorderPane paneWeb = (BorderPane)findById("contentView",viewerPane.getItems());
             paneWeb.setCenter(contentView);
@@ -385,12 +394,29 @@ public class StartEditView extends AbstractFxmlView{
         );
 
         initButton("tab",toolBar.getItems(),"table",e->{
-            Stage stage = tableDialog.getStage();
-            if (!stage.isShowing()){
-                stage.showAndWait();
+            Button btnTable = (Button)findById("tab",toolBar.getItems());
+            rectSelector.setX(UIUtil.getScreenX(btnTable));
+            rectSelector.setY(UIUtil.getScreenY(btnTable) + btnTable.getHeight());
+            if (rectSelector.getOwner() == null) {
+                rectSelector.initOwner(GUIState.getStage());
+            }
+            RectResult rectResult = rectSelector.showAndWait().orElse(new RectResult());
+            String table = "";
+            for (int i = 0;i < rectResult.getxCount() + 1; i++){
+                for (int j = 0;j < rectResult.getyCount();j++){
+                    if(i!=1){
+                        table = table + "| <内容> ";
+                    }else {
+                        table = table + "|:-----:";
+                    }
+                    if(j+1 == rectResult.getyCount()){
+                        table = table + "|";
+                    }
+                }
+                table = table + "\n";
             }
             IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-            code.replaceText(rgCurr,"\n\n"+tableDialog.getTable());
+            code.replaceText(rgCurr,"\n\n"+table);
         });
         initButton("ol",toolBar.getItems(),"list_ol",e->{
             int idx = 1;
