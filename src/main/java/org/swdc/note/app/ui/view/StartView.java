@@ -189,7 +189,7 @@ public class StartView extends AbstractFxmlView {
 
         SimpleDoubleProperty width = new SimpleDoubleProperty();
         content.widthProperty().addListener(((observable, oldValue, newValue) -> {
-            width.setValue(newValue);
+            width.set(newValue.doubleValue());
         }));
         splitPane.getDividers().get(0).positionProperty().addListener(((observable, oldValue, newValue) -> {
             double widthFull = content.getWidth();
@@ -200,9 +200,8 @@ public class StartView extends AbstractFxmlView {
                 width.set(pane.getWidth() - leftPane.getMinWidth());
                 return;
             }
-            widthFull = widthFull *(1 - newValue.doubleValue());
-            width.set(widthFull);
         }));
+
         ((BorderPane) viewList.getView()).prefWidthProperty().bind(width);
         ((BorderPane) viewEdit.getView()).prefWidthProperty().bind(width);
         ((BorderPane) viewRead.getView()).prefWidthProperty().bind(width);
