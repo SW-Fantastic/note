@@ -5,7 +5,6 @@ import com.vladsch.flexmark.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.swdc.note.app.ui.UIConfig;
-import org.swdc.note.app.ui.view.dialogs.ImageDialog;
 import org.swdc.note.app.util.DataUtil;
 
 import java.util.HashMap;
@@ -49,7 +48,7 @@ public class HTMLContentRender implements ContentRender {
             }
         }
         StringBuilder sb = new StringBuilder(source);
-        sb.append("\r\n");
+        sb.append("\n\n");
         resource.entrySet().forEach(ent->
                 sb.append("[")
                         .append(ent.getKey())
