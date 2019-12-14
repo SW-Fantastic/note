@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleContext;
+import org.swdc.note.app.render.ContentRender;
 import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
@@ -36,16 +37,7 @@ public class MarkedHtmlFormatter extends FileFormatter {
     private ArticleService articleService;
 
     @Autowired
-    private Parser parser;
-
-    @Autowired
-    private HtmlRenderer renderer;
-
-    @Autowired
     private Remark remark;
-
-    @Autowired
-    private UIConfig config;
 
     private List<FileChooser.ExtensionFilter> filters = Arrays.asList(new FileChooser.ExtensionFilter("HTML格式","*.html","*.htm"));
 
@@ -121,18 +113,11 @@ public class MarkedHtmlFormatter extends FileFormatter {
             Article article = (Article)targetObj;
             ArticleContext context = articleService.loadContext(article);
             Map<String,String> resource = context.getImageRes();
-            StringBuilder sb = new StringBuilder();
-            sb.append("\r\n");
-            resource.entrySet().forEach(ent->
-                    sb.append("[")
-                            .append(ent.getKey())
-                            .append("]: data:image/png;base64,")
-                            .append(ent.getValue())
-                            .append("\n"));
-            String content = renderer.render(parser.parse(context.getContent()+"\n"+sb.toString()));
+            ContentRender render = articleService.getRender("html");
+            String content = render.processBeforeRender(context.getContent(),resource);
+            content = render.renderSource(content);
+            content = render.processAfterRender(content);
             try {
-                content = "<!doctype html><html><head><meta charset='UTF-8'><style>"+config.getMdStyleContent()+"</style></head>"
-                        +"<body ondragstart='return false;'>"+new String(content.getBytes(Charset.defaultCharset()),"utf8")+"</body></html>";
                 if(!extName[extName.length - 1].equals("html")&&!extName[extName.length - 1].equals("htm")){
                     target = new File(target.getAbsolutePath() + ".html");
                 }
@@ -141,7 +126,6 @@ public class MarkedHtmlFormatter extends FileFormatter {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     @Override

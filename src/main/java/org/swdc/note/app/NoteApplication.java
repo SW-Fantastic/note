@@ -1,6 +1,7 @@
 package org.swdc.note.app;
 
 import de.felixroske.jfxsupport.AbstractJavaFxApplicationSupport;
+import de.felixroske.jfxsupport.GUIState;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -8,6 +9,7 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.event.ReLaunchEvent;
 import org.swdc.note.app.ui.Splash;
@@ -19,6 +21,7 @@ import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.awt.*;
+import java.io.File;
 import java.util.Collection;
 
 @CommonsLog
@@ -33,18 +36,24 @@ public class NoteApplication extends AbstractJavaFxApplicationSupport {
 
     public static void main(String[] args) throws Exception{
         BeautyEyeLNFHelper.launchBeautyEyeLNF();
-        /*
-        * 判断启动模式，classical模式和normal两种，
-        * 他们会共用一部分controller，这会导致controller冲突
-        * 因此部分方法会失效，为了防止这种问题，需要使用NotViewClassicalCondition
-        * 结合conditional注解屏蔽一部分view
-        * */
-        if(UIUtil.isClassical()){
-            // 此模式暂时弃用
-            launch(NoteApplication.class,ClStartView.class,new Splash(),args);
-        }else{
-            launch(NoteApplication.class,StartView.class,new Splash(),args);
-        }
+        launch(NoteApplication.class,StartView.class,new Splash(),args);
+    }
+
+    @Override
+    public void beforeInitialView(Stage stage, ConfigurableApplicationContext ctx) {
+        stage.showingProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                UIConfig config = ctx.getBean(UIConfig.class);
+                stage.getScene().getStylesheets().add(new File("./configs/theme/" + config.getTheme() + "/stage.css").toURI().toURL().toExternalForm());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            stage.close();
+            ctx.stop();
+            System.exit(0);
+        }));
     }
 
     @PostConstruct

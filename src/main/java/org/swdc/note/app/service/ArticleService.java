@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleContext;
 import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.render.ContentRender;
+import org.swdc.note.app.render.HTMLContentRender;
 import org.swdc.note.app.repository.ArticleRepository;
 import org.swdc.note.app.repository.ArticleTypeRepository;
 import org.swdc.note.app.ui.UIConfig;
@@ -32,13 +34,7 @@ public class ArticleService {
     private EntityManager entityManager;
 
     @Autowired
-    private Parser parser;
-
-    @Autowired
-    private HtmlRenderer renderer;
-
-    @Autowired
-    private UIConfig config;
+    private List<ContentRender> renders;
 
     @Autowired
     private ArticleRepository articleRepository;
@@ -108,48 +104,21 @@ public class ArticleService {
         }
     }
 
-    public String compile(ArticleContext context){
-        Map<String,String> resource = context.getImageRes();
-        String contentStr = context.getContent();
-        // 渲染TeX公式
-        // 匹配双$符，在这之间的是公式
-        Pattern pattern = Pattern.compile("\\$[^$]+\\$");
-        Matcher matcher = pattern.matcher(contentStr);
-        Map<String,String> funcsMap = new HashMap<>();
-        // 匹配到了一个
-        while (matcher.find()){
-            // 获取内容，转换为base64
-            String result = matcher.group();
-            result = result.substring(1,result.length() - 1);
-            if (result.trim().equals("")){
-                continue;
-            }
-            String funcData = DataUtil.compileFunc(result);
-            if (funcData != null){
-                // 准备图片
-                funcsMap.put(result,funcData);
-                contentStr = contentStr.replace("$"+result+"$","![func]["+result.trim()+"]");
+    public ContentRender getRender(String format) {
+        for (ContentRender render : renders) {
+            if (render.support(format)) {
+                return render;
             }
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("\r\n");
-        // 渲染图片资源
-        resource.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey())
-                        .append("]: data:image/png;base64,")
-                        .append(ent.getValue())
-                        .append("\n"));
-        funcsMap.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey().trim())
-                        .append("]: data:image/png;base64,")
-                        .append(ent.getValue())
-                        .append("\n"));
-        String content = renderer.render(parser.parse(contentStr+"\n"+sb.toString()));
-        content = "<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
-                +"<body ondragstart='return false;'>"+content+"</body></html>";
-        return content;
+        return null;
+    }
+
+    public String renderHTML(ArticleContext context){
+        ContentRender render = getRender("html");
+
+        Map<String,String> resource = context.getImageRes();
+        String contentStr = context.getContent();
+        return render.render(contentStr,resource);
     }
 
 }

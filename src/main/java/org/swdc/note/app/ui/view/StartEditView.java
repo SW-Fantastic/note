@@ -1,6 +1,9 @@
 package org.swdc.note.app.ui.view;
 
 import com.sun.javafx.scene.input.ExtendedInputMethodRequests;
+import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
+import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
+import com.teamdev.jxbrowser.chromium.javafx.BrowserView;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.profiles.pegdown.Extensions;
@@ -33,6 +36,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.NoteApplication;
 import org.swdc.note.app.event.ResetEvent;
+import org.swdc.note.app.render.HTMLContentRender;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.component.RectResult;
 import org.swdc.note.app.ui.component.RectSelector;
@@ -86,11 +90,8 @@ public class StartEditView extends AbstractFxmlView{
 
     private static final String FUNCTEX_PATTERN ="\\$[^$]+\\$";
 
-    @Autowired
-    private Parser parser;
-
-    @Autowired
-    private HtmlRenderer renderer;
+   @Autowired
+   private HTMLContentRender render;
 
     @Getter
     private Stage stage;
@@ -126,6 +127,8 @@ public class StartEditView extends AbstractFxmlView{
 
     @Autowired
     private TableDialog tableDialog;
+
+    private CodeArea codeArea;
 
     private RectSelector rectSelector;
 
@@ -186,7 +189,49 @@ public class StartEditView extends AbstractFxmlView{
     protected void initUI() throws Exception{
         BorderPane pane = (BorderPane)this.getView();
         UIUtil.configTheme(pane,config);
-        CodeArea codeArea = new CodeArea();
+        initCodeArea();
+
+        SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
+        BorderPane codePane = (BorderPane) findById("codeView",viewerPane.getItems());
+        codePane.setCenter(new VirtualizedScrollPane<>(codeArea));
+        // javaFX SpringBoot Support库不能够在FXML中初始化webView。
+        Platform.runLater(()->{
+            try {
+                rectSelector = new RectSelector();
+                UIUtil.configTheme(rectSelector.getDialogPane(), config);
+            } catch (Exception ex) {
+
+            }
+            BrowserView browserView = new BrowserView();
+            BorderPane paneWeb = (BorderPane)findById("contentView",viewerPane.getItems());
+            paneWeb.setCenter(browserView);
+            browserView.getBrowser().addLoadListener(new LoadAdapter() {
+                @Override
+                public void onFinishLoadingFrame(FinishLoadingEvent event) {
+                    if (event.isMainFrame()) {
+                        // 计算当前行
+                        int currLine = codeArea.getText().substring(0,codeArea.getCaretPosition()).split("\n").length;
+                        // 总行数
+                        int lines = codeArea.getText().split("\n").length;
+                        double scrollPos = 1;
+                        // 计算滚动位置
+                        if(lines > 0 && currLine>0){
+                            scrollPos = ((double)currLine) / ((double) lines);
+                        }
+                        browserView.getBrowser().executeJavaScript("window.scrollTo(0, document.body.clientHeight * "+scrollPos+");");
+                    }
+                }
+            });
+            codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
+                String context = render.render(codeArea.getText(),imageDialog.getImages());
+                browserView.getBrowser().loadHTML(context);
+            }));
+        });
+        initEditTool();
+    }
+
+    private void initCodeArea() {
+        codeArea = new CodeArea();
         codeArea.setInputMethodRequests(new InputMethodRequestsObject(codeArea));
         codeArea.setOnInputMethodTextChanged(e->{
             if(e.getCommitted() != null){
@@ -203,74 +248,10 @@ public class StartEditView extends AbstractFxmlView{
         codeArea.textProperty().addListener(((observable, oldValue, newValue) -> {
             this.saved = false;
         }));
-        SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
+        codeArea.setContextMenu(createCodeAreaMenu());
+    }
 
-        BorderPane codePane = (BorderPane) findById("codeView",viewerPane.getItems());
-        codePane.setCenter(new VirtualizedScrollPane<>(codeArea));
-        // javaFX SpringBoot Support库不能够在FXML中初始化webView。
-        Platform.runLater(()->{
-            try {
-                rectSelector = new RectSelector();
-                UIUtil.configTheme(rectSelector.getDialogPane(), config);
-            } catch (Exception ex) {}
-            WebView contentView = new WebView();
-            BorderPane paneWeb = (BorderPane)findById("contentView",viewerPane.getItems());
-            paneWeb.setCenter(contentView);
-            contentView.getEngine().getLoadWorker().stateProperty().addListener(((observable, oldValue, newValue) -> {
-                if(newValue.equals(Worker.State.SUCCEEDED)){
-                    // 计算当前行
-                    int currLine = codeArea.getText().substring(0,codeArea.getCaretPosition()).split("\n").length;
-                    // 总行数
-                    int lines = codeArea.getText().split("\n").length;
-                    double scrollPos = 1;
-                    // 计算滚动位置
-                    if(lines > 0 && currLine>0){
-                        scrollPos = ((double)currLine) / ((double) lines);
-                    }
-                    contentView.getEngine().executeScript("window.scrollTo(0, document.body.clientHeight * "+scrollPos+");");
-                }
-            }));
-            codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
-                String context = codeArea.getText();
-                // 匹配双$符，在这之间的是公式
-                Pattern pattern = Pattern.compile("\\$[^$]+\\$");
-                Matcher matcher = pattern.matcher(context);
-                Map<String,String> funcsMap = new HashMap<>();
-                // 匹配到了一个
-                while (matcher.find()){
-                    // 获取内容，转换为base64
-                    String result = matcher.group();
-                    result = result.substring(1,result.length() - 1);
-                    if (result.trim().equals("")){
-                        continue;
-                    }
-                    String funcData = DataUtil.compileFunc(result);
-                    if (funcData != null){
-                        // 准备图片
-                        funcsMap.put(result,funcData);
-                        context = context.replace("$"+result+"$","![func]["+result.trim()+"]");
-                    }
-                }
-                StringBuilder sb = new StringBuilder();
-                sb.append("\r\n");
-                imageDialog.getImages().entrySet().forEach(ent->
-                    sb.append("[")
-                            .append(ent.getKey())
-                            .append("]: data:image/png;base64,")
-                            .append(ent.getValue())
-                            .append("\n"));
-                funcsMap.entrySet().forEach(ent->
-                        sb.append("[")
-                                .append(ent.getKey().trim())
-                                .append("]: data:image/png;base64,")
-                                .append(ent.getValue())
-                                .append("\n"));
-                String content = renderer.render(parser.parse(context+"\n"+sb.toString()));
-                contentView.getEngine().loadContent("<!doctype html><html><head><style>"+config.getMdStyleContent()+"</style></head>"
-                        +"<body ondragstart='return false;'>"+content+"</body></html>");
-            }));
-        });
-
+    private ContextMenu createCodeAreaMenu() {
         ContextMenu menu = new ContextMenu();
         MenuItem itemCopy = new MenuItem("复制 (Ctrl/Command + C)");
         MenuItem itemPaste = new MenuItem("黏贴 (Ctrl/Command + V)");
@@ -302,70 +283,34 @@ public class StartEditView extends AbstractFxmlView{
         itemRedo.setOnAction(e->codeArea.redo());
 
         menu.getStyleClass().add("edit-menu");
-
-        codeArea.setContextMenu(menu);
-
-        initEditTool();
-        if(UIUtil.isClassical()){
-            Platform.runLater(()->{
-                String res = new StringBuilder(UIConfig.getConfigLocation()).append("res/").append(config.getBackground()).toString();
-                this.getView().setStyle(pane.getStyle()+";-fx-background-image: url("+res+");");
-                stage = new Stage();
-                Scene scene = new Scene(this.getView());
-                stage.setScene(scene);
-                stage.setMinWidth(800);
-                stage.setMinHeight(600);
-                stage.getIcons().addAll(UIConfig.getImageIcons());
-                stage.setTitle("编辑");
-                imageDialog.getStage().initOwner(stage);
-                tableDialog.getStage().initOwner(stage);
-            });
-        }
+        return menu;
     }
 
     private void initEditTool(){
         SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
         BorderPane pane = (BorderPane)findById("codeView",viewerPane.getItems());
         ToolBar toolBar = (ToolBar) pane.getTop();
-        CodeArea code = (CodeArea) ((VirtualizedScrollPane)pane.getCenter()).getContent();
+
         // 加粗按钮的处理
-        initButton("big",toolBar.getItems(),"bold",e->{
-            String sel = code.getSelectedText();
-            IndexRange range = code.getSelection();
-            if(sel==null||sel.equals("")){
-                // 获取光标位置
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                // 插入内容
-                code.replaceText(rgCurr,"**内容写在这里**");
-                return;
-            }
-            sel = reduceDesc(sel,"**");
-            code.replaceText(range.getStart(),range.getEnd(),sel);
-         });
+        initButton("big",toolBar.getItems(),"bold", this::onToolBold);
         // 斜体按钮的处理
-        initButton("italic",toolBar.getItems(),"italic",e->{
-            String sel = code.getSelectedText();
-            IndexRange range = code.getSelection();
-            if(sel==null||sel.equals("")){
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr,"*内容写在这里*");
-                return;
-            }
-            sel = reduceDesc(sel,"*");
-            code.replaceText(range.getStart(),range.getEnd(),sel);
-        });
+        initButton("italic",toolBar.getItems(),"italic",this::onToolItalic);
         // 删除线的处理
-        initButton("delLine",toolBar.getItems(),"strikethrough",e->{
-            String sel = code.getSelectedText();
-            IndexRange range = code.getSelection();
-            if(sel==null||sel.equals("")){
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr,"~~内容写在这里~~");
-                return;
-            }
-           sel = reduceDesc(sel,"~~");
-            code.replaceText(range.getStart(),range.getEnd(),sel);
-        });
+        initButton("delLine",toolBar.getItems(),"strikethrough",this::onToolThrow);
+        // 表格的处理
+        initButton("tab",toolBar.getItems(),"table",this::onToolTable);
+        // 新建文档的处理
+        initButton("create",toolBar.getItems(),"sticky_note", this::onToolCreate);
+        // 有序列表的处理
+        initButton("ol",toolBar.getItems(),"list_ol", this::onToolListOl);
+        // 无序列表的处理
+        initButton("ul",toolBar.getItems(),"list_ul",this::onToolListUl);
+        // 图片添加
+        initButton("img",toolBar.getItems(),"image", this::onToolImage);
+        // 添加引用
+        initButton("quote",toolBar.getItems(),"quote_right", this::onToolQuite);
+        // 添加代码块
+        initButton("code",toolBar.getItems(),"code",this::onToolCode);
 
         Optional.ofNullable(findById("title",toolBar.getItems())).ifPresent(item->{
             MenuButton btn = (MenuButton)item;
@@ -384,110 +329,158 @@ public class StartEditView extends AbstractFxmlView{
             btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("save")));
         });
 
-        initButton("create",toolBar.getItems(),"sticky_note",e ->
-                UIUtil.showAlertWithOwner("要放弃现在编辑的内容，开始新的创作吗？", "提示", Alert.AlertType.CONFIRMATION,stage == null?GUIState.getStage():stage)
-                        .ifPresent(btnSel->{
-                            if(btnSel.equals(ButtonType.OK)) {
-                                config.publishEvent(new ResetEvent(StartEditView.class));
-                            }
-                        })
-        );
+    }
 
-        initButton("tab",toolBar.getItems(),"table",e->{
-            Button btnTable = (Button)findById("tab",toolBar.getItems());
-            rectSelector.setX(UIUtil.getScreenX(btnTable));
-            rectSelector.setY(UIUtil.getScreenY(btnTable) + btnTable.getHeight());
-            if (rectSelector.getOwner() == null) {
-                rectSelector.initOwner(GUIState.getStage());
-            }
-            RectResult rectResult = rectSelector.showAndWait().orElse(new RectResult());
-            String table = "";
-            for (int i = 0;i < rectResult.getxCount() + 1; i++){
-                for (int j = 0;j < rectResult.getyCount();j++){
-                    if(i!=1){
-                        table = table + "| <内容> ";
-                    }else {
-                        table = table + "|:-----:";
-                    }
-                    if(j+1 == rectResult.getyCount()){
-                        table = table + "|";
-                    }
+    private void onToolBold(ActionEvent event) {
+        String sel = codeArea.getSelectedText();
+        IndexRange range = codeArea.getSelection();
+        if(sel==null||sel.equals("")){
+            // 获取光标位置
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            // 插入内容
+            codeArea.replaceText(rgCurr,"**内容写在这里**");
+            return;
+        }
+        sel = reduceDesc(sel,"**");
+        codeArea.replaceText(range.getStart(),range.getEnd(),sel);
+    }
+
+    private void onToolItalic(ActionEvent event) {
+        String sel = codeArea.getSelectedText();
+        IndexRange range = codeArea.getSelection();
+        if(sel==null||sel.equals("")){
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr,"*内容写在这里*");
+            return;
+        }
+        sel = reduceDesc(sel,"*");
+        codeArea.replaceText(range.getStart(),range.getEnd(),sel);
+    }
+
+    private void onToolTable(ActionEvent event) {
+        SplitPane viewerPane = (SplitPane) getView().lookup("#viewerPane");
+        BorderPane pane = (BorderPane)findById("codeView",viewerPane.getItems());
+        ToolBar toolBar = (ToolBar) pane.getTop();
+
+        Button btnTable = (Button)findById("tab",toolBar.getItems());
+        rectSelector.setX(UIUtil.getScreenX(btnTable));
+        rectSelector.setY(UIUtil.getScreenY(btnTable) + btnTable.getHeight());
+        if (rectSelector.getOwner() == null) {
+            rectSelector.initOwner(GUIState.getStage());
+        }
+        RectResult rectResult = rectSelector.showAndWait().orElse(new RectResult());
+        String table = "";
+        for (int i = 0;i < rectResult.getxCount() + 1; i++){
+            for (int j = 0;j < rectResult.getyCount();j++){
+                if(i!=1){
+                    table = table + "| <内容> ";
+                }else {
+                    table = table + "|:-----:";
                 }
-                table = table + "\n";
-            }
-            IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-            code.replaceText(rgCurr,"\n\n"+table);
-        });
-        initButton("ol",toolBar.getItems(),"list_ol",e->{
-            int idx = 1;
-            String txt = code.getSelectedText();
-            if(txt == null || txt.equals("")){
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr," 1. 列表项a \n 2. 列表项b \n 3. 列表项c");
-                return;
-            }
-            List<String> list = Arrays.asList(txt.split("\n"));
-            StringBuilder sb = new StringBuilder();
-            for (String str:list) {
-                sb.append("\n " )
-                        .append((idx++))
-                        .append(". ")
-                        .append(str);
-            }
-            code.replaceText(code.getSelection(),sb.toString());
-        });
-        initButton("ul",toolBar.getItems(),"list_ul",e->{
-            String txt = code.getSelectedText();
-            if(txt == null || txt.equals("")){
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr," - 列表项a \n - 列表项b \n - 列表项c");
-                return;
-            }
-            List<String> list = Arrays.asList(txt.split("\n"));
-            StringBuilder sb = new StringBuilder();
-            list.forEach(str->{
-                if(str.trim().equals("")){
-                    return;
+                if(j+1 == rectResult.getyCount()){
+                    table = table + "|";
                 }
-                sb.append("\n - " ).append(str);
-            });
-            code.replaceText(code.getSelection(),sb.toString());
-        });
-        initButton("img",toolBar.getItems(),"image",e->{
-            Stage stg = imageDialog.getStage();
-            if(!stg.isShowing()){
-                stg.showAndWait();
             }
-            Optional.ofNullable(imageDialog.getSelectedImage()).ifPresent(img->{
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr,"![输入简介]["+img+"]");
-            });
-        });
-        initButton("quote",toolBar.getItems(),"quote_right",e->{
-            String text = code.getSelectedText();
-            if(text==null||text.equals("")){
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr,"\n> 输入引用的内容\n");
+            table = table + "\n";
+        }
+        IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+        codeArea.replaceText(rgCurr,"\n\n"+table);
+    }
+
+    private void onToolListOl(ActionEvent event){
+        int idx = 1;
+        String txt = codeArea.getSelectedText();
+        if(txt == null || txt.equals("")){
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr," 1. 列表项a \n 2. 列表项b \n 3. 列表项c");
+            return;
+        }
+        List<String> list = Arrays.asList(txt.split("\n"));
+        StringBuilder sb = new StringBuilder();
+        for (String str:list) {
+            sb.append("\n " )
+                    .append((idx++))
+                    .append(". ")
+                    .append(str);
+        }
+        codeArea.replaceText(codeArea.getSelection(),sb.toString());
+    }
+
+    private void onToolListUl(ActionEvent event) {
+        String txt = codeArea.getSelectedText();
+        if(txt == null || txt.equals("")){
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr," - 列表项a \n - 列表项b \n - 列表项c");
+            return;
+        }
+        List<String> list = Arrays.asList(txt.split("\n"));
+        StringBuilder sb = new StringBuilder();
+        list.forEach(str->{
+            if(str.trim().equals("")){
                 return;
             }
-            StringBuilder sb = new StringBuilder("\n");
-            List<String> list = Arrays.asList(text.split("\n"));
-            for (String str:  list) {
-                sb.append("\n> "+str );
-            }
-            code.replaceText(code.getSelection(),sb.toString());
+            sb.append("\n - " ).append(str);
         });
-        initButton("code",toolBar.getItems(),"code",e->{
-            String sel = code.getSelectedText();
-            IndexRange range = code.getSelection();
-            if (sel == null|| sel.equals("")){
-                IndexRange rgCurr = new IndexRange(code.getCaretPosition(),code.getCaretPosition());
-                code.replaceText(rgCurr,"\n```language\n \\\\ 在这里编写代码 \n ```");
-                return;
-            }
-            sel = "```language\n"+sel+"\n```";
-            code.replaceText(range.getStart(),range.getEnd(),sel);
+        codeArea.replaceText(codeArea.getSelection(),sb.toString());
+    }
+
+    private void onToolImage(ActionEvent event) {
+        Stage stg = imageDialog.getStage();
+        if(!stg.isShowing()){
+            stg.showAndWait();
+        }
+        Optional.ofNullable(imageDialog.getSelectedImage()).ifPresent(img->{
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr,"![输入简介]["+img+"]");
         });
+    }
+
+    private void onToolQuite(ActionEvent event) {
+        String text = codeArea.getSelectedText();
+        if(text==null||text.equals("")){
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr,"\n> 输入引用的内容\n");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("\n");
+        List<String> list = Arrays.asList(text.split("\n"));
+        for (String str:  list) {
+            sb.append("\n> "+str );
+        }
+        codeArea.replaceText(codeArea.getSelection(),sb.toString());
+    }
+
+    private void onToolCode(ActionEvent event) {
+        String sel = codeArea.getSelectedText();
+        IndexRange range = codeArea.getSelection();
+        if (sel == null|| sel.equals("")){
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr,"\n```language\n \\\\ 在这里编写代码 \n ```");
+            return;
+        }
+        sel = "```language\n"+sel+"\n```";
+        codeArea.replaceText(range.getStart(),range.getEnd(),sel);
+    }
+
+    private void onToolThrow(ActionEvent event) {
+        String sel = codeArea.getSelectedText();
+        IndexRange range = codeArea.getSelection();
+        if(sel==null||sel.equals("")){
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr,"~~内容写在这里~~");
+            return;
+        }
+        sel = reduceDesc(sel,"~~");
+        codeArea.replaceText(range.getStart(),range.getEnd(),sel);
+    }
+
+    private void onToolCreate(ActionEvent event) {
+        UIUtil.showAlertWithOwner("要放弃现在编辑的内容，开始新的创作吗？", "提示", Alert.AlertType.CONFIRMATION,stage == null?GUIState.getStage():stage)
+                .ifPresent(btnSel->{
+                    if(btnSel.equals(ButtonType.OK)) {
+                        config.publishEvent(new ResetEvent(StartEditView.class));
+                    }
+                });
     }
 
     public void reset(){

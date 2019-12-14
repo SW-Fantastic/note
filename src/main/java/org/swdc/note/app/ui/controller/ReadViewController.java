@@ -85,7 +85,7 @@ public class ReadViewController implements Initializable {
         Article article = e.getArticle();
         this.article = article;
         ArticleContext context = articleService.loadContext(article);
-        readView.getWebView().getEngine().loadContent(articleService.compile(context));
+        readView.getWebView().getBrowser().loadHTML(articleService.renderHTML(context));
         txtTitle.setText(article.getTitle());
         lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
         btnExport.setVisible(true);
@@ -106,7 +106,7 @@ public class ReadViewController implements Initializable {
             if(article != null){
                 // 单个数据文件打开
                 ArticleContext context = article.getContext();
-                readView.getWebView().getEngine().loadContent(articleService.compile(context));
+                readView.getWebView().getBrowser().loadHTML(articleService.renderHTML(context));
                 txtTitle.setText(article.getTitle());
                 lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
                 this.article = article;
@@ -159,7 +159,7 @@ public class ReadViewController implements Initializable {
                 return;
             }
             this.article = null;
-            readView.getWebView().getEngine().loadContent("");
+            readView.getWebView().getBrowser().loadHTML("");
             lblDate.setText("");
             txtTitle.setText("");
         }

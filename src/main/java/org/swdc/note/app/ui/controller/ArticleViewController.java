@@ -71,7 +71,7 @@ public class ArticleViewController implements Initializable {
                 Article sel = articleTable.getSelectionModel().getSelectedItem();
                 if(e.getClickCount() >= 2 && sel != null){
                     ArticleContext context = articleService.loadContext(sel);
-                    classicalView.setContent(articleService.compile(context));
+                    classicalView.setContent(articleService.renderHTML(context));
                     ArticleOpenEvent openEvent = new ArticleOpenEvent(sel);
                     config.publishEvent(openEvent);
                 }
