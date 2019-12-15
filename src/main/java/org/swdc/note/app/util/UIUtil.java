@@ -1,16 +1,24 @@
 package org.swdc.note.app.util;
 
 import de.felixroske.jfxsupport.GUIState;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
+import org.controlsfx.control.PropertySheet;
+import org.controlsfx.property.editor.PropertyEditor;
 import org.springframework.core.io.ClassPathResource;
+import org.swdc.note.app.configs.ConfigProp;
+import org.swdc.note.app.configs.ConfigProperty;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.view.PropertyEditors;
 
+import java.beans.PropertyDescriptor;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -143,6 +151,43 @@ public class UIUtil {
 
     public static double getScreenY(Node node) {
         return node.localToScreen(0,0).getY();
+    }
+
+    public static ObservableList<PropertySheet.Item> getProperties(Object object) throws Exception {
+        ObservableList<PropertySheet.Item> list = FXCollections.observableArrayList();
+        Field[] fields = object.getClass().getDeclaredFields();
+        for(Field field: fields) {
+            if (field.getAnnotation(ConfigProp.class) == null){
+                continue;
+            }
+            ConfigProp propDefinition = field.getAnnotation(ConfigProp.class);
+            ConfigProperty property = new ConfigProperty(object,new PropertyDescriptor(field.getName(),object.getClass()),propDefinition);
+            list.add(property);
+        }
+        return list;
+    }
+
+    public static PropertyEditor<?> getEditor(PropertySheet.Item prop, UIConfig config) {
+        if (!(prop instanceof ConfigProperty)) {
+            return null;
+        }
+        ConfigProperty property = (ConfigProperty) prop;
+        ConfigProp propData = property.getPropData();
+        switch (propData.type()) {
+            case FILE_SELECT_IMPORTABLE:
+                return PropertyEditors.createFileImportableEditor(property, config);
+            case FOLDER_SELECT_IMPORTABLE:
+                return PropertyEditors.createFolderImportableEditor(property,config);
+            case CHECK:
+                return PropertyEditors.createCheckedEditor(property);
+            case COLOR:
+                return PropertyEditors.createColorEditor(property);
+            case NUMBER_SELECTABLE:
+                return PropertyEditors.createNumberRangeEditor(property);
+            case NUMBER:
+                return PropertyEditors.createNumberEditor(property);
+        }
+        return null;
     }
 
 }

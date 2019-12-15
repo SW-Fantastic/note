@@ -5,82 +5,16 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ConfigViewController">
-   <center>
-      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="code-tool" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets left="8.0" />
-         </BorderPane.margin>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="600.0" styleClass="code-tool" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.ConfigViewController">
+   <top>
+      <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_RIGHT" prefHeight="65.0" prefWidth="592.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#onConfigSave" prefHeight="30.0" prefWidth="82.0" styleClass="btn-ghost" text="保存配置">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="53.0" prefWidth="592.0">
-               <children>
-                  <Label text="主题配色：" />
-                  <ComboBox id="cbxTheme" fx:id="combTheme" prefHeight="29.0" prefWidth="288.0" styleClass="comb" />
-                  <Button mnemonicParsing="false" onAction="#onInstallTheme" prefHeight="29.0" prefWidth="76.0" styleClass="btn-ghost" text="添加主题">
-                     <HBox.margin>
-                        <Insets left="8.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="51.0" prefWidth="592.0">
-               <children>
-                  <Label text="背景图片：" />
-                  <ComboBox id="cbxImg" fx:id="combImg" prefHeight="30.0" prefWidth="224.0" styleClass="comb" />
-                  <Button mnemonicParsing="false" onAction="#importBackground" prefHeight="30.0" prefWidth="76.0" styleClass="btn-ghost" text="添加图片">
-                     <HBox.margin>
-                        <Insets left="8.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#deleteBackground" prefHeight="32.0" prefWidth="64.0" styleClass="btn-ghost" text="删除">
-                     <HBox.margin>
-                        <Insets left="4.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="43.0" prefWidth="592.0">
-               <children>
-                  <Label text="外观选择：" />
-                  <RadioButton id="uiClassical" fx:id="radioUIClassical" disable="true" mnemonicParsing="false" styleClass="radio" text="横版（简洁，多窗口）" />
-                  <RadioButton id="uiSimple" fx:id="radioUISimple" mnemonicParsing="false" styleClass="radio" text="纵版（单窗口，时间轴）" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="43.0" prefWidth="592.0">
-               <children>
-                  <Label text="选项：" />
-                  <CheckBox id="float" fx:id="cbxBackground" mnemonicParsing="false" styleClass="check" text="在后台运行(取消的话，在关闭的时候会退出)" />
-                  <CheckBox fx:id="cbxTrayWinLike" mnemonicParsing="false" styleClass="check" text="使用Windows风格的托盘菜单">
-                     <HBox.margin>
-                        <Insets left="8.0" />
-                     </HBox.margin>
-                  </CheckBox>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="592.0">
-               <children>
-                  <Label text="编辑器字体大小：">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <padding>
-                        <Insets right="8.0" />
-                     </padding>
-                  </Label>
-                  <Slider id="editorFont" fx:id="sldEditorFont" blockIncrement="2.0" max="32.0" min="12.0" prefHeight="14.0" prefWidth="279.0" />
-                  <TextField id="txtEditSize" editable="false" prefHeight="23.0" prefWidth="50.0" styleClass="title-field" />
-               </children>
-            </HBox>
+            <Button mnemonicParsing="false" onAction="#onConfigSave" prefHeight="30.0" prefWidth="82.0" styleClass="btn-ghost" text="保存配置">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
          </children>
-      </VBox>
-   </center>
+      </HBox>
+   </top>
 </BorderPane>

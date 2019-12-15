@@ -2,6 +2,9 @@ package org.swdc.note.app.util;
 
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.swdc.note.app.configs.ConfigProp;
 import org.swdc.note.app.ui.UIConfig;
 
 import javax.imageio.ImageIO;
@@ -52,33 +55,22 @@ public class DataUtil {
         return target;
     }
 
-    public static <T> boolean isEquals(T src,T target){
-        Class clazz = src.getClass();
-        ArrayList<Field> fields = new ArrayList<>();
-        boolean isEqual = true;
-        while (clazz!=null){
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            clazz = clazz.getSuperclass();
-        }
-        for(Field field : fields ) {
-            try {
-                if(isProperties(src.getClass(),field.getName())&&isProperties(target.getClass(),field.getName())){
-                    PropertyDescriptor pds = new PropertyDescriptor(field.getName(),src.getClass());
-                    PropertyDescriptor targetPds = new PropertyDescriptor(field.getName(),target.getClass());
-                    Method targetReader = targetPds.getReadMethod();
-                    Method reader = pds.getReadMethod();
-                    Object val = reader.invoke(src);
-                    Object valCurr = targetReader.invoke(target);
-                    if (val == null || val.equals("") || val.equals(valCurr)){
-                        continue;
-                    }
-                    isEqual = false;
-                }
-            }catch (Exception e){
-                isEqual = false;
+    public static void saveConfigFile(Object config) throws Exception {
+        Field[] fields = config.getClass().getDeclaredFields();
+        ConfigurationProperties prop = config.getClass().getAnnotation(ConfigurationProperties.class);
+        PropertySource propSource = config.getClass().getAnnotation(PropertySource.class);
+        String name = propSource.value()[0].substring(propSource.value()[0].lastIndexOf("/"));
+        String prefix = prop.prefix();
+        Properties props = new Properties();
+        props.load(new FileInputStream("./configs/" + name));
+        for(Field field: fields) {
+            if (field.getAnnotation(ConfigProp.class) == null) {
+                continue;
             }
+            PropertyDescriptor desc = new PropertyDescriptor(field.getName(),config.getClass());
+            props.setProperty(prefix +"."+ field.getAnnotation(ConfigProp.class).propName(), desc.getReadMethod().invoke(config).toString());
         }
-        return isEqual;
+        props.store(new FileOutputStream("./configs/" + name), "");
     }
 
     private static boolean isProperties(Class clazz,String name){
@@ -90,31 +82,6 @@ public class DataUtil {
         }catch (Exception e){
             return false;
         }
-    }
-
-    /**
-     * 写配置文件，用户配置修改之后用于更新properties文件。
-     * @param config 配置数据
-     * @throws Exception
-     */
-    public static void writeConfigProp(UIConfig config) throws Exception{
-        Properties props = new Properties();
-        props.load(new FileInputStream("configs/config.properties"));
-        Properties themeConfig = new Properties();
-        themeConfig.load(new FileInputStream("configs/theme/" + config.getTheme() + "/config.properties"));
-        if (!props.get("app.theme").toString().equals(config.getTheme())){
-            String themeBg = themeConfig.getProperty("app.background");
-            if (themeConfig.get("app.background") != null){
-                config.setBackground(themeBg);
-            }
-        }
-        props.setProperty("app.theme",config.getTheme());
-        props.setProperty("app.background",config.getBackground());
-        props.setProperty("app.mode",config.getMode());
-        props.setProperty("app.run-in-background",config.getRunInBackground().toString());
-        props.setProperty("app.editor-font-size", config.getEditorFontSize() + "");
-        props.setProperty("app.win-styled-popup", config.getWinStyledPopup() + "");
-        props.store(new FileOutputStream("configs/config.properties"),"this is the configure file to keep users special state");
     }
 
     /**

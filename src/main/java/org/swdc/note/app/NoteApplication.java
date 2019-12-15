@@ -16,10 +16,9 @@ import org.swdc.note.app.ui.Splash;
 import org.swdc.note.app.ui.desktop.TrayMenuIcon;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.StartView;
-import org.swdc.note.app.ui.view.classes.ClStartView;
-import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.awt.*;
 import java.io.File;
 import java.util.Collection;
@@ -33,6 +32,8 @@ public class NoteApplication extends AbstractJavaFxApplicationSupport {
 
     @Autowired
     private UIConfig config;
+
+    private boolean isRestarting = false;
 
     public static void main(String[] args) throws Exception{
         BeautyEyeLNFHelper.launchBeautyEyeLNF();
@@ -49,11 +50,6 @@ public class NoteApplication extends AbstractJavaFxApplicationSupport {
                 ex.printStackTrace();
             }
         });
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            stage.close();
-            ctx.stop();
-            System.exit(0);
-        }));
     }
 
     @PostConstruct
@@ -82,9 +78,10 @@ public class NoteApplication extends AbstractJavaFxApplicationSupport {
 
     @EventListener(ReLaunchEvent.class)
     public void relaunch(){
+        isRestarting = true;
         Platform.runLater(() -> {
             getStage().close();
-            if (SystemTray.isSupported()){
+            if (config.getRunInBackground() && SystemTray.isSupported()){
                 SystemTray.getSystemTray().remove(icon);
             }
             try {
@@ -94,7 +91,20 @@ public class NoteApplication extends AbstractJavaFxApplicationSupport {
             } catch (Exception e) {
                 log.error(e);
             }
+            isRestarting = false;
         });
+    }
+
+    /**
+     * 为什么要这样做呢？我自己也没弄明白，springboot在关闭后并没有彻底
+     * 关闭这个进程，而直接使用System.exit的话会导致spring卡住stop这里。
+     */
+    @PreDestroy
+    public void onDestroy() {
+        if (!isRestarting) {
+            Thread shutdownThread = new Thread(() -> System.exit(0));
+            shutdownThread.start();
+        }
     }
 
 }

@@ -349,3 +349,19 @@
     -c-border-color: #999;
     -c-fill-color: rgb(208,242,179);
 }
+.config-sheet {
+    -fx-background: rgba(247,255,168,0.2);
+}
+.config-sheet .label{
+    -fx-font-size: 14;
+}
+.config-sheet .tool-bar {
+    -fx-background-color: rgba(247,255,168,0.4);
+}
+.config-sheet .text-field{
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: rgb(86,163,108);
+    -fx-prompt-text-fill: rgba(86,163,108,0.8);
+    -fx-border-color: rgb(86,163,108);
+    -fx-border-width: 0 0 2 0;
+}

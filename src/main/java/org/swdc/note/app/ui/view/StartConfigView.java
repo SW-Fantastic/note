@@ -8,9 +8,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import lombok.Getter;
+import org.controlsfx.control.PropertySheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
@@ -31,12 +33,19 @@ public class StartConfigView extends AbstractFxmlView{
     @Autowired
     protected UIConfig config;
 
-    @Getter
-    private Stage stage;
-
     @PostConstruct
     protected void initUI() throws Exception{
-        ComboBox<String> combTheme = (ComboBox)getView().lookup("#cbxTheme");
+        BorderPane pane = (BorderPane) this.getView();
+
+        PropertySheet configSheet = new PropertySheet(UIUtil.getProperties(config));
+        configSheet.getStyleClass().add("config-sheet");
+        configSheet.setPropertyEditorFactory(item -> UIUtil.getEditor(item, config));
+        configSheet.setModeSwitcherVisible(false);
+
+        pane.setCenter(configSheet);
+        UIUtil.configTheme(pane,config);
+
+        /*ComboBox<String> combTheme = (ComboBox)getView().lookup("#cbxTheme");
         File[] themes = new File("configs/theme").listFiles();
         List<String> lstTheme = Arrays.asList(themes).stream().filter(item->item.isDirectory())
                 .map(item->item.getName())
@@ -53,20 +62,7 @@ public class StartConfigView extends AbstractFxmlView{
         slider.setValue(config.getEditorFontSize());
         TextField txtFontSize = (TextField)getView().lookup("#txtEditSize");
         txtFontSize.textProperty().bind(slider.valueProperty().asString());
-        UIUtil.configTheme((Pane)getView(),config);
-        if(UIUtil.isClassical()){
-            Platform.runLater(()->{
-                String res = new StringBuilder(UIConfig.getConfigLocation()).append("res/").append(config.getBackground()).toString();
-                this.getView().setStyle(getView().getStyle()+";-fx-background-image: url("+res+");");
-                stage = new Stage();
-                Scene scene = new Scene(this.getView());
-                stage.setScene(scene);
-                stage.setMinWidth(800);
-                stage.setMinHeight(600);
-                stage.getIcons().addAll(UIConfig.getImageIcons());
-                stage.setTitle("配置");
-            });
-        }
+        UIUtil.configTheme((Pane)getView(),config);*/
     }
 
 }

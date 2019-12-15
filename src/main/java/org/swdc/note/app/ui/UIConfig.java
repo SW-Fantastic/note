@@ -13,6 +13,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.swdc.note.app.configs.ConfigProp;
+import org.swdc.note.app.configs.PropType;
+import org.swdc.note.app.configs.ThemeImporter;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
@@ -792,6 +795,8 @@ public class UIConfig {
 
     @Getter
     @Setter
+    @ConfigProp(name = "背景图片",value = "configs/res",tooltip = "应用的背景图片",
+            propName = "background",type = PropType.FILE_SELECT_IMPORTABLE)
     private String background;
 
     /**
@@ -799,18 +804,20 @@ public class UIConfig {
      */
     @Getter
     @Setter
+    @ConfigProp(name = "允许后台运行", value = "", type = PropType.CHECK,
+            propName = "run-in-background",tooltip = "如果不允许后台运行，那么关闭窗口后会退出。")
     private Boolean runInBackground;
 
     @Getter
     @Setter
+    @ConfigProp(name = "主题", value = "configs/theme", type = PropType.FOLDER_SELECT_IMPORTABLE,
+            propName = "theme", tooltip = "工程使用的主题。", importer = ThemeImporter.class)
     private String theme;
 
     @Getter
     @Setter
-    private String mode;
-
-    @Getter
-    @Setter
+    @ConfigProp(name = "编辑器字体大小", value = "42", tooltip = "编辑器的字体的大小。",
+            type = PropType.NUMBER_SELECTABLE, propName = "editor-font-size")
     private Integer editorFontSize;
 
     @Getter

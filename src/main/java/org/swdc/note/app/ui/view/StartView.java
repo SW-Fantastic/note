@@ -14,18 +14,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.event.EventListener;
 import org.swdc.note.app.event.ResetEvent;
 import org.swdc.note.app.event.ViewChangeEvent;
 import org.swdc.note.app.ui.UIConfig;
-import org.swdc.note.app.ui.view.classes.NotViewClassicalCondition;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
 
-@Conditional(NotViewClassicalCondition.class)
 @FXMLView(value = "/view/start.fxml")
 public class StartView extends AbstractFxmlView {
 
