@@ -1,5 +1,8 @@
 package org.swdc.note.app.ui.view;
 
+import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.BrowserContext;
+import com.teamdev.jxbrowser.chromium.BrowserContextParams;
 import com.teamdev.jxbrowser.chromium.javafx.BrowserView;
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
@@ -29,6 +32,9 @@ public class StartReadView extends AbstractFxmlView{
     @Autowired
     private UIConfig config;
 
+    @Autowired
+    private BrowserContext browserContext;
+
     @Getter
     private BrowserView webView;
 
@@ -40,7 +46,7 @@ public class StartReadView extends AbstractFxmlView{
         BorderPane root = (BorderPane) getView();
         UIUtil.configTheme(root,config);
         Platform.runLater(()->{
-            BrowserView view = new BrowserView();
+            BrowserView view = new BrowserView(new Browser(browserContext));
             root.setCenter(view);
             this.webView = view;
         });

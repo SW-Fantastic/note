@@ -1,6 +1,9 @@
 package org.swdc.note.app.ui.view;
 
 import com.sun.javafx.scene.input.ExtendedInputMethodRequests;
+import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.BrowserContext;
+import com.teamdev.jxbrowser.chromium.BrowserContextParams;
 import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
 import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
 import com.teamdev.jxbrowser.chromium.javafx.BrowserView;
@@ -93,6 +96,9 @@ public class StartEditView extends AbstractFxmlView{
    @Autowired
    private HTMLContentRender render;
 
+    @Autowired
+    private BrowserContext browserContext;
+
     @Getter
     private Stage stage;
 
@@ -124,9 +130,6 @@ public class StartEditView extends AbstractFxmlView{
 
     @Autowired
     private ImageDialog imageDialog;
-
-    @Autowired
-    private TableDialog tableDialog;
 
     private CodeArea codeArea;
 
@@ -202,7 +205,7 @@ public class StartEditView extends AbstractFxmlView{
             } catch (Exception ex) {
 
             }
-            BrowserView browserView = new BrowserView();
+            BrowserView browserView = new BrowserView(new Browser(browserContext));
             BorderPane paneWeb = (BorderPane)findById("contentView",viewerPane.getItems());
             paneWeb.setCenter(browserView);
             browserView.getBrowser().addLoadListener(new LoadAdapter() {

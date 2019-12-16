@@ -2,6 +2,8 @@ package org.swdc.note.app.util;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
+import com.teamdev.jxbrowser.chromium.BrowserContext;
+import com.teamdev.jxbrowser.chromium.BrowserContextParams;
 import com.vladsch.flexmark.Extension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
@@ -30,6 +32,11 @@ public class StaticBeans {
     public Parser parser(){
         Parser parser = Parser.builder(OPTIONS).build();
         return parser;
+    }
+
+    @Bean
+    BrowserContext browserContext() {
+        return new BrowserContext(new BrowserContextParams("./configs/xRender"));
     }
 
     @Bean
