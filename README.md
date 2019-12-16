@@ -10,9 +10,9 @@ current version is not good at mac or linux OS
 
 ### 运行截图 （Screen Shots）
 
-![主界面](https://s2.ax1x.com/2019/05/26/VEkoIU.png)
+![主界面](https://github.com/SW-Fantastic/note/blob/master/pages/src/assets/screenShot0.png)
 
-![编辑界面](https://s2.ax1x.com/2019/05/26/VEkjqx.png)
+![编辑界面](https://github.com/SW-Fantastic/note/blob/master/pages/src/assets/screenShot2.png)
 
 ### 开发进程（Development Progress）
 
@@ -22,6 +22,7 @@ current version is not good at mac or linux OS
 * [x] 实现主题功能（UI 、Themes）
 * [x] ~~添加悬浮窗~~添加托盘菜单（Tray Icon）
 * [x] 增加LaTeX公式支持（Latex Support）
+* [x] 左右结构，允许拖动以改变两侧区域大小
 * [ ] 增加公式编辑器
 * [ ] 完善工具栏
 
@@ -29,3 +30,4 @@ current version is not good at mac or linux OS
 
 * [x] 编辑器没有纵向滚动条（No ScrollBar On Editor） 2019-5-17 fixed
 * [x] 表格语法高亮出现bug （HighLight Bugs）2018-11-19 fixed
+* [x] WebView在最大化的时候出现不能滚动的问题 2019-12-16
