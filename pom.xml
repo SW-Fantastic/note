@@ -132,6 +132,12 @@
             <version>0.1</version>
             <systemPath>${project.basedir}/libs/jxbrowser-win64-6.21.jar</systemPath>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.29</version>
+        </dependency>
     </dependencies>
 
     <build>

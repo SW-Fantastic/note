@@ -821,6 +821,24 @@ public class UIConfig {
     private Integer editorFontSize;
 
     @Getter
+    @Setter
+    @ConfigProp(name = "渲染字体大小", value = "42", tooltip = "显示的字体的大小。",
+            type = PropType.NUMBER_SELECTABLE, propName = "render-font-size")
+    private Integer renderFontSize;
+
+    @Getter
+    @Setter
+    @ConfigProp(name = "标题字体大小", value = "42", tooltip = "文档中标题的字体的大小。",
+            type = PropType.NUMBER_SELECTABLE, propName = "header-font-size")
+    private Integer headerFontSize;
+
+    @Getter
+    @Setter
+    @ConfigProp(name = "渲染字体阴影", value = "", tooltip = "渲染字体阴影效果。",
+            type = PropType.CHECK, propName = "text-shadow")
+    private Boolean textShadow;
+
+    @Getter
     private String mdStyleContent;
 
     @Getter

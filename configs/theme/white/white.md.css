@@ -3,7 +3,7 @@ html{
 }
 body {
   font-family: "Microsoft Yahei",'PingFang TC',"【嵐】西良文字改+" , Helvetica, arial, sans-serif ;
-  font-size: 16px;
+  font-size: ${defaultFontSize}px;
   line-height: 2;
   background-color: white;
   -webkit-font-smoothing: antialiased;
@@ -13,6 +13,11 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   color: #7EAF67;}
+
+body p {
+  text-shadow: ${(textshadow)? string('0px 0px 4px #7EAF67','none')};
+  letter-spacing: 1px;
+}
 
 body > *:first-child {
   margin-top: 0 !important; }
@@ -66,30 +71,30 @@ h6 tt, h6 code {
   font-size: inherit; }
 
 h1 {
-  font-size: 28px;
+  font-size: ${headerFontSize}px;
   color: #567A34;
 }
 
 h2 {
-  font-size: 24px;
+  font-size: ${headerFontSize - (headerFontSize / 6)}px;
   border-bottom: 1px solid #DDE4E9;
   color: #567A34; }
 
 h3 {
-  font-size: 18px;
+  font-size: ${headerFontSize - (headerFontSize / 3)}px;
   color: #567A34;  }
 
 h4 {
-  font-size: 16px;
+  font-size: ${headerFontSize - (headerFontSize / 2)}px;
   color: #567A34;  }
 
 h5 {
-  font-size: 14px;
+  font-size: ${headerFontSize - (headerFontSize / 2)}px;
   color: #567A34;  }
 
 h6 {
   color: #567A34;
-  font-size: 14px;
+  font-size: ${headerFontSize - (headerFontSize / 2)}px;
 }
 
  ul, ol, dl, li {
@@ -328,6 +333,4 @@ code {
   pre {
     word-wrap: break-word;
   }
-
-
 }

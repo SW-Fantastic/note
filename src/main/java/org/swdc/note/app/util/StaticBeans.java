@@ -22,6 +22,8 @@ public class StaticBeans {
 
     private static DataHolder OPTIONS ;
 
+    private static final BrowserContext renderContext = new BrowserContext(new BrowserContextParams("./configs/xRender"));
+
     static {
         OPTIONS = PegdownOptionsAdapter.flexmarkOptions(true,
                 Extensions.ALL_WITH_OPTIONALS
@@ -35,8 +37,13 @@ public class StaticBeans {
     }
 
     @Bean
-    BrowserContext browserContext() {
-        return new BrowserContext(new BrowserContextParams("./configs/xRender"));
+    public BrowserContext browserContext() {
+        return renderContext;
+    }
+
+    @Bean
+    public freemarker.template.Configuration markerConfig() {
+        return new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_25);
     }
 
     @Bean

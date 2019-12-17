@@ -11,6 +11,7 @@ import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.event.ReLaunchEvent;
+import org.swdc.note.app.event.RefreshEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.util.DataUtil;
@@ -50,6 +51,7 @@ public class ConfigViewController implements Initializable {
             if (buttonType == ButtonType.OK) {
                 config.publishEvent(new ReLaunchEvent(""));
             } else {
+                config.publishEvent(new RefreshEvent(UIConfig.class));
                 messageView.setMessage("配置已经保存。");
                 Notifications.create()
                         .hideCloseButton()

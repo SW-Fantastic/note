@@ -2,11 +2,17 @@ package org.swdc.note.app.render;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.swdc.note.app.event.RefreshEvent;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.DataUtil;
 
+import javax.annotation.PostConstruct;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -24,7 +30,33 @@ public class HTMLContentRender implements ContentRender {
     @Autowired
     private UIConfig config;
 
+    @Autowired
+    private Configuration markerConfig;
+
     private static final String name = "html";
+
+    private String style = "";
+
+    @PostConstruct
+    public void init() throws Exception {
+        StringWriter stringWriter = new StringWriter();
+        Template template = new Template("styles",config.getMdStyleContent(),markerConfig);
+        Map<String,Object> configsMap = new HashMap<>();
+        configsMap.put("defaultFontSize", config.getRenderFontSize());
+        configsMap.put("headerFontSize", config.getHeaderFontSize());
+        configsMap.put("textshadow", config.getTextShadow());
+        template.process(configsMap,stringWriter);
+
+        style = stringWriter.toString();
+    }
+
+    @EventListener(RefreshEvent.class)
+    public void onConfigRefresh(RefreshEvent event) throws Exception {
+        if (event.getSource() != UIConfig.class) {
+            return;
+        }
+        this.init();
+    }
 
     @Override
     public String processBeforeRender(String source, Map<String, String> resource) {
@@ -67,10 +99,11 @@ public class HTMLContentRender implements ContentRender {
     @Override
     public String renderSource(String source) {
         return "<!doctype html><html><head><meta charset='UTF-8'><style>" +
-                config.getMdStyleContent() + "</style></head>" +
+                style + "</style></head>" +
                 "<body ondragstart='return false;'>" +
                 renderer.render(parser.parse(source)) +
                 "</body></html>";
+
     }
 
     @Override
