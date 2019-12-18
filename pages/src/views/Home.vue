@@ -26,10 +26,10 @@
               <span>工程概览：</span>
             </Row>
           </div>
-          <h2 style="text-align: left">Writer：</h2>
           <Row type="flex" justify="start" style="padding: 8px;text-align: left">
             <MarkdownItVue class="md-body" :content="overViewText"/>
-            <Button style="margin-top: 12px" size="large"><Icon type="logo-github" />访问GitHub</Button>
+            <Button style="margin-top: 12px" size="large" @click="gotoGithub('https://github.com/SW-Fantastic/note')"><Icon style="font-size: 36px" type="logo-github" />访问GitHub</Button>
+            <Button style="margin-top: 12px;margin-left: 8px" size="large" type="success"><Icon type="ios-cog" style="font-size: 36px" /> 下载此应用</Button>
           </Row>
           <Divider dashed />
           <h2 style="text-align: left;margin-bottom: 8px">运行截图：</h2>
@@ -63,7 +63,27 @@
           </Row>
         </Card>
         <Card v-else-if="selectMenuItem === 'downloads'">
-
+          <div style="text-align: left">
+            <h2 style="margin-bottom: 18px">下载应用</h2>
+            <Card dis-hover>
+              <span slot="title">
+                <h3>{{releaseLasted.name}}</h3>
+              </span>
+              <p>{{releaseLasted.body}}</p>
+              <Row type="flex" justify="start" align="middle"  style="padding:8px" :key="key" v-for="(item,key) in releaseLasted.assets">
+                <Divider dashed />
+                <i-col :span="4">
+                  <Avatar size="large" :src="item.uploader.avatar_url"></Avatar>
+                </i-col>
+                <i-col :span="6" style="display: flex;flex-direction: column">
+                  <span>{{'发布于：' + getDateStr(new Date(item.created_at))}}</span>
+                  <Button  @click="download(item.browser_download_url)" size="large">
+                    {{item.name }}
+                  </Button>
+                </i-col>
+              </Row>
+            </Card>
+          </div>
         </Card>
       </i-col>
     </Row>
@@ -86,7 +106,9 @@ export default {
       screenShots: [ { src: require('@/assets/screenShot0.png') },
         { src: require('@/assets/screenShot1.png') },
         { src: require('@/assets/screenShot2.png') } ],
-      commits: []
+      commits: [],
+      releaseLasted: null,
+      releases: []
     }
   },
   created () {
@@ -97,10 +119,35 @@ export default {
         this.overViewText = resp
       })
     this.loadCommits()
+    this.loadRelease()
+    this.loadLastRelease()
   },
   methods: {
     onItemSelect (item) {
       this.selectMenuItem = item
+    },
+    gotoGithub (url) {
+      window.location = url
+    },
+    loadRelease () {
+      fetch('https://api.github.com/repos/SW-Fantastic/note/releases')
+        .then(resp => resp.json())
+    },
+    loadLastRelease () {
+      fetch('https://api.github.com/repos/SW-Fantastic/note/releases/latest')
+        .then(resp => resp.json())
+        .then(resp => {
+          this.releaseLasted = resp
+        })
+    },
+    download (url) {
+      window.open(url)
+    },
+    getDateStr (date) {
+      let year = date.getFullYear()
+      let month = date.getMonth()
+      let day = date.getDate()
+      return year + '-' + month + '-' + day
     },
     loadCommits () {
       let date = new Date()

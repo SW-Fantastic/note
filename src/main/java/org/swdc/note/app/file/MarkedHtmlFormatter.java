@@ -1,8 +1,6 @@
 package org.swdc.note.app.file;
 
 import com.overzealous.remark.Remark;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
 import javafx.stage.FileChooser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,7 +12,7 @@ import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleContext;
 import org.swdc.note.app.render.ContentRender;
 import org.swdc.note.app.service.ArticleService;
-import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.util.DataUtil;
 import org.swdc.note.app.util.UIUtil;
 
 import java.io.DataInputStream;
@@ -23,7 +21,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -47,49 +45,58 @@ public class MarkedHtmlFormatter extends FileFormatter {
     }
 
     @Override
+    public boolean supportSingleExtension(String extensionName) {
+        return extensionName.toLowerCase().trim().equals("html");
+    }
+
+    @Override
+    public boolean supportMultiExtension(String extension) {
+        return false;
+    }
+
+    @Override
     public <T> T processRead(File target,Class<T> clazz) {
-        System.out.println("load html");
+        FileInputStream inputStream = null;
         try {
-            String source = UIUtil.readFile((InputStream)new FileInputStream(target));
+            inputStream = new FileInputStream(target);
+            String source = UIUtil.readFileAsText(inputStream);
             Document doc = Jsoup.parse(source);
+            Elements links = doc.body().getElementsByTag("a");
+            for (Element elem: links) {
+                elem.tagName("span").attributes().remove("href");
+            }
             Elements elems = doc.getElementsByTag("img");
             Map<String,String> resource = new HashMap<>();
+            int index = 0;
             for(Element elem:elems){
                 String res = elem.attr("src");
-                StringBuilder sb = new StringBuilder();
                 Base64.Encoder  encoder = Base64.getEncoder();
                 if(res.startsWith("http")){
-                    HttpURLConnection connection = (HttpURLConnection)new URL(res).openConnection();
-                    connection.setDoInput(true);
-                    connection.setDoOutput(true);
-                    connection.setRequestMethod("GET");
-                    connection.setUseCaches(false);
-                    connection.setInstanceFollowRedirects(true);
-                    connection.connect();
-                    int code = connection.getResponseCode();
-                    if(code == 200){
-                        DataInputStream din = new DataInputStream(connection.getInputStream());
-                        byte[] buff = new byte[1024];
-                        while (din.read(buff) > 0){
-                            String data = encoder.encodeToString(buff);
-                            sb.append(data);
-                        }
-                        din.close();
-                    }
-                    connection.disconnect();
-                    resource.put(""+sb.hashCode(),sb.toString());
+                    byte[] data = DataUtil.loadHttpData(res);
+                    URL url = new URL(res);
+                    String file = url.getFile();
+                    resource.put(file.substring(1), encoder.encodeToString(data));
                 }else if (res.startsWith("file")){
                     String path = new URL(res).getPath();
                     File file = new File(path);
-                    String data = UIUtil.readFile((InputStream)new FileInputStream(file));
-                    data = encoder.encodeToString(data.getBytes());
-                    resource.put(data.hashCode()+"",data);
+                    byte[] data = UIUtil.readFile(new FileInputStream(file));
+                    String image = encoder.encodeToString(data);
+                    resource.put(file.getName(),image);
                 }else if(res.startsWith("data")){
+                    index ++;
                     String data = res.replace("data:image/png;base64,","");
-                    resource.put(data.hashCode()+"",data);
+                    resource.put("Image "+ index,data);
+                }else {
+                    File file = new File(target.getAbsoluteFile().getParentFile().getPath() + File.separator + URLDecoder.decode(res,"utf8"));
+                    if (file.exists()) {
+                        index ++;
+                        byte[] data = UIUtil.readFile(new FileInputStream(file));
+                        String image = encoder.encodeToString(data);
+                        resource.put("Image "+ index,image);
+                    }
                 }
             }
-            String markdown = remark.convertFragment(source);
+            String markdown = remark.convertFragment(doc.toString());
             Article article = new Article();
             article.setType(null);
             article.setTitle(doc.title());
@@ -101,8 +108,14 @@ public class MarkedHtmlFormatter extends FileFormatter {
             return (T) article;
         }catch (Exception e){
             e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                inputStream.close();
+            } catch (Exception ex) {
+                return null;
+            }
         }
-        return null;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.swdc.note.app.util;
 
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypes;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,15 +13,12 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyDescriptor;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Properties;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
 
 /**
  * 提供数据更新的通用工具方法
@@ -53,6 +52,72 @@ public class DataUtil {
             }
         }
         return target;
+    }
+
+    public static byte[] loadHttpData(String url) throws Exception{
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setRequestMethod("GET");
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(true);
+        connection.connect();
+        int code = connection.getResponseCode();
+        if(code == 200){
+            DataInputStream din = new DataInputStream(connection.getInputStream());
+            byte[] buff = new byte[1024];
+            int len = 0;
+            while ((len = din.read(buff)) > 0){
+                byteArrayOutputStream.write(buff,0,len);
+            }
+            byteArrayOutputStream.flush();
+            din.close();
+        }
+        connection.disconnect();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    public static File downloadHttpContent(String url) throws Exception {
+        HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setRequestMethod("GET");
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(true);
+        connection.connect();
+        int code = connection.getResponseCode();
+        if(code == 200){
+            FileOutputStream outputStream = null;
+            try {
+                String contentType = connection.getHeaderField("Content-Type");
+                MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+                if (contentType.contains(";")) {
+                    contentType = contentType.split(";")[0].trim();
+                }
+                MimeType type = allTypes.forName(contentType);
+                File tempFile = new File("./data/temp" + new Date().getTime() + type.getExtension());
+                outputStream = new FileOutputStream(tempFile);
+                byte[] buff = new byte[1024];
+                DataInputStream din = new DataInputStream(connection.getInputStream());
+                while (din.read(buff) > 0){
+                    outputStream.write(buff);
+                }
+                outputStream.flush();
+                outputStream.close();
+                connection.disconnect();
+                return tempFile;
+            } catch (Exception ex) {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+                throw ex;
+            }
+        }
+        connection.disconnect();
+        return null;
     }
 
     public static void saveConfigFile(Object config) throws Exception {

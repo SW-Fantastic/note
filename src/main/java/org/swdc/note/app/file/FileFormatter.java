@@ -17,6 +17,20 @@ public abstract class FileFormatter {
     public abstract String getFormatName();
 
     /**
+     * 支持的文件的拓展名
+     * @param extension 文件拓展名
+     * @return
+     */
+    public abstract boolean supportSingleExtension(String extension);
+
+    /**
+     * 支持的导入导出的拓展名
+     * @param extension
+     * @return
+     */
+    public abstract boolean supportMultiExtension(String extension);
+
+    /**
      * 处理读取
      * @param target
      */

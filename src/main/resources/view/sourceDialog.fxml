@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="124.0" prefWidth="495.0" styleClass="left-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.dialogs.SourceDialogController">
+   <center>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="基于此文件创建：">
+               <HBox.margin>
+                  <Insets left="12.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="txtLocation" prefHeight="26.0" prefWidth="293.0" styleClass="txt" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </TextField>
+            <Button id="btnOpen" mnemonicParsing="false" onAction="#onOpenFile" prefHeight="32.0" prefWidth="32.0" styleClass="btn-normal" text="开">
+               <HBox.margin>
+                  <Insets right="12.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="495.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onCreateDocument" prefHeight="29.0" prefWidth="72.0" styleClass="btn-normal" text="创建文档">
+               <HBox.margin>
+                  <Insets right="12.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
+</BorderPane>

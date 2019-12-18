@@ -848,9 +848,9 @@ public class UIConfig {
     @PostConstruct
     private void init() throws Exception{
         if (this.theme == null|| this.theme.equals("")||this.theme.equals("default")){
-            mdStyleContent = UIUtil.readFile(new ClassPathResource("/style/markdown.css").getInputStream());
+            mdStyleContent = UIUtil.readFileAsText(new ClassPathResource("/style/markdown.css").getInputStream());
         }else{
-            mdStyleContent = UIUtil.readFile((InputStream) new FileInputStream("./configs/theme/"+theme+"/"+theme+".md.css"));
+            mdStyleContent = UIUtil.readFileAsText((InputStream) new FileInputStream("./configs/theme/"+theme+"/"+theme+".md.css"));
         }
         File fontFile = new File("./configs/theme/"+theme+"/font.ttf");
         if (fontFile.exists()) {

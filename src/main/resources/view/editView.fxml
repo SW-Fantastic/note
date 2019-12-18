@@ -67,7 +67,8 @@
                         <Button id="quote" mnemonicParsing="false" text="引" />
                         <Button id="code" mnemonicParsing="false" text="码" />
                         <Separator orientation="VERTICAL" prefHeight="29.0" prefWidth="0.0" />
-                        <Button id="create" mnemonicParsing="false" prefHeight="23.0" prefWidth="30.0" text="建" />
+                        <Button id="create" mnemonicParsing="false" text="建" />
+                        <Button id="load" mnemonicParsing="false" text="载" />
                      </items>
                      <padding>
                         <Insets bottom="2.0" right="3.0" />

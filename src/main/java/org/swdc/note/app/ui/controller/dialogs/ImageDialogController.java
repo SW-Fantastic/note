@@ -96,7 +96,12 @@ public class ImageDialogController implements Initializable{
     @EventListener
     public void onArticleEdit(ArticleEditEvent e){
         Article article = e.getSource();
-        ArticleContext context = articleService.loadContext(article);
+        ArticleContext context;
+        if (!e.isContextFilled()) {
+            context = articleService.loadContext(article);
+        } else {
+            context = article.getContext();
+        }
         dlg.setImages(context.getImageRes());
         listView.getItems().clear();
         listView.getItems().addAll(context.getImageRes().keySet());

@@ -10,6 +10,8 @@ public class ArticleEditEvent extends ViewChangeEvent{
 
     private Article changedArticle;
 
+    private boolean contextFilled = false;
+
     public ArticleEditEvent(Article source) {
         super("EditView");
         this.changedArticle = source;
@@ -17,5 +19,13 @@ public class ArticleEditEvent extends ViewChangeEvent{
 
     public Article getSource(){
         return this.changedArticle;
+    }
+
+    public boolean isContextFilled() {
+        return contextFilled;
+    }
+
+    public void setContextFilled(boolean contextFilled) {
+        this.contextFilled = contextFilled;
     }
 }

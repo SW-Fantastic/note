@@ -44,6 +44,7 @@ import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.component.RectResult;
 import org.swdc.note.app.ui.component.RectSelector;
 import org.swdc.note.app.ui.view.dialogs.ImageDialog;
+import org.swdc.note.app.ui.view.dialogs.SourceDialog;
 import org.swdc.note.app.ui.view.dialogs.TableDialog;
 import org.swdc.note.app.util.DataUtil;
 import org.swdc.note.app.util.UIUtil;
@@ -130,6 +131,9 @@ public class StartEditView extends AbstractFxmlView{
 
     @Autowired
     private ImageDialog imageDialog;
+
+    @Autowired
+    private SourceDialog sourceDialog;
 
     private CodeArea codeArea;
 
@@ -314,6 +318,8 @@ public class StartEditView extends AbstractFxmlView{
         initButton("quote",toolBar.getItems(),"quote_right", this::onToolQuite);
         // 添加代码块
         initButton("code",toolBar.getItems(),"code",this::onToolCode);
+        // 外部载入的处理
+        initButton("load",toolBar.getItems(), "download", this::onToolLoad);
 
         Optional.ofNullable(findById("title",toolBar.getItems())).ifPresent(item->{
             MenuButton btn = (MenuButton)item;
@@ -332,6 +338,16 @@ public class StartEditView extends AbstractFxmlView{
             btn.setText(String.valueOf(UIConfig.getAwesomeMap().get("save")));
         });
 
+    }
+
+    private void onToolLoad(ActionEvent event) {
+        UIUtil.showAlertDialog("你正在准备从其他位置载入文档，如果这样，你将会失去现在正在编辑的内容，要继续吗？",
+                "提示", Alert.AlertType.CONFIRMATION,config).ifPresent(btn -> {
+                    if (btn.equals(ButtonType.OK)) {
+                        config.publishEvent(new ResetEvent(StartEditView.class));
+                        sourceDialog.show();
+                    }
+        });
     }
 
     private void onToolBold(ActionEvent event) {

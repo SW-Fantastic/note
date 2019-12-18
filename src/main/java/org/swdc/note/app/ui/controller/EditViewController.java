@@ -127,11 +127,18 @@ public class EditViewController implements Initializable{
     @EventListener
     public void onArticleEdit(ArticleEditEvent event){
         Article article = event.getSource();
-        this.article = article;
-        this.currType = article.getType();
-        this.txtType.setText(currType.getName());
+        if (article.getId() != null) {
+            this.article = article;
+        }
         this.txtTitle.setText(article.getTitle());
-        ArticleContext context = articleService.loadContext(article);
+        ArticleContext context;
+        if (!event.isContextFilled()) {
+            context = articleService.loadContext(article);
+            this.currType = article.getType();
+            this.txtType.setText(currType.getName());
+        } else {
+            context = article.getContext();
+        }
         editView.setContext(context.getContent());
         editView.setSaved(true);
         if(editView.getStage()!=null){

@@ -42,13 +42,23 @@ public class SwMarkdownFormatter extends FileFormatter {
     }
 
     @Override
+    public boolean supportSingleExtension(String extension) {
+        return extension.toLowerCase().trim().equals("mdxn");
+    }
+
+    @Override
+    public boolean supportMultiExtension(String extension) {
+        return extension.toLowerCase().trim().equals("mdzz");
+    }
+
+    @Override
     public <T> T processRead(File target,Class<T> clazz) {
         String name = target.getAbsolutePath();
         String[] extName = name.split("[.]");
         if(extName[extName.length - 1].equals("mdxn") && clazz.equals(Article.class)){
             try {
                 InputStream is = new FileInputStream(target);
-                String source = UIUtil.readFile(is);
+                String source = UIUtil.readFileAsText(is);
                 Map<String,String> result = (Map) JSON.parse(source);
                 Article article = new Article();
                 article.setTitle(result.get("artleTitle"));
@@ -127,7 +137,7 @@ public class SwMarkdownFormatter extends FileFormatter {
         }else{
             InputStream in = zipFile.getInputStream(ent);
             Article article = new Article();
-            String source = UIUtil.readFile(in);
+            String source = UIUtil.readFileAsText(in);
             Map<String,String> result = (Map)JSON.parse(source);
             article.setTitle(result.get("artleTitle"));
             article.setCreatedDate(dateFormat.parse(result.get("artleDate")));

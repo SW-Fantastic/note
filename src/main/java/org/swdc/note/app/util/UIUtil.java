@@ -47,7 +47,7 @@ public class UIUtil {
         }
     }
 
-    public static String readFile(InputStream in) throws Exception{
+    public static String readFileAsText(InputStream in) throws Exception{
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = reader.readLine();
         String buff = line;
@@ -115,7 +115,7 @@ public class UIUtil {
 
     public static Node findById(String id, ObservableList<Node> list){
         for (Node node:list) {
-            if(node.getId().equals(id)){
+            if(id.equals(node.getId())){
                 return node;
             }
         }
