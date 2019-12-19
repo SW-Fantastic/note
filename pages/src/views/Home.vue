@@ -12,7 +12,7 @@
     <Row style="margin-top: 16px;" type="flex" justify="center">
       <i-col :span="5">
         <Affix>
-          <Menu active-name="1" style="border-radius: 8px;padding: 12px" @on-select="onItemSelect">
+          <Menu :active-name="selectMenuItem" style="border-radius: 8px;padding: 12px" @on-select="onItemSelect">
             <MenuItem name="overView">概览</MenuItem>
             <MenuItem name="updates">更新日志</MenuItem>
             <MenuItem name="downloads">资源</MenuItem>
@@ -29,7 +29,7 @@
           <Row type="flex" justify="start" style="padding: 8px;text-align: left">
             <MarkdownItVue class="md-body" :content="overViewText"/>
             <Button style="margin-top: 12px" size="large" @click="gotoGithub('https://github.com/SW-Fantastic/note')"><Icon style="font-size: 36px" type="logo-github" />访问GitHub</Button>
-            <Button style="margin-top: 12px;margin-left: 8px" size="large" type="success"><Icon type="ios-cog" style="font-size: 36px" /> 下载此应用</Button>
+            <Button style="margin-top: 12px;margin-left: 8px" @click="selectMenuItem = 'downloads'" size="large" type="success"><Icon type="ios-cog" style="font-size: 36px" /> 下载此应用</Button>
           </Row>
           <Divider dashed />
           <h2 style="text-align: left;margin-bottom: 8px">运行截图：</h2>
@@ -65,30 +65,31 @@
         <Card v-else-if="selectMenuItem === 'downloads'">
           <div style="text-align: left">
             <h2 style="margin-bottom: 18px">下载应用</h2>
-            <Card dis-hover>
+          </div>
+          <div style="text-align: left">
+            <Card dis-hover :key="key" v-for="(relItem,key) of releases" style="margin-bottom: 6px;">
               <span slot="title">
-                <h3>{{releaseLasted.name}}</h3>
+                <h3>{{relItem.name + '  ' + getDateStr(new Date(relItem.created_at))}}</h3>
               </span>
-              <p>{{releaseLasted.body}}</p>
-              <Row type="flex" justify="start" align="middle"  style="padding:8px" :key="key" v-for="(item,key) in releaseLasted.assets">
+              <p>{{relItem.body}}</p>
+              <Row type="flex" justify="start" align="middle"  style="padding:8px" >
                 <Divider dashed />
-                <i-col :span="4">
-                  <Avatar size="large" :src="item.uploader.avatar_url"></Avatar>
+                <i-col :span="2">
+                  <Avatar size="large" :src="relItem.author.avatar_url"></Avatar>
                 </i-col>
-                <i-col :span="6" style="display: flex;flex-direction: column">
-                  <span>{{'发布于：' + getDateStr(new Date(item.created_at))}}</span>
-                  <Button  @click="download(item.browser_download_url)" size="large">
-                    {{item.name }}
+                <i-col :span="16" style="display: flex;flex-direction: row">
+                  <Button  @click="download(item.browser_download_url)" size="large" :key="key" v-for="(item,key) in relItem.assets">
+                    下载：{{item.name }}
                   </Button>
                 </i-col>
               </Row>
             </Card>
           </div>
         </Card>
+        <Row type="flex" justify="center">
+          <span style="padding: 8px;font-size:16px">Fantastic MIT License 2019</span>
+        </Row>
       </i-col>
-    </Row>
-    <Row type="flex" justify="center">
-      <span style="padding: 8px;font-size:16px">Fantastic MIT License 2019</span>
     </Row>
   </div>
 </template>
@@ -132,6 +133,16 @@ export default {
     loadRelease () {
       fetch('https://api.github.com/repos/SW-Fantastic/note/releases')
         .then(resp => resp.json())
+        .then(resp => {
+          resp = resp.sort((itemA, itemB) =>
+            new Date(itemB.created_at).getTime() - new Date(itemA.created_at).getTime())
+          this.releases = []
+          let count = resp.length < 5 ? resp.length : 5
+          let index
+          for (index = 0; index < count; index++) {
+            this.releases.push(resp[index])
+          }
+        })
     },
     loadLastRelease () {
       fetch('https://api.github.com/repos/SW-Fantastic/note/releases/latest')
@@ -162,7 +173,12 @@ export default {
       fetch('https://api.github.com/repos/SW-Fantastic/note/commits?since=' + date)
         .then(resp => resp.json())
         .then(resp => {
-          for (const commitItem of resp) {
+          let count = resp.length < 10 ? resp.length : 10
+          let index
+          resp = resp.sort((itemA, itemB) =>
+            new Date(itemB.created_at).getTime() - new Date(itemA.created_at).getTime())
+          for (index = 0; index < count; index++) {
+            let commitItem = resp[index]
             let date = new Date(commitItem.commit.committer.date)
             this.commits.push({
               id: commitItem.node_id,

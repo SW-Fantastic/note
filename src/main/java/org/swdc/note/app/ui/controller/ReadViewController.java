@@ -20,9 +20,9 @@ import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.ArticleOpenEvent;
 import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.event.ResetEvent;
-import org.swdc.note.app.event.TypeImportEvent;
-import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.file.Formatter;
 import org.swdc.note.app.service.ArticleService;
+import org.swdc.note.app.service.FormatterService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.ui.view.StartReadView;
@@ -46,6 +46,9 @@ public class ReadViewController implements Initializable {
     private Article article;
 
     @Autowired
+    private FormatterService formatterService;
+
+    @Autowired
     private StartReadView readView;
 
     @Autowired
@@ -56,9 +59,6 @@ public class ReadViewController implements Initializable {
 
     @Autowired
     private ArticleService articleService;
-
-    @Autowired
-    private List<FileFormatter> formaters;
 
     @Autowired
     private TypeDialog typeDialog;
@@ -95,29 +95,38 @@ public class ReadViewController implements Initializable {
     @FXML
     protected void onOpen(){
         List<FileChooser.ExtensionFilter> list = new ArrayList<>();
-        formaters.stream().filter(item->item.canRead()).map(item->item.getFilters()).forEach(list::addAll);
+        List<Formatter> formatters = formatterService.getAllFormatters();
+
+        for (Formatter formatter : formatters) {
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(formatter.getFormatName(), new String[]{formatter.getFormatExtension()});
+            list.add(filter);
+        }
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("打开");
         fileChooser.getExtensionFilters().addAll(list);
         File file = fileChooser.showOpenDialog(GUIState.getStage());
-        FileChooser.ExtensionFilter filter = fileChooser.getSelectedExtensionFilter();
-        formaters.stream().filter(item->item.getFilters().contains(filter)).findFirst().ifPresent(target->{
-            Article article = target.processRead(file,Article.class);
-            if(article != null){
-                // 单个数据文件打开
-                ArticleContext context = article.getContext();
-                readView.getWebView().getBrowser().loadHTML(articleService.renderHTML(context));
-                txtTitle.setText(article.getTitle());
-                lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
-                this.article = article;
-                btnExport.setVisible(false);
-                btnImport.setVisible(true);
-            }else {
-                // 数据合并导入
-                TypeImportEvent importEvent = new TypeImportEvent(file,target);
-                config.publishEvent(importEvent);
-            }
-        });
+
+        String[] nameItems = file.getName().split(".");
+        String extension = nameItems.length > 1 ? nameItems[nameItems.length - 1] : "";
+
+        Formatter formatter = formatterService.getDocumentFormatterByExtension(extension,false);
+        if (formatter != null) {
+            // 单个数据文件打开
+            Article article = (Article) formatter.readDocument(file);
+            ArticleContext context = article.getContext();
+            readView.getWebView().getBrowser().loadHTML(articleService.renderHTML(context));
+            txtTitle.setText(article.getTitle());
+            lblDate.setText(new SimpleDateFormat("yyyy-MM-dd").format(article.getCreatedDate()));
+            this.article = article;
+            btnExport.setVisible(false);
+            btnImport.setVisible(true);
+        }
+
+        formatter = formatterService.getDocumentFormatterByExtension(extension, true);
+        if (formatter != null) {
+            //TODO 批量导入处理
+        }
     }
 
     @FXML

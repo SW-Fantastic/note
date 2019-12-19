@@ -8,7 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.file.Formatter;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.util.UIUtil;
@@ -36,7 +36,7 @@ public class ExportDialogController implements Initializable{
     protected TextField txtFileName;
 
     @FXML
-    protected ComboBox<FileFormatter> combFormat;
+    protected ComboBox<Formatter> combFormat;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -49,12 +49,12 @@ public class ExportDialogController implements Initializable{
     protected void onOpen(){
         FileChooser fc = new FileChooser();
         fc.setTitle("导出文件");
-        FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
+        Formatter desc = combFormat.getSelectionModel().getSelectedItem();
         if(desc == null){
             UIUtil.showAlertDialog("请选择导出格式。", "提示", Alert.AlertType.ERROR, config);
             return;
         }
-        fc.getExtensionFilters().addAll(desc.getFilters());
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(desc.getFormatName(), new String(desc.getFormatExtension())));
         File target = fc.showSaveDialog(dialog.getStage());
         if(target == null){
             return;
@@ -64,7 +64,7 @@ public class ExportDialogController implements Initializable{
 
     @FXML
     protected void onExport(){
-        FileFormatter desc = combFormat.getSelectionModel().getSelectedItem();
+        Formatter desc = combFormat.getSelectionModel().getSelectedItem();
 
         if(desc == null){
             UIUtil.showAlertWithOwner("必须选择导出的格式才可以导出。", "提示", Alert.AlertType.ERROR,dialog.getStage());
@@ -76,9 +76,9 @@ public class ExportDialogController implements Initializable{
         }
         File file = new File(txtFileName.getText());
         if(dialog.getTargetArticle()!=null){
-            desc.processWrite(file,dialog.getTargetArticle());
+            desc.writeDocument(file,dialog.getTargetArticle());
         }else{
-            desc.processWrite(file,dialog.getTargetGroup());
+            desc.writeDocument(file,dialog.getTargetGroup());
         }
         UIUtil.showAlertWithOwner("文档导出完毕。", "提示", Alert.AlertType.INFORMATION,dialog.getStage());
         dialog.getStage().close();

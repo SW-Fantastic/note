@@ -15,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.ExportEvent;
-import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.file.Formatter;
+import org.swdc.note.app.service.FormatterService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.util.UIUtil;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 导出对话框的view界面。
@@ -43,7 +43,7 @@ public class ExportDialog extends AbstractFxmlView{
     private ArticleType targetGroup;
 
     @Autowired
-    private List<FileFormatter> fileFormatters;
+    private FormatterService formatterService;
 
     @PostConstruct
     protected void initUI() throws Exception {
@@ -60,8 +60,9 @@ public class ExportDialog extends AbstractFxmlView{
         Button btnOpen = (Button)getView().lookup("#open");
         btnOpen.setFont(UIConfig.getFontIconSmall());
         btnOpen.setText(String.valueOf(UIConfig.getAwesomeMap().get("folder_open")));
-        ComboBox<FileFormatter> combDescs = (ComboBox)getView().lookup("#formats");
-        combDescs.getItems().addAll(fileFormatters.stream().filter(item->item.canWrite()).collect(Collectors.toList()));
+        ComboBox<Formatter> combDescs = (ComboBox)getView().lookup("#formats");
+        List<Formatter> formatters = formatterService.getAllFormatters();
+        combDescs.getItems().addAll(formatters);
     }
 
     public void initExport(ExportEvent exportEvent){

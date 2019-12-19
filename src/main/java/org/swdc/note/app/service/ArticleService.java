@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleContext;
 import org.swdc.note.app.entity.ArticleType;
+import org.swdc.note.app.file.Formatter;
 import org.swdc.note.app.render.ContentRender;
 import org.swdc.note.app.render.HTMLContentRender;
 import org.swdc.note.app.repository.ArticleRepository;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 文章服务，提供关于文章的各种操作
@@ -41,6 +43,8 @@ public class ArticleService {
 
     @Autowired
     private ArticleTypeRepository typeRepository;
+
+
 
     @Transactional
     public List<Article> loadArticles(ArticleType type){

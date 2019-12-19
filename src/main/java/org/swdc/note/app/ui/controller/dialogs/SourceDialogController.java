@@ -11,13 +11,13 @@ import javafx.stage.FileChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.event.ArticleEditEvent;
-import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.file.Formatter;
+import org.swdc.note.app.service.FormatterService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.dialogs.SourceDialog;
 import org.swdc.note.app.util.DataUtil;
 import org.swdc.note.app.util.UIUtil;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class SourceDialogController implements Initializable {
     private TextField txtLocation;
 
     @Autowired
-    private List<FileFormatter> formaters;
+    private FormatterService formatterService;
 
     @Autowired
     private UIConfig config;
@@ -44,18 +44,15 @@ public class SourceDialogController implements Initializable {
 
     }
 
-    @PostConstruct
-    public void initData() {
-        Platform.runLater(() -> {
-            });
-    }
-
     @FXML
     public void onOpenFile() {
         FileChooser fileChooser = new FileChooser();
         List<FileChooser.ExtensionFilter> list = new ArrayList<>();
-        formaters.stream().filter(item->item.canRead()).map(item->item.getFilters()).forEach(list::addAll);
-
+        List<Formatter> formatters = formatterService.getDocumentFormatters();
+        for (Formatter formatter : formatters) {
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(formatter.getFormatName(), formatter.getFormatExtension());
+            list.add(filter);
+        }
         File file = fileChooser.showOpenDialog(GUIState.getStage());
         if (file == null) {
             return;
@@ -97,15 +94,17 @@ public class SourceDialogController implements Initializable {
     private void resolveDocumentFile (File file) {
         String[] name = file.getName().split("[.]");
         String ext = name[name.length - 1];
-        formaters.stream().filter(item -> item.supportSingleExtension(ext)).findFirst().ifPresent(target -> {
-            Article article = target.processRead(file, Article.class);
-            if (article == null) {
-                return;
-            }
-            ArticleEditEvent editEvent = new ArticleEditEvent(article);
-            editEvent.setContextFilled(true);
-            config.publishEvent(editEvent);
-        });
+        Formatter formatter = formatterService.getDocumentFormatterByExtension(ext,false);
+        if (formatter == null) {
+            return;
+        }
+        Article article = (Article) formatter.readDocument(file);
+        if (article == null) {
+            return;
+        }
+        ArticleEditEvent editEvent = new ArticleEditEvent(article);
+        editEvent.setContextFilled(true);
+        config.publishEvent(editEvent);
     }
 
 }

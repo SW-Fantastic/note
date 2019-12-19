@@ -10,7 +10,7 @@ import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.ExportEvent;
 import org.swdc.note.app.event.TypeImportEvent;
-import org.swdc.note.app.file.FileFormatter;
+import org.swdc.note.app.file.Formatter;
 import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
@@ -104,8 +104,12 @@ public class CommonController {
             return;
         }
         File file = importEvent.getTargetFile();
-        FileFormatter formatter = importEvent.getFormatter();
-        formatter.processImport(file,type);
+        Formatter formatter = importEvent.getFormatter();
+        if (!formatter.isBatch()) {
+            return;
+        }
+        formatter.readDocument(file);
+        //TODO 处理批量导入
     }
 
 }
