@@ -494,7 +494,7 @@ public class StartEditView extends AbstractFxmlView{
     }
 
     private void onToolCreate(ActionEvent event) {
-        UIUtil.showAlertWithOwner("要放弃现在编辑的内容，开始新的创作吗？", "提示", Alert.AlertType.CONFIRMATION,stage == null?GUIState.getStage():stage)
+        UIUtil.showAlertWithOwner("要放弃现在编辑的内容，开始新的创作吗？", "提示", Alert.AlertType.CONFIRMATION,stage == null?GUIState.getStage():stage, config)
                 .ifPresent(btnSel->{
                     if(btnSel.equals(ButtonType.OK)) {
                         config.publishEvent(new ResetEvent(StartEditView.class));

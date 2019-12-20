@@ -26,6 +26,7 @@ import org.swdc.note.app.service.FormatterService;
 import org.swdc.note.app.ui.UIConfig;
 import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.ui.view.StartReadView;
+import org.swdc.note.app.ui.view.dialogs.ArticleSetDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.UIUtil;
 
@@ -63,6 +64,9 @@ public class ReadViewController implements Initializable {
     @Autowired
     private TypeDialog typeDialog;
 
+    @Autowired
+    private ArticleSetDialog articleSetDialog;
+
     @FXML
     protected TextField txtTitle;
 
@@ -98,7 +102,7 @@ public class ReadViewController implements Initializable {
         List<Formatter> formatters = formatterService.getAllFormatters();
 
         for (Formatter formatter : formatters) {
-            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(formatter.getFormatName(), new String[]{formatter.getFormatExtension()});
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(formatter.getFormatName(), "*." + formatter.getFormatExtension());
             list.add(filter);
         }
 
@@ -107,7 +111,11 @@ public class ReadViewController implements Initializable {
         fileChooser.getExtensionFilters().addAll(list);
         File file = fileChooser.showOpenDialog(GUIState.getStage());
 
-        String[] nameItems = file.getName().split(".");
+        if (file == null) {
+            return;
+        }
+
+        String[] nameItems = file.getName().split("[.]");
         String extension = nameItems.length > 1 ? nameItems[nameItems.length - 1] : "";
 
         Formatter formatter = formatterService.getDocumentFormatterByExtension(extension,false);
@@ -125,7 +133,9 @@ public class ReadViewController implements Initializable {
 
         formatter = formatterService.getDocumentFormatterByExtension(extension, true);
         if (formatter != null) {
-            //TODO 批量导入处理
+            ArticleType articleType = (ArticleType)formatter.readDocument(file);
+            articleSetDialog.setType(articleType);
+            articleSetDialog.show();
         }
     }
 

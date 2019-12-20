@@ -50,9 +50,10 @@ public class SourceDialogController implements Initializable {
         List<FileChooser.ExtensionFilter> list = new ArrayList<>();
         List<Formatter> formatters = formatterService.getDocumentFormatters();
         for (Formatter formatter : formatters) {
-            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(formatter.getFormatName(), formatter.getFormatExtension());
+            FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(formatter.getFormatName(), "*."+formatter.getFormatExtension());
             list.add(filter);
         }
+        fileChooser.getExtensionFilters().addAll(list);
         File file = fileChooser.showOpenDialog(GUIState.getStage());
         if (file == null) {
             return;

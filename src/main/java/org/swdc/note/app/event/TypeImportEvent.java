@@ -1,6 +1,7 @@
 package org.swdc.note.app.event;
 
 import org.springframework.context.ApplicationEvent;
+import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.file.Formatter;
 
 import java.io.File;
@@ -10,22 +11,14 @@ import java.io.File;
  */
 public class TypeImportEvent extends ApplicationEvent{
 
-    private File targetFile;
+    private ArticleType type;
 
-    private Formatter formatter;
-
-    public TypeImportEvent(File file,Formatter formatter) {
-        super(file);
-        this.targetFile = file;
-        this.formatter = formatter;
+    public TypeImportEvent(ArticleType type) {
+        super("");
+        this.type = type;
     }
 
-    public File getTargetFile() {
-        return targetFile;
+    public ArticleType getType() {
+        return type;
     }
-
-    public Formatter getFormatter() {
-        return formatter;
-    }
-
 }

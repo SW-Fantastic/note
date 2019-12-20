@@ -66,7 +66,7 @@ public class TypeDialogController implements Initializable{
         String name = txtName.getText();
 
         if(name == null || name.equals("")){
-            UIUtil.showAlertWithOwner("请输入类别的名称", "提示", Alert.AlertType.INFORMATION, typeDialog.getStage());
+            UIUtil.showAlertWithOwner("请输入类别的名称", "提示", Alert.AlertType.INFORMATION, typeDialog.getStage(),config);
             return;
         }
         type.setName(name);
@@ -74,7 +74,7 @@ public class TypeDialogController implements Initializable{
             type.setParentType(nodeParent.getValue());
         }
         if(!typeService.addType(type)){
-            UIUtil.showAlertWithOwner("名称重复了，这样是不可以的", "提示", Alert.AlertType.ERROR, typeDialog.getStage());
+            UIUtil.showAlertWithOwner("名称重复了，这样是不可以的", "提示", Alert.AlertType.ERROR, typeDialog.getStage(),config);
         }
     }
 

@@ -136,13 +136,18 @@ public class UIUtil {
         }
     }
 
-    public static Optional<ButtonType> showAlertWithOwner(String content, String title, Alert.AlertType type, Window owner) {
+    public static Optional<ButtonType> showAlertWithOwner(String content, String title, Alert.AlertType type, Window owner, UIConfig config) {
         Alert alert = new Alert(type);
         alert.setHeaderText(null);
         alert.setTitle(title);
         alert.setContentText(content);
         alert.initOwner(owner);
-        return alert.showAndWait();
+        try {
+            UIUtil.configTheme(alert.getDialogPane(), config);
+            return alert.showAndWait();
+        }catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public static double getScreenX(Node node) {

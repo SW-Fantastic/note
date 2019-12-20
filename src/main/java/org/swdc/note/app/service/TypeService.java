@@ -1,13 +1,17 @@
 package org.swdc.note.app.service;
 
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.repository.ArticleTypeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 分类服务，提供和分类相关的操作
@@ -30,6 +34,27 @@ public class TypeService {
             root.getChildren().add(typeItem);
         });
         return root;
+    }
+
+    public TreeItem<ArticleType> getExternalTypes(ArticleType articleType) {
+        return externalChildItem(articleType);
+    }
+
+    private TreeItem<ArticleType> externalChildItem(ArticleType item) {
+        TreeItem<ArticleType> result = new TreeItem<>();
+
+        Set<ArticleType> type = item.getChildType();
+        if (type != null && type.size() > 0) {
+            List<TreeItem<ArticleType>> typeList = new ArrayList<>();
+            for (ArticleType typeItem : type) {
+                typeList.add(externalChildItem(typeItem));
+            }
+            result.setValue(item);
+            result.getChildren().addAll(typeList);
+            return result;
+        }
+        result.setValue(item);
+        return result;
     }
 
     /**
@@ -76,6 +101,24 @@ public class TypeService {
         return valid;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public ArticleType saveType(ArticleType type) {
+        // 如果是已有类型就直接修改
+        if(type.getId() != null){
+            return typeRepository.save(type);
+        }
+        ArticleType parentType = type.getParentType();
+        if(parentType != null){
+            parentType = typeRepository.getOne(parentType.getId());
+        }
+        type.setParentType(parentType);
+        boolean valid = typeValid(type);
+        if(valid){
+            return typeRepository.save(type);
+        }
+        return null;
+    }
+
     /**
      * 删除分类
      * @param type 被删除分类
@@ -106,7 +149,7 @@ public class TypeService {
      * @return 分类是否重复
      */
     @Transactional(readOnly = true)
-    private boolean typeValid(ArticleType type){
+    protected boolean typeValid(ArticleType type){
         ArticleType parentType = type.getParentType();
         boolean repeated = false;
         if(parentType == null){

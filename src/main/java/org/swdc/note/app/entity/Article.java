@@ -51,4 +51,8 @@ public class Article {
     @Setter
     private ArticleContext context;
 
+    @Override
+    public String toString() {
+        return title;
+    }
 }

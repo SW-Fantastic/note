@@ -70,12 +70,22 @@ public class ExportDialog extends AbstractFxmlView{
         this.targetGroup = null;
         TextField txtName =(TextField) getView().lookup("#targetName");
         if(exportEvent.isArtleExport()){
+            setBatch(false);
             this.targetArticle = exportEvent.getArticle();
             txtName.setText(targetArticle.getTitle());
         }else if(exportEvent.isTypeExport()){
+            setBatch(true);
             this.targetGroup = exportEvent.getArticleType();
             txtName.setText(targetGroup.getName());
         }
     }
 
+    public void setBatch(boolean batch) {
+        Platform.runLater(() -> {
+            ComboBox<Formatter> combDescs = (ComboBox)getView().lookup("#formats");
+            List<Formatter> formatters = batch ? formatterService.getBatchFormatters() : formatterService.getDocumentFormatters();
+            combDescs.getItems().clear();
+            combDescs.getItems().addAll(formatters);
+        });
+    }
 }

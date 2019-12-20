@@ -1,11 +1,13 @@
 package org.swdc.note.app.ui.controller;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
+import org.swdc.note.app.entity.Article;
 import org.swdc.note.app.entity.ArticleType;
 import org.swdc.note.app.event.DeleteEvent;
 import org.swdc.note.app.event.ExportEvent;
@@ -14,11 +16,13 @@ import org.swdc.note.app.file.Formatter;
 import org.swdc.note.app.service.ArticleService;
 import org.swdc.note.app.service.TypeService;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.view.dialogs.ArticleSetDialog;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.ui.view.dialogs.TypeDialog;
 import org.swdc.note.app.util.UIUtil;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Optional;
 
 /**
@@ -41,6 +45,9 @@ public class CommonController {
 
     @Autowired
     private UIConfig config;
+
+    @Autowired
+    private ArticleSetDialog articleSetDialog;
 
     /**
      * 处理导出事件
@@ -78,8 +85,8 @@ public class CommonController {
             result.ifPresent(btnType->{
                 if(btnType.equals(ButtonType.OK)){
                     if(!typeService.delType(deleteEvent.getArtleType(),false)){
-                        UIUtil.showAlertDialog("提示", "此分类下含有其他数据，如果你依然需要删除，那么" +
-                                "包括子分类下（如果有子分类的话）的所有数据都将会被删除，依然要这样做吗？",
+                        UIUtil.showAlertDialog("此分类下含有其他数据，如果你依然需要删除，那么" +
+                                        "包括子分类下（如果有子分类的话）的所有数据都将会被删除，依然要这样做吗？", "提示",
                                 Alert.AlertType.CONFIRMATION, config).ifPresent(btn->{
                             if(btn.equals(ButtonType.OK)){
                                 typeService.delType(deleteEvent.getArtleType(),true);
@@ -103,13 +110,39 @@ public class CommonController {
         if(type == null){
             return;
         }
-        File file = importEvent.getTargetFile();
-        Formatter formatter = importEvent.getFormatter();
-        if (!formatter.isBatch()) {
+        ArticleType source = importEvent.getType();
+        this.mountImportType(source, type);
+    }
+
+    private void mountImportType(ArticleType articleType, ArticleType parent) {
+
+        if (parent.getId() == null) {
             return;
         }
-        formatter.readDocument(file);
-        //TODO 处理批量导入
+
+        ArticleType type = new ArticleType();
+        type.setParentType(parent);
+        type.setName(articleType.getName());
+        type = typeService.saveType(type);
+
+        if (type == null) {
+            return;
+        }
+
+        for (Article article : articleType.getArticles()) {
+            Article created = new Article();
+            created.setType(type);
+            created.setTitle(article.getTitle());
+            created.setCreatedDate(article.getCreatedDate());
+            articleService.saveArticle(created, article.getContext());
+        }
+
+        if (articleType.getChildType() != null && articleType.getChildType().size() > 0) {
+            for (ArticleType typeItem : articleType.getChildType()) {
+                mountImportType(typeItem, type);
+            }
+        }
+
     }
 
 }

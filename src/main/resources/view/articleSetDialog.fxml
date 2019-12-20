@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="450.0" prefWidth="880.0" styleClass="set-view" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.app.ui.controller.dialogs.ArticleSetDialogController">
+   <center>
+      <SplitPane dividerPositions="0.2072892938496583, 0.428246013667426" prefHeight="450.0" prefWidth="926.0" BorderPane.alignment="CENTER">
+         <items>
+            <TreeView id="typeTree" fx:id="typeTreeView" prefHeight="200.0" prefWidth="200.0" styleClass="tree" />
+            <ListView id="articleList" fx:id="articleList" prefHeight="200.0" prefWidth="200.0" styleClass="list" />
+            <BorderPane id="content" prefHeight="200.0" prefWidth="200.0" styleClass="code-tool">
+               <top>
+                  <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="30.0" prefWidth="406.0" BorderPane.alignment="CENTER">
+                     <items>
+                        <Button id="btnImport" mnemonicParsing="false" onAction="#singleImport" text="存" />
+                     </items>
+                  </ToolBar>
+               </top>
+            </BorderPane>
+         </items>
+      </SplitPane>
+   </center>
+</BorderPane>

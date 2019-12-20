@@ -229,38 +229,6 @@
     -fx-background-color: rgba(218,249,202,1);
     -fx-background-radius: 9999;
 }
-.table{
-    -fx-background-color: rgba(0,0,0,0.8);
-}
-.table .column-header-background{
-    -fx-background-color: rgba(0,0,0,0);
-}
-.table .column-header{
-    -fx-background-color: rgba(0,0,0,0.1);
-    -fx-border-width: 0 0 0.5 0;
-    -fx-border-color: rgba(255,255,255,0.5);
-    -fx-border-style: solid;
-}
-.table .label{
-    -fx-text-fill: #FFF;
-}
-.table .table-row-cell{
-    -fx-background-color: rgba(0,0,0,0);
-    -fx-text-fill: #FFFFFF;
-    -fx-border-width: 0 0 0.1 0;
-    -fx-border-color: rgba(255,255,255,0.6);
-}
-.table .table-cell{
-    -fx-text-fill: #FFFFFF;
-    -fx-border-width: 0;
-    -fx-alignment: center;
- }
-.table .table-row-cell:selected{
-    -fx-background-color: rgba(0,0,0,0.4);
-}
-.table .table-row-cell:empty{
-    -fx-border-width: 0 0 0 0;
-}
 .radio,.check {
     -fx-text-fill: rgb(86,163,108);
 }
@@ -284,7 +252,7 @@
 .check:selected .box .mark{
     fx-background-color: rgb(158,175,130);
 }
-.spl-pane .split-pane-divider{
+.split-pane-divider{
     -fx-background-color: rgb(157,175,130);
 }
 .edit-menu {
@@ -364,4 +332,25 @@
     -fx-prompt-text-fill: rgba(86,163,108,0.8);
     -fx-border-color: rgb(86,163,108);
     -fx-border-width: 0 0 2 0;
+}
+
+.set-view {
+    -fx-background-size: cover;
+}
+.set-view .tree {
+    -fx-font-size: 12.8px;
+    -fx-font-family: "【嵐】西良文字改+";
+    -fx-background-color: rgb(218,249,202);
+}
+.set-view .list {
+    -fx-font-size: 12.8px;
+    -fx-font-family: "【嵐】西良文字改+";
+    -fx-background-color: rgba(253,255,223,0.6);
+}
+.set-view .list .list-cell{
+    -fx-text-fill: #000;
+}
+.set-view .list .list-cell:focused{
+    -fx-background-color: rgb(86,163,108);
+    -fx-text-fill: #FFFFFF;
 }

@@ -1,15 +1,20 @@
 package org.swdc.note.app.ui.controller.dialogs;
 
 import de.felixroske.jfxsupport.FXMLController;
+import de.felixroske.jfxsupport.GUIState;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.swdc.note.app.file.Formatter;
 import org.swdc.note.app.ui.UIConfig;
+import org.swdc.note.app.ui.view.MessageView;
 import org.swdc.note.app.ui.view.dialogs.ExportDialog;
 import org.swdc.note.app.util.UIUtil;
 
@@ -28,6 +33,9 @@ public class ExportDialogController implements Initializable{
 
     @Autowired
     private UIConfig config;
+
+    @Autowired
+    private MessageView messageView;
 
     @FXML
     protected TextField txtTargetName;
@@ -54,7 +62,7 @@ public class ExportDialogController implements Initializable{
             UIUtil.showAlertDialog("请选择导出格式。", "提示", Alert.AlertType.ERROR, config);
             return;
         }
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(desc.getFormatName(), new String(desc.getFormatExtension())));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(desc.getFormatName(), "*." + desc.getFormatExtension()));
         File target = fc.showSaveDialog(dialog.getStage());
         if(target == null){
             return;
@@ -67,11 +75,11 @@ public class ExportDialogController implements Initializable{
         Formatter desc = combFormat.getSelectionModel().getSelectedItem();
 
         if(desc == null){
-            UIUtil.showAlertWithOwner("必须选择导出的格式才可以导出。", "提示", Alert.AlertType.ERROR,dialog.getStage());
+            UIUtil.showAlertWithOwner("必须选择导出的格式才可以导出。", "提示", Alert.AlertType.ERROR,dialog.getStage(), config);
             return;
         }
         if(txtFileName.getText()==null||txtFileName.getText().equals("")){
-            UIUtil.showAlertWithOwner("请选择存储位置。", "提示", Alert.AlertType.ERROR,dialog.getStage());
+            UIUtil.showAlertWithOwner("请选择存储位置。", "提示", Alert.AlertType.ERROR,dialog.getStage(), config);
             return;
         }
         File file = new File(txtFileName.getText());
@@ -80,7 +88,14 @@ public class ExportDialogController implements Initializable{
         }else{
             desc.writeDocument(file,dialog.getTargetGroup());
         }
-        UIUtil.showAlertWithOwner("文档导出完毕。", "提示", Alert.AlertType.INFORMATION,dialog.getStage());
+        messageView.setMessage("文档导出完毕。");
+        Notifications.create()
+                .hideCloseButton()
+                .graphic(messageView.getView())
+                .position(Pos.CENTER)
+                .owner(GUIState.getStage())
+                .hideAfter(new Duration(1200))
+                .show();
         dialog.getStage().close();
         this.txtFileName.setText("");
         this.txtTargetName.setText("");

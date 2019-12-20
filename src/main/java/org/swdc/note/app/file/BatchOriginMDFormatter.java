@@ -35,6 +35,7 @@ public class BatchOriginMDFormatter extends AbstractFormatter<ArticleType> {
     public ArticleType readDocument(File file) {
 
         Map<String, List<String>> typePathArticleMap = new HashMap<>();
+        Map<String, ArticleType> typePathTypeMap = new HashMap<>();
 
         try (ZipFile zipFile = new ZipFile(file)){
             Enumeration<? extends ZipEntry> zipEnum = zipFile.entries();
@@ -48,10 +49,55 @@ public class BatchOriginMDFormatter extends AbstractFormatter<ArticleType> {
                 } else {
                     String[] nameItem = ent.getName().split("/");
                     String parent = ent.getName().substring(0, ent.getName().indexOf(nameItem[nameItem.length - 1]));
-                    typePathArticleMap.get(parent).add(ent.getName());
+                    List<String> contents = typePathArticleMap.get(parent);
+                    if (contents == null) {
+                        contents = new ArrayList<>();
+                        typePathArticleMap.put(parent,contents);
+                    }
+                    contents.add(ent.getName());
                 }
             }
 
+            for (String key: typePathArticleMap.keySet()){
+                ArticleType type = new ArticleType();
+                List<Article> articles = new ArrayList<>();
+
+                String[] names = key.split("/");
+                String name = names[names.length - 1];
+                type.setName(name);
+
+                List<String> artFiles = typePathArticleMap.get(key);
+                for (String item : artFiles) {
+                    ZipEntry entry = zipFile.getEntry(item);
+                    Article article = resolveZipEntry(entry,type,zipFile);
+                    if (article == null) {
+                        continue;
+                    }
+                    articles.add(article);
+                }
+
+                type.setArticles(articles);
+                type.setChildType(new HashSet<>());
+                typePathTypeMap.put(key,type);
+            }
+
+            for (String key : typePathTypeMap.keySet()) {
+                String[] keyItems = key.split("/");
+                String parent = key.substring(0, key.indexOf(keyItems[keyItems.length - 1]));
+                ArticleType type = typePathTypeMap.get(parent);
+                ArticleType current = typePathTypeMap.get(key);
+                if (current.getParentType() == null && type != null) {
+                    current.setParentType(type);
+                    type.getChildType().add(current);
+                }
+            }
+
+            for (ArticleType type : typePathTypeMap.values()) {
+                if (type.getParentType() == null) {
+                    return type;
+                }
+            }
+            return null;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -114,21 +160,14 @@ public class BatchOriginMDFormatter extends AbstractFormatter<ArticleType> {
         }
     }
 
-    public Object resolveZipEntry(ZipEntry ent, ArticleType type, ZipFile zipFile) throws Exception{
-        if(ent.isDirectory() && !ent.getName().equals("source") && !ent.getName().equals(type.getName())){
-            ArticleType subType = new ArticleType();
-            subType.setName(ent.getName().split("[/\\\\]")[ent.getName().split("[/\\\\]").length - 1]);
-            subType.setArticles(new ArrayList<>());
-            if (type != null) {
-                subType.setParentType(type);
-                type.getChildType().add(subType);
-            }
-            return subType;
-        }else{
-            if (type == null) {
-                throw new RuntimeException("format is not correct");
-            }
-            InputStream in = zipFile.getInputStream(ent);
+    public Article resolveZipEntry(ZipEntry ent, ArticleType type, ZipFile zipFile) throws Exception{
+        if(ent.isDirectory()){
+            return null;
+        }
+        if (type == null) {
+            throw new RuntimeException("format is not correct");
+        }
+        try(InputStream in = zipFile.getInputStream(ent)) {
             Article article = new Article();
             String source = UIUtil.readFileAsText(in);
             Map<String,String> result = (Map)JSON.parse(source);
@@ -141,7 +180,10 @@ public class BatchOriginMDFormatter extends AbstractFormatter<ArticleType> {
             article.setContext(context);
             in.close();
             return article;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+        return null;
     }
 
     private String writeArtleJSON(Article article){
