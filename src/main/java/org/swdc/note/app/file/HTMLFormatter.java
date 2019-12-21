@@ -53,6 +53,9 @@ public class HTMLFormatter extends AbstractFormatter<Article> {
             int index = 0;
             for(Element elem:elems){
                 String res = elem.attr("src");
+                if(res == null || res.equals("")) {
+                    continue;
+                }
                 Base64.Encoder  encoder = Base64.getEncoder();
                 if(res.startsWith("http")){
                     byte[] data = DataUtil.loadHttpData(res);
