@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="48.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label id="title" text="Label" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="24.0" />
+               </padding>
+            </HBox>
+            <HBox prefHeight="48.0" HBox.hgrow="ALWAYS" />
+            <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="38.0" spacing="4.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button id="open" mnemonicParsing="false" styleClass="tool-btn" text="读" />
+                  <Button id="edit" mnemonicParsing="false" styleClass="tool-btn" text="改" />
+                  <Button id="delete" mnemonicParsing="false" styleClass="tool-btn" text="删" />
+               </children>
+               <padding>
+                  <Insets right="8.0" />
+               </padding>
+            </HBox>
+         </children>
+         <styleClass>
+            <String fx:value="cell-view" />
+            <String fx:value="scene" />
+         </styleClass>
+      </HBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="300.0" styleClass="cell-desc" BorderPane.alignment="CENTER">
+         <children>
+            <Label id="desc" text="Desc">
+               <HBox.margin>
+                  <Insets left="24.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </bottom>
+</BorderPane>

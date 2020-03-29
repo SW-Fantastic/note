@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="543.0" prefWidth="790.0" styleClass="sub-view" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.TypeSubViewController">
+   <center>
+      <SplitPane dividerPositions="0.48639455782312924" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <items>
+            <ListView id="typeList" fx:id="typeList" minWidth="300.0" prefHeight="200.0" prefWidth="300.0" />
+            <ListView id="articleList" fx:id="articlesList" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
+         </items>
+      </SplitPane>
+   </center>
+   <left>
+      <BorderPane prefHeight="543.0" prefWidth="239.0" styleClass="tool-pane" BorderPane.alignment="CENTER">
+         <top>
+            <HBox alignment="CENTER" prefHeight="71.0" prefWidth="263.0" spacing="12.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button id="add" mnemonicParsing="false" onAction="#onTypeAdded" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="加" />
+                  <Button id="imp" layoutX="26.0" layoutY="25.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="导" />
+                  <Button id="help" layoutX="76.0" layoutY="25.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="明" />
+               </children>
+            </HBox>
+         </top>
+         <bottom>
+            <HBox alignment="CENTER" prefHeight="94.0" prefWidth="239.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onCreateDocument" prefHeight="38.0" prefWidth="208.0" styleClass="btn-primary" text="创建文档" />
+               </children>
+            </HBox>
+         </bottom>
+         <center>
+            <ListView fx:id="recentlyList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </left>
+</BorderPane>

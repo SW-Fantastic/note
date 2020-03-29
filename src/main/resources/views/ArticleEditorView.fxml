@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="499.0" prefWidth="719.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.ArticleEditorController">
+   <center>
+      <TabPane id="editorTab" fx:id="articlesTab" prefHeight="431.0" prefWidth="719.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <BorderPane prefHeight="78.0" prefWidth="719.0" styleClass="tool-area" BorderPane.alignment="CENTER">
+         <bottom>
+            <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="719.0" spacing="8.0" BorderPane.alignment="CENTER">
+               <children>
+                  <TextField id="title" prefHeight="23.0" prefWidth="365.0" styleClass="text" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets left="8.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <TextField id="type" editable="false" styleClass="text" />
+                  <Button id="changeType" mnemonicParsing="false" onAction="#changeType" prefHeight="31.0" prefWidth="82.0" styleClass="btn-primary" text="更改分类">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </bottom>
+         <top>
+            <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+              <items>
+                <Button id="save" mnemonicParsing="false" onAction="#onToolSave" text="存" />
+                  <MenuButton id="header" contentDisplay="CENTER" mnemonicParsing="false" text="标">
+                    <items>
+                      <MenuItem id="h1" mnemonicParsing="false" text="Header1" />
+                      <MenuItem id="h2" mnemonicParsing="false" text="Header2" />
+                        <MenuItem id="h3" mnemonicParsing="false" text="Header3" />
+                        <MenuItem id="h4" mnemonicParsing="false" text="Header4" />
+                        <MenuItem id="h5" mnemonicParsing="false" text="Header5" />
+                        <MenuItem id="h6" mnemonicParsing="false" text="Header6" />
+                    </items>
+                  </MenuButton>
+                  <Button id="throwLine" mnemonicParsing="false" onAction="#onToolThrow" text="删" />
+                  <Button id="listOl" mnemonicParsing="false" onAction="#onToolListOl" text="序" />
+                  <Button id="listUl" layoutX="74.0" layoutY="14.0" mnemonicParsing="false" onAction="#onToolListUl" text="列" />
+                  <Button id="todo" mnemonicParsing="false" onAction="#onToolTodo" text="目" />
+                  <Button id="table" layoutX="138.0" layoutY="14.0" mnemonicParsing="false" onAction="#onToolTable" text="表" />
+                  <Button id="code" layoutX="170.0" layoutY="14.0" mnemonicParsing="false" onAction="#onToolCode" text="码" />
+                  <Button id="img" layoutX="202.0" layoutY="14.0" mnemonicParsing="false" onAction="#onToolImage" text="图" />
+                  <Button id="bold" mnemonicParsing="false" onAction="#onToolBold" text="粗" />
+                  <Button id="italic" mnemonicParsing="false" onAction="#onToolItalic" text="斜" />
+                  <Button id="quote" mnemonicParsing="false" onAction="#onToolQuite" text="引" />
+              </items>
+               <BorderPane.margin>
+                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+               </BorderPane.margin>
+            </ToolBar>
+         </top>
+      </BorderPane>
+   </top>
+</BorderPane>

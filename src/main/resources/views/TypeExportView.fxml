@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeExportController">
+   <top>
+      <HBox alignment="BOTTOM_LEFT" prefHeight="41.0" prefWidth="415.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="请选择存储的类型：" />
+         </children>
+         <padding>
+            <Insets left="18.0" />
+         </padding>
+      </HBox>
+   </top>
+   <center>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <ComboBox fx:id="renderComboBox" prefHeight="30.0" prefWidth="331.0" styleClass="cbx" />
+         </children>
+      </HBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="48.0" prefWidth="366.0" spacing="8.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onCancel" prefHeight="28.0" prefWidth="73.0" styleClass="btn-info" text="取消" />
+            <Button mnemonicParsing="false" onAction="#onOK" prefHeight="28.0" prefWidth="73.0" styleClass="btn-primary" text="确定" />
+         </children>
+         <padding>
+            <Insets right="12.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <styleClass>
+      <String fx:value="scene" />
+      <String fx:value="dialog-pane" />
+   </styleClass>
+</BorderPane>

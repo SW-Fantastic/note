@@ -1,0 +1,97 @@
+.scene .tool-area {
+  -fx-background-color: rgba(245, 237, 240, 0.5);
+  -fx-font-size: 12;
+}
+.scene .tool-area .tool-bar {
+  -fx-background-color: rgba(255, 255, 255, 0.8);
+  -fx-background-radius: 8px;
+}
+.scene .tool-area .tool-bar .button {
+  -fx-background-color: rgba(0, 0, 0, 0);
+  -fx-text-fill: #7ca982;
+  -fx-border-width: 0.5;
+  -fx-border-style: dashed;
+  -fx-border-color: #7ca982;
+  -fx-border-radius: 12;
+}
+.scene .tool-area .tool-bar .button:hover {
+  -fx-effect: dropshadow(three-pass-box, #243e36, 8, 0, 0, 0);
+}
+.scene .tool-area .tool-bar .menu-button {
+  -fx-background-color: rgba(0, 0, 0, 0);
+  -fx-text-fill: #74A982;
+  -fx-border-width: 0.5;
+  -fx-border-style: dashed;
+  -fx-border-color: #74A982;
+  -fx-border-radius: 12;
+}
+.scene .tool-area .tool-bar .menu-button:hover {
+  -fx-effect: dropshadow(three-pass-box, #243e36, 8, 0, 0, 0);
+}
+.scene .tool-area .text {
+  -fx-background-color: rgba(255, 255, 255, 0.6);
+  -fx-border-width: 0 0 2 0;
+  -fx-border-color: #7ca982;
+  -fx-border-style: solid;
+}
+.scene .tab-pane {
+  -fx-background-color: rgba(0, 0, 0, 0);
+  -fx-background-radius: 8;
+  -fx-tab-min-width: 100;
+}
+.scene .tab-pane .tab-label {
+  -fx-text-fill: #7ca982;
+  -fx-font-size: 13;
+}
+.scene .tab-pane .tab-header-background {
+  -fx-background-color: rgba(255, 255, 255, 0.4);
+  -fx-effect: dropshadow(three-pass-box, #7ca982, 8, 0, 0, 0);
+}
+.scene .tab-pane .tab {
+  -fx-focus-color: rgba(0, 0, 0, 0);
+  -fx-background-color: rgba(255, 255, 255, 0.5);
+}
+.scene .tab-pane .tab:selected {
+  -fx-focus-color: rgba(0, 0, 0, 0);
+  -fx-background-color: #FFF;
+}
+.scene .tab-pane .split-pane .split-pane-divider {
+  -fx-background-color: rgba(245, 237, 240, 0.8);
+  -fx-padding: 0 1 0 1;
+}
+.scene .tab-pane .split-pane .code-area {
+  -fx-font-family: "YouYuan";
+  -fx-font-size: 16;
+  -fx-background-color: rgba(247, 255, 168, 0.1);
+  -fx-background-radius: 8;
+}
+.scene .tab-pane .split-pane .code-area .context-menu {
+  -fx-font-family: "【嵐】西良文字改+";
+}
+.scene .tab-pane .split-pane .code-area .context-menu .menu-item {
+  -fx-font-size: 13;
+  -fx-accent: #7ca982;
+}
+.scene .tab-pane .split-pane .code-area .context-menu .menu-item:hover * {
+  -fx-text-fill: #FFF;
+}
+.scene .tab-pane .split-pane .code-area .context-menu .menu-item:focused * {
+  -fx-text-fill: #FFF;
+}
+.scene .tab-pane .split-pane .code-area .selection {
+  -fx-fill: rgba(166, 215, 194, 0.4);
+}
+.scene .tab-pane .split-pane .code-area .paragraph-box {
+  -fx-background-color: rgba(0, 0, 0, 0);
+}
+.scene .tab-pane .split-pane .code-area .lineno {
+  -fx-background-color: rgba(0, 0, 0, 0);
+}
+.scene .virtualized-scroll-pane {
+  -fx-background-color: #ffffff;
+}
+.rect-selector {
+  -c-background-color: #FFF;
+  -c-border-color: #999;
+  -c-fill-color: #d0f2b3;
+}

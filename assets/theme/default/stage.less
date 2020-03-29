@@ -1,0 +1,319 @@
+@primaryColor: #7CA982;
+@secondaryColor: #8EA4D2;
+@backgroundColor: #FDFFFC;
+@backgroundSecondary: #F5EDF0;
+@darkPrimaryColor: #243E36;
+@nothing: rgba(0,0,0,0);
+
+.dialog-pane {
+  -fx-font-size: 13;
+  -fx-font-family: "【嵐】西良文字改+";
+  -fx-background-color: @backgroundColor;
+  .button {
+    -fx-background-color: @primaryColor;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 2 4 2 4;
+  }
+  .button:hover {
+    -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+  }
+}
+
+.scene {
+  -fx-background-radius: 6;
+  -fx-border-radius: 6;
+  -fx-background-size: cover;
+  -fx-font-family: "【嵐】西良文字改+";
+  -fx-font-size: 14px;
+
+  .txt-second {
+    -fx-font-size: 13px;
+  }
+
+  .tools {
+    -fx-background-color: @backgroundColor;
+    -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+
+    .toggle-button {
+      -fx-background-color: @nothing;
+      -fx-border-style: none;
+      -fx-text-fill: @darkPrimaryColor;
+      -fx-border-width: 0.8;
+    }
+
+    .toggle-button:hover {
+      -fx-effect: dropshadow(three-pass-box,@darkPrimaryColor, 8, 0, 0, 0);
+      -fx-border-width: 0.8;
+      -fx-border-style: none;
+    }
+
+    .toggle-button:selected {
+      -fx-border-style: dashed;
+      -fx-border-width: 1;
+      -fx-border-radius: 8px;
+      -fx-border-color: @darkPrimaryColor;
+    }
+  }
+
+  .sccontent {
+    -fx-background-color: rgba(245,237,240, 0.4);
+    -fx-border-style: none;
+  }
+
+  .sub-view {
+
+    -fx-background-color: @nothing;
+
+    .list-view {
+      -fx-background-color: rgba(255,255,255,0.4);
+
+      .list-cell:empty {
+        -fx-background-color: @nothing;
+        -fx-text-fill: @darkPrimaryColor;
+      }
+
+      .list-cell:filled {
+        -fx-background-color: @nothing;
+        -fx-text-fill: @darkPrimaryColor;
+      }
+
+      .list-cell {
+        .cell-view {
+          -fx-background-color: @backgroundColor;
+          -fx-background-radius: 6px;
+        }
+        .cell-desc {
+          -fx-background-color: rgba(255,255,255,0.6);
+          -fx-background-radius: 0 0 6 6;
+        }
+        .cell-view .tool-btn {
+          -fx-background-color: @nothing;
+          -fx-text-fill: @primaryColor;
+          -fx-border-style: dashed;
+          -fx-border-width: 1px;
+          -fx-border-color: @primaryColor;
+          -fx-border-radius: 60px;
+        }
+        .cell-view .tool-btn:hover {
+          -fx-effect: dropshadow(three-pass-box,#74A982, 8, 0, 0, 0);
+        }
+      }
+
+      .list-cell:selected {
+        -fx-background-color: @nothing;
+        * {
+          -fx-text-fill: @darkPrimaryColor;
+        }
+        .cell-view {
+          -fx-background-color: @backgroundSecondary;
+        }
+        .simple-cell {
+          -fx-text-fill: @primaryColor;
+          -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+        }
+      }
+    }
+
+    .tool-pane {
+      -fx-background-color: @backgroundColor;
+      -fx-border-style: dashed;
+      -fx-border-color: @darkPrimaryColor;
+      -fx-border-width: 0 1 0 0;
+
+      .list-view {
+        -fx-background-color: @nothing;
+        -fx-border-color: @nothing;
+      }
+    }
+
+    .split-pane{
+      -fx-background-color: @nothing;
+      .split-pane-divider{
+        -fx-background-color: rgba(245,237,240, 0.8);
+        -fx-padding: 0 1 0 1;
+      }
+    }
+
+    .tab-pane {
+      -fx-background-color: @nothing;
+      -fx-background-radius: 8;
+      -fx-tab-min-width: 80;
+      .tab-label {
+        -fx-text-fill: @primaryColor;
+        -fx-font-size: 13;
+      }
+      .tab-header-background {
+        -fx-background-color: rgba(255,255,255,0.4);
+        -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+      }
+      .tab {
+        -fx-focus-color:@nothing;
+        -fx-background-color: rgba(255,255,255,0.5);
+      }
+      .tab:selected {
+        -fx-focus-color: @nothing;
+        -fx-background-color: #FFF;
+      }
+      .prop-sheets {
+        -fx-background: rgba(245,237,240, 0.2);
+        .tool-bar {
+          -fx-background-color: rgba(245,237,240, 0.4);
+        }
+        .text-field{
+          -fx-background-color: @nothing;
+          -fx-border-width: 0 0 2 0;
+          -fx-border-color: @primaryColor;
+          -fx-border-style: solid;
+        }
+        .button {
+          -fx-background-color: @primaryColor;
+          -fx-text-fill: #FFF;
+          -fx-background-insets: 2 4 2 4;
+        }
+        .button:hover{
+          -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+        }
+        .slider {
+          .thumb {
+            -fx-background-color: @primaryColor;
+            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+          }
+          .track {
+            -fx-background-color: rgba(255,255,255,0.6);
+            -fx-border-color: @primaryColor;
+            -fx-border-radius: 12;
+          }
+        }
+        .check-box {
+          .box {
+            -fx-background-color: @nothing;
+            -fx-border-color: @primaryColor;
+          }
+          &:selected .mark {
+            -fx-background-color: @darkPrimaryColor;
+            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+          }
+        }
+      }
+    }
+
+  }
+
+  .btn-primary-text {
+    -fx-background-color: @nothing;
+    -fx-text-fill: @primaryColor;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-color: @nothing;
+    -fx-border-radius: 24;
+  }
+
+  .btn-primary-text:hover {
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: @primaryColor;
+    -fx-border-width: 1px;
+    -fx-border-style: dashed;
+    -fx-border-color: @primaryColor;
+    -fx-border-radius: 24;
+  }
+
+  .text {
+    -fx-background-color: @nothing;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: @primaryColor;
+    -fx-border-style: solid;
+  }
+
+  .btn-primary{
+    -fx-background-color: @primaryColor;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 2 4 2 4;
+  }
+
+  .btn-primary:hover{
+    -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+  }
+
+  .btn-info {
+    -fx-background-color: @secondaryColor;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 2 4 2 4;
+  }
+
+  .btn-info:hover {
+    -fx-effect: dropshadow(three-pass-box,#8EA4D2, 8, 0, 0, 0);
+  }
+
+  .context-menu{
+    .menu-item {
+      -fx-font-size: 13;
+      -fx-accent: @primaryColor;
+    }
+    .menu-item:hover *{
+      -fx-text-fill: #FFF;
+    }
+    .menu-item:focused *{
+      -fx-text-fill: #FFF;
+    }
+  }
+
+  .list-view {
+    -fx-background-color: @backgroundColor;
+    -fx-text-fill: @primaryColor;
+    .list-cell:empty{
+      -fx-background-color: @nothing;
+    }
+    .list-cell:filled {
+      -fx-background-color: @nothing;
+    }
+    .list-cell:selected {
+      -fx-background-color: @primaryColor;
+      -fx-text-fill: #FFF;
+    }
+  }
+
+  .select-list {
+    -fx-border-color: @primaryColor;
+    -fx-border-width: 1 0 1 0;
+    -fx-border-style: dashed;
+  }
+
+  .cbx,.combo-box {
+    -fx-background-color: rgba(255,255,255,0.6);
+    -fx-border-width: 0 0 1.5 0;
+    -fx-border-color: @primaryColor;
+    -fx-border-style: solid;
+    .list-view {
+      -fx-text-fill: @primaryColor;
+      .list-cell:selected *{
+        -fx-text-fill: #FFF;
+      }
+      .list-cell:hover{
+        -fx-background-color: @primaryColor;
+      }
+      .list-cell:hover *{
+        -fx-text-fill: #FFF;
+      }
+    }
+  }
+
+  .popup{
+    -fx-background-color: #FFF;
+    -fx-border-style: dashed;
+    -fx-border-color: @darkPrimaryColor;
+    -fx-border-width: 1;
+  }
+
+  .btn-circle {
+    -fx-background-color: @nothing;
+    -fx-text-fill: @primaryColor;
+    -fx-border-style: dashed;
+    -fx-border-width: 1px;
+    -fx-border-color: @primaryColor;
+    -fx-border-radius: 60px;
+  }
+  .btn-circle:hover {
+    -fx-effect: dropshadow(three-pass-box,#74A982, 8, 0, 0, 0);
+  }
+
+}

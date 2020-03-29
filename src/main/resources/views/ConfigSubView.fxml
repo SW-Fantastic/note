@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="400.0" prefWidth="636.0" styleClass="sub-view" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.ConfigSubViewController">
+   <top>
+      <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="636.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#saveProperties" prefHeight="32.0" prefWidth="78.0" styleClass="btn-primary" text="保存配置">
+               <HBox.margin>
+                  <Insets right="18.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <TabPane id="tabs" prefHeight="200.0" prefWidth="200.0" styleClass="txt-second" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
