@@ -22,7 +22,7 @@ import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
-import org.swdc.note.core.render.HTMLRender;
+import org.swdc.note.core.render.HTMLResolver;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.RectSelector;
 import org.swdc.note.ui.events.RefreshEvent;
@@ -46,7 +46,7 @@ public class ArticleEditorView extends FXView {
     private MaterialIconsService iconsService = null;
 
     @Aware
-    private HTMLRender render = null;
+    private HTMLResolver render = null;
 
     @Aware
     private ArticleService articleService = null;
@@ -359,6 +359,7 @@ public class ArticleEditorView extends FXView {
     }
 
     private void onTabClose(Event e, Tab tab, Article article) {
+        e.consume();
         EditorContentView editor = fxViewByView(tab.getContent(), EditorContentView.class);
         if (editor.hasSaved()) {
             tabs.remove(tab);
@@ -368,14 +369,13 @@ public class ArticleEditorView extends FXView {
             }
             return;
         }
-        if (article.getType() == null) {
-            this.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
-            return;
-        }
         this.showAlertDialog("关闭","是否要保存《" + article.getTitle() + "》?", Alert.AlertType.CONFIRMATION)
                 .ifPresent(buttonType -> {
-                    e.consume();
                     if (buttonType == ButtonType.OK) {
+                        if (article.getType() == null) {
+                            this.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
+                            return;
+                        }
                         String source = editor.getCodeArea().getText();
                         ArticleResource resource = new ArticleResource();
                         Map<String, ByteBuffer> images = editor.getImagesView().getImages();

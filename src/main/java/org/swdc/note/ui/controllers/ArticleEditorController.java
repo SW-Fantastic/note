@@ -15,6 +15,7 @@ import org.swdc.note.ui.component.RectSelector;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.EditorContentView;
+import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.dialogs.ImagesView;
 import org.swdc.note.ui.view.dialogs.TypeSelectView;
 
@@ -297,6 +298,7 @@ public class ArticleEditorController extends FXController {
             } else {
                 editor.setSaved();
                 select.setText(article.getTitle());
+                UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！",view);
                 this.emit(new RefreshEvent(article,this));
             }
         } catch (Exception e) {

@@ -22,7 +22,7 @@
             <HBox alignment="CENTER" prefHeight="71.0" prefWidth="263.0" spacing="12.0" BorderPane.alignment="CENTER">
                <children>
                   <Button id="add" mnemonicParsing="false" onAction="#onTypeAdded" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="加" />
-                  <Button id="imp" layoutX="26.0" layoutY="25.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="导" />
+                  <Button id="imp" layoutX="26.0" layoutY="25.0" mnemonicParsing="false" onAction="#onOpenFile" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="导" />
                   <Button id="help" layoutX="76.0" layoutY="25.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="46.0" styleClass="btn-primary-text" text="明" />
                </children>
             </HBox>

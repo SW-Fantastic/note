@@ -1,5 +1,7 @@
 package org.swdc.note.core.render;
 
+import com.overzealous.remark.Options;
+import com.overzealous.remark.Remark;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.profile.pegdown.Extensions;
@@ -10,6 +12,8 @@ import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.swdc.fx.anno.Aware;
@@ -18,7 +22,9 @@ import org.swdc.fx.event.ConfigRefreshEvent;
 import org.swdc.note.config.RenderConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.proto.HttpURLResolver;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -26,6 +32,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +45,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HTMLRender extends ContentRender {
+public class HTMLResolver extends ContentRender implements FileExporter {
 
     @Aware
     private RenderConfig config = null;
@@ -228,7 +236,27 @@ public class HTMLRender extends ContentRender {
     }
 
     @Override
-    public void renderAsFile(Article article, Path path) {
+    public String subfix() {
+        return "html";
+    }
+
+    @Override
+    public String typeSubfix() {
+        return "epub";
+    }
+
+    @Override
+    public String typeName() {
+        return "电子书格式EPUB";
+    }
+
+    @Override
+    public boolean readable(boolean type) {
+        return !type;
+    }
+
+    @Override
+    public void writeFile(Article article, Path path) {
         try {
             if (Files.exists(path)) {
                 Files.delete(path);
@@ -241,7 +269,7 @@ public class HTMLRender extends ContentRender {
     }
 
     @Override
-    public void renderAllArticles(ArticleType type, Path file) {
+    public void writeType(ArticleType type, Path file) {
         Book book = new Book();
         Metadata metadata = book.getMetadata();
         metadata.addAuthor(new Author("Fantastic Note"));
@@ -270,18 +298,72 @@ public class HTMLRender extends ContentRender {
     }
 
     @Override
-    public String subfix() {
-        return "html";
+    public Article readFile(Path filePath) {
+        Remark remark = new Remark(Options.markdown());
+        try {
+            String source = Files.readString(filePath);
+            Document doc = Jsoup.parse(source);
+            Elements links = doc.body().getElementsByTag("a");
+            for (Element elem : links) {
+                elem.tagName("span").attributes().remove("href");
+            }
+            Elements elems = doc.getElementsByTag("img");
+
+            Map<String, byte[]> resource = new HashMap<>();
+            int index = 0;
+            for (Element elem : elems) {
+                String res = elem.attr("src");
+                if (res.isBlank() && elem.hasAttr("data-src")) {
+                    res = elem.attr("data-src");
+                }
+                if (res == null || res.equals("")) {
+                    continue;
+                }
+                if (res.startsWith("http")) {
+                    byte[] data = HttpURLResolver.loadHttpData(res);
+                    URL url = new URL(res);
+                    String fileName = url.getFile();
+                    resource.put(fileName.substring(1), data);
+                } else if (res.startsWith("file")) {
+                    String path = new URL(res).getPath();
+                    File localFile = new File(path);
+                    byte[] data = Files.readAllBytes(Paths.get(localFile.getAbsolutePath()));
+                    resource.put(localFile.getName(), data);
+                } else if (res.startsWith("data")) {
+                    index++;
+                    String content = res.replace("data:image/png;base64,", "");
+                    byte[] data = Base64.getDecoder().decode(content);
+                    resource.put("Image " + index, data);
+                } else {
+                    File localFile = new File(filePath.toFile().getAbsoluteFile().getParentFile().getPath() + File.separator + URLDecoder.decode(res, "utf8"));
+                    if (localFile.exists()) {
+                        index++;
+                        byte[] data = Files.readAllBytes(Paths.get(localFile.getAbsolutePath()));
+                        resource.put("Image " + index, data);
+                    }
+                }
+            }
+            String markdown = remark.convertFragment(doc.toString());
+            ArticleContent content = new ArticleContent();
+            ArticleResource contentResource = new ArticleResource();
+            contentResource.setImages(resource);
+            content.setResources(contentResource);
+            content.setSource(markdown);
+            Article article = new Article();
+            article.setContent(content);
+            article.setTitle(filePath.getFileName().toString());
+            article.setCreateDate(new java.util.Date());
+            return article;
+        } catch (Exception e) {
+            logger.error("fail to read html file", e);
+        }
+        return null;
     }
 
-    @Override
-    public String typeSubfix() {
-        return "epub";
-    }
 
     @Override
-    public String typeName() {
-        return "电子书格式EPUB";
+    public ArticleType readTypeFile(Path path) {
+        return null;
     }
 
     @Override

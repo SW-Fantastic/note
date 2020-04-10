@@ -35,7 +35,6 @@ public class MainView extends FXView {
         super.initialize();
         this.group = new ToggleGroup();
         this.initViewToolButton("type", "list");
-        // this.initViewToolButton("edit", "edit");
         this.initViewToolButton("conf","settings");
 
         group.selectedToggleProperty().addListener(this::viewToggleChange);
@@ -78,7 +77,7 @@ public class MainView extends FXView {
         FXView view = subViews.get(viewContent);
         if (view == null) {
             view = findView(viewContent);
-            BorderPane contentRoot = (BorderPane) view.getView();
+            BorderPane contentRoot =  view.getView();
             contentRoot.prefWidthProperty().bind(subViewWidth);
             contentRoot.prefHeightProperty().bind(subViewHeight);
             subViews.put(viewContent,view);

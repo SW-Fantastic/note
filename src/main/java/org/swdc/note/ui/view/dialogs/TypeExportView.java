@@ -4,7 +4,7 @@ import org.swdc.fx.FXView;
 import org.swdc.fx.anno.Scope;
 import org.swdc.fx.anno.ScopeType;
 import org.swdc.fx.anno.View;
-import org.swdc.note.core.render.ContentRender;
+import org.swdc.note.core.render.FileExporter;
 import org.swdc.note.ui.controllers.dialogs.TypeExportController;
 
 @Scope(ScopeType.MULTI)
@@ -19,7 +19,7 @@ public class TypeExportView extends FXView {
         });
     }
 
-    public ContentRender getSelected() {
+    public FileExporter getSelected() {
         TypeExportController controller = getLoader().getController();
         return controller.getSelected();
     }

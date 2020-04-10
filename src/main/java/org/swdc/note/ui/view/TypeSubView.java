@@ -40,7 +40,7 @@ public class TypeSubView extends FXView {
         TypeSubViewController controller = getLoader().getController();
         MenuItem itemCreate = createMenuItem("添加分类",controller::creatType, null);
         MenuItem itemDelete = createMenuItem("删除", controller::deleteType, null);
-        MenuItem itemRename = new MenuItem("重命名分类");
+        MenuItem itemRename = createMenuItem("修改分类", controller::onModifyType,null);
         MenuItem itemExport = createMenuItem("导出", controller::exportType,null);
 
         itemDelete.disableProperty().bind(typeNotSelectProp);

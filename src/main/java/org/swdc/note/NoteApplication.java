@@ -5,11 +5,13 @@ import javafx.scene.image.Image;
 import org.swdc.fx.ApplicationContainer;
 import org.swdc.fx.FXApplication;
 import org.swdc.fx.FXSplash;
+import org.swdc.fx.FXView;
 import org.swdc.fx.anno.SFXApplication;
 import org.swdc.fx.properties.ConfigManager;
 import org.swdc.fx.resource.source.ModulePathResource;
 import org.swdc.fx.services.ServiceManager;
 import org.swdc.note.config.AppConfig;
+import org.swdc.note.core.proto.URLResolverManager;
 import org.swdc.note.core.render.RendersManager;
 import org.swdc.note.ui.controllers.GlobalKeyListener;
 import org.swdc.note.ui.view.MainView;
@@ -43,6 +45,7 @@ public class NoteApplication extends FXApplication {
     @Override
     protected void onStart(ApplicationContainer container) {
         container.register(RendersManager.class);
+        container.register(URLResolverManager.class);
         container.getComponent(ServiceManager.class).register(GlobalKeyListener.class);
         if (SystemTray.isSupported()) {
             try {
@@ -81,6 +84,14 @@ public class NoteApplication extends FXApplication {
             } catch (Exception e) {
                 logger.error("failed to create tray icon.", e);
             }
+        }
+    }
+
+    @Override
+    protected void appHasStarted(FXView mainView) {
+        AppConfig config = findComponent(AppConfig.class);
+        if (config.getShowMainView()) {
+            mainView.show();
         }
     }
 

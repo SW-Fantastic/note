@@ -5,6 +5,10 @@
 @darkPrimaryColor: #243E36;
 @nothing: rgba(0,0,0,0);
 
+.notification-bar .pane{
+  -fx-background-color: rgba(253,255,223,0);
+}
+
 .dialog-pane {
   -fx-font-size: 13;
   -fx-font-family: "【嵐】西良文字改+";
@@ -126,7 +130,38 @@
       }
     }
 
-    .split-pane{
+    .tool-second{
+      -fx-background-color: rgba(255,255,255,0.4);
+      .tool-bar {
+        -fx-background-color: rgba(255, 255, 255, 0.8);
+        -fx-background-radius: 8px;
+
+        .button {
+          -fx-background-color: @nothing;
+          -fx-text-fill: @primaryColor;
+          -fx-border-width: 0.5;
+          -fx-border-style: dashed;
+          -fx-border-color: @primaryColor;
+          -fx-border-radius: 12;
+        }
+
+        .button:hover {
+          -fx-effect: dropshadow(three-pass-box, @darkPrimaryColor, 8, 0, 0, 0);
+        }
+      }
+      .list-view {
+        .list-cell {
+          -fx-text-fill: @primaryColor;
+        }
+        .list-cell:selected {
+          -fx-background-color: #FFF;
+          -fx-background-radius: 8;
+          -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+        }
+      }
+    }
+
+    .split-pane, &.split-pane{
       -fx-background-color: @nothing;
       .split-pane-divider{
         -fx-background-color: rgba(245,237,240, 0.8);
@@ -192,6 +227,23 @@
           &:selected .mark {
             -fx-background-color: @darkPrimaryColor;
             -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+          }
+        }
+        .combo-box {
+          .list-view {
+            -fx-text-fill: @primaryColor;
+            -fx-background-color: #FFF;
+            .list-cell:selected *{
+              -fx-text-fill: #FFF;
+              -fx-background-color: @primaryColor;
+            }
+            .list-cell:hover{
+              -fx-text-fill: #FFF;
+              -fx-background-color: @primaryColor;
+            }
+            .list-cell:hover *{
+              -fx-text-fill: #FFF;
+            }
           }
         }
       }

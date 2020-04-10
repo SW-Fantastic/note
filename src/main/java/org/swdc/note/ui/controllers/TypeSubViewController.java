@@ -1,5 +1,6 @@
 package org.swdc.note.ui.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,14 +18,17 @@ import org.swdc.fx.anno.Listener;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.render.ContentRender;
+import org.swdc.note.core.render.FileExporter;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.view.ArticleEditorView;
+import org.swdc.note.ui.view.ArticleSetView;
 import org.swdc.note.ui.view.ReaderView;
+import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.cells.*;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
 import org.swdc.note.ui.view.dialogs.TypeCreateView;
+import org.swdc.note.ui.view.dialogs.TypeEditView;
 import org.swdc.note.ui.view.dialogs.TypeExportView;
 
 import java.io.File;
@@ -33,6 +37,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 public class TypeSubViewController extends FXController {
 
@@ -118,6 +123,45 @@ public class TypeSubViewController extends FXController {
         editorView.show();
     }
 
+    @FXML
+    public void onOpenFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("打开文档集");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("所有支持的格式","*.*"));
+        File file = chooser.showOpenDialog(null);
+        if (file == null) {
+            return;
+        }
+        // 从exporter读取，存在支持的exporter那么就读进来
+        // 按照分类和文档两种模式获取和处理
+        FileExporter exporter = articleService.getFileExporter(file,true,true);
+
+        if (exporter == null) {
+            exporter = articleService.getFileExporter(file, true, false);
+            if (exporter == null) {
+                return;
+            }
+            FileExporter targetExporter = exporter;
+            CompletableFuture.supplyAsync(() -> targetExporter.readTypeFile(file))
+                .whenCompleteAsync((type, e) -> {
+                    if (e != null) {
+                        logger.error("fail to load article set: " + targetExporter.name());
+                        return;
+                    }
+                    Platform.runLater(() -> {
+                        ArticleSetView articleSetView = findView(ArticleSetView.class);
+                        articleSetView.loadContent(type);
+                        articleSetView.show();
+                    });
+            });
+        } else {
+            Article article = exporter.readFile(file);
+            ReaderView readerView = findView(ReaderView.class);
+            readerView.addArticle(article);
+            readerView.show();
+        }
+    }
+
     public void createDocument(ActionEvent event) {
         ArticleEditorView editorView = findView(ArticleEditorView.class);
         Article article = new Article();
@@ -163,25 +207,26 @@ public class TypeSubViewController extends FXController {
         if (articles.size() == 1) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("另存为");
-            fileChooser.getExtensionFilters().addAll(articleService.getRenderFilters());
+            fileChooser.getExtensionFilters().addAll(articleService.getExporterFilters(false));
             File file = fileChooser.showSaveDialog(null);
             if (file == null) {
                 return;
             }
-            ContentRender render = articleService.getRender(file);
-            if (render == null) {
+            FileExporter exporter = articleService.getFileExporter(file,false, true);
+            if (exporter == null) {
                 return;
             }
             Article article = articlesList.getSelectionModel().getSelectedItem();
             if (article == null) {
                 return;
             }
-            render.renderAsFile(article,file.toPath());
+            exporter.writeFile(article,file);
+            UIUtils.notification("文档《" + article.getTitle() + "》已经导出。", this.getView());
         } else {
             BatchExportView batchExportView = findView(BatchExportView.class);
             batchExportView.show();
-            ContentRender render = batchExportView.getSelected();
-            if (render == null) {
+            FileExporter exporter = batchExportView.getSelected();
+            if (exporter == null) {
                 return;
             }
 
@@ -193,9 +238,10 @@ public class TypeSubViewController extends FXController {
             }
             Path dir = directory.toPath().toAbsolutePath();
             for (Article article: articles) {
-               Path path = dir.resolve(article.getTitle() + "." + render.subfix());
-               render.renderAsFile(article, path);
+               Path path = dir.resolve(article.getTitle() + "." + exporter.subfix());
+                exporter.writeFile(article, path);
             }
+            UIUtils.notification("选择的文档已经导出。", this.getView());
         }
     }
 
@@ -229,6 +275,16 @@ public class TypeSubViewController extends FXController {
                 });
     }
 
+    public void onModifyType(ActionEvent e) {
+        ArticleType type = typeList.getSelectionModel().getSelectedItem();
+        if (type == null) {
+            return;
+        }
+        TypeEditView editView = findView(TypeEditView.class);
+        editView.setType(type);
+        editView.show();
+    }
+
     public void exportType(ActionEvent e) {
         ArticleType type = typeList.getSelectionModel().getSelectedItem();
         if (type == null) {
@@ -236,19 +292,20 @@ public class TypeSubViewController extends FXController {
         }
         TypeExportView exportView = findView(TypeExportView.class);
         exportView.show();
-        ContentRender render = exportView.getSelected();
-        if(render == null) {
+        FileExporter exporter = exportView.getSelected();
+        if(exporter == null) {
             return;
         }
         FileChooser chooser = new FileChooser();
         chooser.setTitle("导出");
-        chooser.getExtensionFilters().add(render.getTypeFilters());
+        chooser.getExtensionFilters().add(exporter.typeFilter());
         chooser.setInitialFileName(type.getName());
         File target = chooser.showSaveDialog(null);
         if (target == null) {
             return;
         }
-        render.renderAllArticles(type, target.toPath());
+        exporter.writeType(type, target);
+        UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
     }
 
 }

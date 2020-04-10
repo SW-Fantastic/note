@@ -21,6 +21,7 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.view.ArticleEditorView;
+import org.swdc.note.ui.view.dialogs.TypeEditView;
 
 import java.util.Date;
 
@@ -96,7 +97,9 @@ public class ArticleTypeCell extends FXView {
     }
 
     private void onTypeEdit(ActionEvent event){
-
+        TypeEditView editView = findView(TypeEditView.class);
+        editView.setType(this.type);
+        editView.show();
     }
 
 }

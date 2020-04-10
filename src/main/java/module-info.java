@@ -11,6 +11,8 @@ module noteEditor {
 
     requires java.persistence;
     requires lombok;
+    requires org.apache.tika.core;
+    requires remark;
 
     requires org.fxmisc.richtext;
 
@@ -37,6 +39,8 @@ module noteEditor {
             fx.framework.core,
             javafx.graphics;
 
+    opens org.swdc.note.core.proto to
+            fx.framework.core;
 
     opens org.swdc.note.core.entities to
             fx.framework.jpa,
@@ -50,6 +54,9 @@ module noteEditor {
     opens org.swdc.note.ui.controllers.dialogs to
             fx.framework.core,
             javafx.fxml;
+
+    opens org.swdc.note.ui.component to
+            fx.framework.core;
 
     opens org.swdc.note.core.render to
             fx.framework.core;

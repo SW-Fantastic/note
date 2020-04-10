@@ -35,7 +35,7 @@ public class ReadViewController extends FXController {
         if (article == null) {
             return;
         }
-        ReaderView readerView = (ReaderView) getView();
+        ReaderView readerView = getView();
         if (readerView.getArticle(article.getId()) == null) {
             return;
         }
@@ -44,8 +44,11 @@ public class ReadViewController extends FXController {
 
     @FXML
     public void editArticle() {
-        ReaderView readerView = (ReaderView) getView();
+        ReaderView readerView = getView();
         Article article = readerView.getReadingArticle();
+        if (article == null ||article.getId() == null) {
+            return;
+        }
         ArticleEditorView editorView = findView(ArticleEditorView.class);
         editorView.addArticle(article);
         editorView.show();
@@ -53,9 +56,9 @@ public class ReadViewController extends FXController {
 
     @FXML
     public void deleteArticle() {
-        ReaderView readerView = (ReaderView) getView();
+        ReaderView readerView = getView();
         Article article = readerView.getReadingArticle();
-        if (article == null) {
+        if (article == null || article.getId() == null) {
             return;
         }
         readerView.showAlertDialog("删除","的确要删除《" + article.getTitle() + "》吗？", Alert.AlertType.CONFIRMATION)

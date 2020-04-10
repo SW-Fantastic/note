@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import org.swdc.fx.FXController;
 import org.swdc.fx.anno.Aware;
-import org.swdc.note.core.render.ContentRender;
+import org.swdc.note.core.render.FileExporter;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
 
@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 public class BatchExportViewController extends FXController {
 
     @FXML
-    private ComboBox<ContentRender> renderComboBox;
+    private ComboBox<FileExporter> renderComboBox;
 
     @Aware
     private ArticleService service = null;
@@ -29,7 +29,7 @@ public class BatchExportViewController extends FXController {
         renderComboBox.getItems().addAll(service.getAllRenders());
     }
 
-    public ContentRender getSelected() {
+    public FileExporter getSelected() {
         return renderComboBox.getSelectionModel().getSelectedItem();
     }
 

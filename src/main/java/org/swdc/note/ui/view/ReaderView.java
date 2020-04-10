@@ -17,7 +17,7 @@ import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.render.HTMLRender;
+import org.swdc.note.core.render.HTMLResolver;
 import org.swdc.note.core.service.ArticleService;
 
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class ReaderView extends FXView {
     private Map<Article, Tab> articleTabMap = new HashMap<>();
 
     @Aware
-    private HTMLRender render = null;
+    private HTMLResolver render = null;
 
     @Aware
     private MaterialIconsService iconsService = null;
@@ -94,7 +94,11 @@ public class ReaderView extends FXView {
     }
 
     public Tab addArticle(Article article) {
-        Article hasOpen = getArticle(article.getId());
+        Article hasOpen = null;
+        if (article.getId() != null) {
+            hasOpen = getArticle(article.getId());
+        }
+
         TabPane tabPane = findById("articleTab");
         if(hasOpen != null) {
             Tab tab =  articleTabMap.get(hasOpen);

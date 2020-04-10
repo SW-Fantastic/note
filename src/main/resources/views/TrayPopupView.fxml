@@ -13,7 +13,7 @@
          <children>
             <Button id="mainView" mnemonicParsing="false" onAction="#showMainView" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="主" />
             <Button id="create" mnemonicParsing="false" onAction="#createNewDoc" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="写" />
-            <Button id="open" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="导" />
+            <Button id="open" mnemonicParsing="false" onAction="#openURL" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="导" />
          </children>
       </HBox>
    </center>

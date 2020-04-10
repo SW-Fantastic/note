@@ -7,6 +7,8 @@ import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.MainView;
+import org.swdc.note.ui.view.dialogs.SourceDialogView;
+import org.swdc.note.ui.view.dialogs.TrayPopupView;
 
 import java.net.URL;
 import java.util.Date;
@@ -26,6 +28,8 @@ public class TrayPopupController extends FXController {
     @FXML
     public void showMainView() {
         findView(MainView.class).show();
+        TrayPopupView popupView = getView();
+        popupView.close();
     }
 
     @FXML
@@ -37,6 +41,18 @@ public class TrayPopupController extends FXController {
         article.setCreateDate(new Date());
         editorView.addArticle(article);
         editorView.show();
+        TrayPopupView popupView = getView();
+        popupView.close();
+    }
+
+    @FXML
+    public void openURL(){
+        TrayPopupView popupView = getView();
+        popupView.close();
+
+        SourceDialogView sourceDialogView = findView(SourceDialogView.class);
+        sourceDialogView.show();
+
     }
 
 }

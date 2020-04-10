@@ -7,8 +7,9 @@ import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.render.ContentRender;
-import org.swdc.note.core.render.HTMLRender;
+import org.swdc.note.core.proto.URLProtoResolver;
+import org.swdc.note.core.render.FileExporter;
+import org.swdc.note.core.render.HTMLResolver;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
 
@@ -26,7 +27,7 @@ public class ArticleService extends Service {
     private ArticleRepo articleRepo = null;
 
     @Aware
-    private HTMLRender render = null;
+    private HTMLResolver render = null;
 
     public boolean createType(ArticleType type) {
         try {
@@ -46,6 +47,20 @@ public class ArticleService extends Service {
             logger.error("fail to create article type: " + type.getName(), ex);
             return false;
         }
+    }
+
+    public boolean saveType(ArticleType type) {
+        if (type == null) {
+            return false;
+        }
+        if (type.getId() == null) {
+            return false;
+        }
+        if (type.getName() == null || type.getName().isBlank() || type.getName().isEmpty()) {
+            return false;
+        }
+        typeRepo.save(type);
+        return true;
     }
 
     public boolean saveArticle(Article article, ArticleContent content) {
@@ -145,24 +160,41 @@ public class ArticleService extends Service {
         return articleRepo.findByType(type);
     }
 
-    public ContentRender getRender(File export) {
-        List<ContentRender> renders = getScoped(ContentRender.class);
-        for (var render: renders) {
-            if (render.support(export)) {
-                return render;
+    public FileExporter getFileExporter(File export, boolean read, boolean singleArticle) {
+        List<FileExporter> exporters = getScoped(FileExporter.class);
+        for (var item: exporters) {
+            if (item.support(export, !singleArticle,!read)) {
+                return item;
             }
         }
         return null;
     }
 
-    public List<FileChooser.ExtensionFilter> getRenderFilters() {
-        List<ContentRender> renders = getScoped(ContentRender.class);
-        return renders.stream().map(ContentRender::getFilters).collect(Collectors.toList());
+    public URLProtoResolver getURLResolver(String url) {
+        List<URLProtoResolver> resolvers = getScoped(URLProtoResolver.class);
+        for (URLProtoResolver resolver: resolvers){
+            if (resolver.support(url)) {
+                return resolver;
+            }
+        }
+        return null;
     }
 
-    public List<ContentRender> getAllRenders() {
-        List<ContentRender> renders = getScoped(ContentRender.class);
-        return renders;
+    public ArticleType getType(Long typeId) {
+        return typeRepo.getOne(typeId);
+    }
+
+    public List<FileChooser.ExtensionFilter> getExporterFilters(boolean type) {
+        List<FileExporter> exporters = getScoped(FileExporter.class);
+        if (type) {
+            return exporters.stream().map(FileExporter::typeFilter).collect(Collectors.toList());
+        } else {
+            return exporters.stream().map(FileExporter::extensionFilters).collect(Collectors.toList());
+        }
+    }
+
+    public List<FileExporter> getAllRenders() {
+        return getScoped(FileExporter.class);
     }
 
 }
