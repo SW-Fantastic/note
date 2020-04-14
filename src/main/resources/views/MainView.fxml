@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="rootContainer" minWidth="850.0" prefHeight="600.0" prefWidth="920.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+         <left>
+            <VBox alignment="CENTER" prefHeight="600.0" prefWidth="57.0" spacing="8.0" styleClass="tools" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="600.0" prefWidth="58.0" spacing="16.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <ToggleButton id="type" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="类">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </ToggleButton>
+                  <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
+                        <ToggleButton id="conf" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="设" />
+                     </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="16.0" top="16.0" />
+               </padding>
+                  </VBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </VBox>
+         </left>
+   <center>
+      <BorderPane id="content" prefHeight="200.0" prefWidth="200.0" styleClass="sccontent" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="8.0" />
+         </BorderPane.margin>
+      </BorderPane>
+   </center>
+</BorderPane>
