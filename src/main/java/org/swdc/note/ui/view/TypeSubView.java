@@ -26,7 +26,11 @@ public class TypeSubView extends FXView {
 
     @Override
     public void initialize() {
-        super.initialize();
+        Button btnSearch = findById("search");
+        btnSearch.setFont(iconsService.getFont(FontSize.MIDDLE));
+        btnSearch.setText(iconsService.getFontIcon("search"));
+        btnSearch.setPadding(new Insets(4,4,4,4));
+
         this.initViewToolButton("add", "add");
         this.initViewToolButton("imp","folder");
         this.initViewToolButton("help", "live_help");

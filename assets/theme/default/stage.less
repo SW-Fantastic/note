@@ -251,6 +251,40 @@
 
   }
 
+  .search-pane {
+    -fx-background-color: rgba(255,255,255,0.4);
+    -fx-background-radius: 8px;
+    .btn-primary-text {
+      -fx-background-color: @nothing;
+      -fx-text-fill: @primaryColor;
+    }
+    .btn-primary-text:hover {
+      -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+      -fx-border-style: none;
+      -fx-border-color: @nothing;
+    }
+    .list-view {
+      -fx-background-color: rgba(255,255,255,0.4);
+      .list-cell {
+        -fx-background-color: @nothing;
+        .simple-cell {
+          -fx-background-color: @backgroundColor;
+          -fx-background-radius: 6px;
+          -fx-text-fill: @darkPrimaryColor;
+        }
+      }
+      .list-cell:selected {
+        -fx-background-color: @nothing;
+        .simple-cell {
+          -fx-text-fill: #FFF;
+          -fx-background-color: @primaryColor;
+        }
+      }
+    }
+  }
+
+
+
   .btn-primary-text {
     -fx-background-color: @nothing;
     -fx-text-fill: @primaryColor;
@@ -323,6 +357,7 @@
       -fx-text-fill: #FFF;
     }
   }
+
 
   .select-list {
     -fx-border-color: @primaryColor;

@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.swdc.fx.FXController;
@@ -21,10 +18,7 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.render.FileExporter;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
-import org.swdc.note.ui.view.ArticleEditorView;
-import org.swdc.note.ui.view.ArticleSetView;
-import org.swdc.note.ui.view.ReaderView;
-import org.swdc.note.ui.view.UIUtils;
+import org.swdc.note.ui.view.*;
 import org.swdc.note.ui.view.cells.*;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
 import org.swdc.note.ui.view.dialogs.TypeCreateView;
@@ -52,6 +46,9 @@ public class TypeSubViewController extends FXController {
 
     @FXML
     private ListView<Article> recentlyList;
+
+    @FXML
+    private TextField txtSearch;
 
     @Aware
     private ReaderView readerView = null;
@@ -306,6 +303,17 @@ public class TypeSubViewController extends FXController {
         }
         exporter.writeType(type, target);
         UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
+    }
+
+    @FXML
+    public void onSearch() {
+        if (txtSearch.getText().isBlank()) {
+            return;
+        }
+        SearchView searchView = findView(SearchView.class);
+        searchView.search(txtSearch.getText());
+        searchView.show();
+        txtSearch.clear();
     }
 
 }

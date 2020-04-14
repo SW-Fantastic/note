@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-@SFXApplication(splash = FXSplash.class, mainView = MainView.class)
+@SFXApplication(splash = FXSplash.class, mainView = MainView.class,singleton = true)
 public class NoteApplication extends FXApplication {
 
     private List<Image> icons;

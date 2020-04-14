@@ -16,4 +16,7 @@ public interface ArticleRepo extends JPARepository<Article, Long> {
     @SQLQuery(value = "FROM Article ORDER BY createDate DESC",maxResult = 7, firstResult = 0)
     List<Article> findRecently();
 
+    @SQLQuery(" FROM Article WHERE title like :title")
+    List<Article> searchByTitle(@Param(value = "title", searchBy = true) String title);
+
 }

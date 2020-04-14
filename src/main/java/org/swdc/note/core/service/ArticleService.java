@@ -63,6 +63,10 @@ public class ArticleService extends Service {
         return true;
     }
 
+    public List<Article> searchByTitle(String title) {
+        return articleRepo.searchByTitle(title);
+    }
+
     public boolean saveArticle(Article article, ArticleContent content) {
         if (article.getId() != null) {
             Article articleOld = articleRepo.getOne(article.getId());

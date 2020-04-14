@@ -8,14 +8,6 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="543.0" prefWidth="790.0" styleClass="sub-view" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.TypeSubViewController">
-   <center>
-      <SplitPane dividerPositions="0.48639455782312924" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <items>
-            <ListView id="typeList" fx:id="typeList" minWidth="300.0" prefHeight="200.0" prefWidth="300.0" />
-            <ListView id="articleList" fx:id="articlesList" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
-         </items>
-      </SplitPane>
-   </center>
    <left>
       <BorderPane prefHeight="543.0" prefWidth="239.0" styleClass="tool-pane" BorderPane.alignment="CENTER">
          <top>
@@ -39,4 +31,36 @@
          </center>
       </BorderPane>
    </left>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <center>
+            <SplitPane dividerPositions="0.48639455782312924" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <items>
+                  <ListView id="typeList" fx:id="typeList" minWidth="300.0" prefHeight="200.0" prefWidth="300.0" />
+                  <ListView id="articleList" fx:id="articlesList" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
+               </items>
+            </SplitPane>
+         </center>
+         <top>
+            <HBox alignment="CENTER_RIGHT" prefHeight="41.0" prefWidth="551.0" spacing="8.0" styleClass="search-pane" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+               </BorderPane.margin>
+               <children>
+                  <TextField fx:id="txtSearch" prefHeight="27.0" prefWidth="243.0" promptText="输入内容开始搜索">
+                     <styleClass>
+                        <String fx:value="txt-second" />
+                        <String fx:value="text" />
+                     </styleClass>
+                  </TextField>
+                  <Button id="search" mnemonicParsing="false" onAction="#onSearch" styleClass="btn-primary-text" text="搜">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </top>
+      </BorderPane>
+   </center>
 </BorderPane>
