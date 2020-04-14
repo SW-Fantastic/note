@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeSelectController">
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="285.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label prefHeight="15.0" prefWidth="103.0" text="请选择分类：">
+               <HBox.margin>
+                  <Insets left="18.0" />
+               </HBox.margin>
+            </Label>
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button id="add" mnemonicParsing="false" onAction="#createType" prefHeight="32.0" prefWidth="32.0" styleClass="btn-primary-text" text="加">
+                     <HBox.margin>
+                        <Insets right="16.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <ListView id="typelist" fx:id="typeListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <styleClass>
+            <String fx:value="select-list" />
+            <String fx:value="txt-second" />
+         </styleClass></ListView>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="42.0" prefWidth="285.0" spacing="6.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="72.0" styleClass="btn-info" text="取消" />
+            <Button mnemonicParsing="false" onAction="#ok" prefHeight="26.0" prefWidth="72.0" styleClass="btn-primary" text="确定" />
+         </children>
+         <padding>
+            <Insets right="8.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <styleClass>
+      <String fx:value="scene" />
+      <String fx:value="dialog-pane" />
+   </styleClass>
+</BorderPane>

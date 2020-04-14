@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="93.0" prefWidth="176.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TrayPopupController">
+   <center>
+      <HBox alignment="BOTTOM_CENTER" prefHeight="36.0" prefWidth="223.0" spacing="12.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button id="mainView" mnemonicParsing="false" onAction="#showMainView" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="主" />
+            <Button id="create" mnemonicParsing="false" onAction="#createNewDoc" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="写" />
+            <Button id="open" mnemonicParsing="false" onAction="#openURL" prefHeight="36.0" prefWidth="36.0" styleClass="btn-circle" text="导" />
+         </children>
+      </HBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="223.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="62.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label styleClass="txt-second" text="笔记" />
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <padding>
+                  <Insets left="8.0" />
+               </padding>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#exitApplication" prefHeight="23.0" prefWidth="85.0" text="退出">
+               <styleClass>
+                  <String fx:value="txt-second" />
+                  <String fx:value="btn-primary" />
+               </styleClass>
+            </Button>
+         </children>
+         <padding>
+            <Insets right="8.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <styleClass>
+      <String fx:value="popup" />
+      <String fx:value="scene" />
+   </styleClass>
+</BorderPane>

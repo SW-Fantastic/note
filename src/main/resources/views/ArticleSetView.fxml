@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="705.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.ArticleSetController">
+   <center>
+      <SplitPane dividerPositions="0.30867709815078237" prefHeight="200.0" prefWidth="200.0" styleClass="sub-view" BorderPane.alignment="CENTER">
+         <items>
+            <BorderPane minWidth="240.0" prefHeight="200.0" prefWidth="200.0" styleClass="tool-second">
+               <center>
+                  <ListView fx:id="articles" prefHeight="200.0" prefWidth="200.0" styleClass="txt-second" BorderPane.alignment="CENTER">
+                     <padding>
+                        <Insets top="12.0" />
+                     </padding></ListView>
+               </center>
+               <top>
+                  <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <items>
+                        <Button id="btnexport" mnemonicParsing="false" onAction="#onItemExport" text="出" />
+                        <Button id="btnimport" mnemonicParsing="false" onAction="#onItemImport" text="入" />
+                        <Button id="btnimportAll" mnemonicParsing="false" text="全" />
+                     </items>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin></ToolBar>
+               </top>
+            </BorderPane>
+            <WebView fx:id="contentView" prefHeight="200.0" prefWidth="200.0" />
+         </items>
+      </SplitPane>
+   </center>
+</BorderPane>

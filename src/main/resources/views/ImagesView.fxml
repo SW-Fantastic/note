@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.ImageViewController">
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="600.0" BorderPane.alignment="TOP_LEFT">
+         <children>
+            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="78.0" text="取消">
+               <HBox.margin>
+                  <Insets right="3.0" />
+               </HBox.margin>
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="txt-second" />
+               </styleClass></Button>
+            <Button mnemonicParsing="false" onAction="#removeSelected" prefHeight="30.0" prefWidth="78.0" text="移除..">
+               <HBox.margin>
+                  <Insets right="3.0" />
+               </HBox.margin>
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="txt-second" />
+               </styleClass>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#openImage" prefHeight="30.0" prefWidth="78.0" text="添加...">
+               <HBox.margin>
+                  <Insets right="3.0" />
+               </HBox.margin>
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="txt-second" />
+               </styleClass></Button>
+            <Button mnemonicParsing="false" onAction="#insertSelected" prefHeight="30.0" prefWidth="98.0" text="插入此图片">
+               <styleClass>
+                  <String fx:value="btn-primary" />
+                  <String fx:value="txt-second" />
+               </styleClass></Button>
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets right="8.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <center>
+      <ListView id="imageList" fx:id="listView" prefHeight="350.0" prefWidth="267.0" styleClass="list-img" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets right="8.0" top="6.0" />
+         </BorderPane.margin>
+      </ListView>
+   </center>
+   <left>
+      <ScrollPane fx:id="scrPane" fitToHeight="true" fitToWidth="true" prefHeight="350.0" prefWidth="365.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="6.0" top="6.0" />
+         </BorderPane.margin>
+      </ScrollPane>
+   </left>
+</BorderPane>
