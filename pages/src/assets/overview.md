@@ -12,15 +12,29 @@
 后来有了spring-boot，和javafx配合起来也是相当不错，不过由于这个作品比较早期，很多地方处理的还是非常粗糙的，
 到现在为止也有很大的改进空间。
 
+到现在为止，springboot已经不再适合工程使用，因此我现在已经不再基于springboot了，
+工程采用了我的自研框架FXApplication进行开发，因此我得以升级jdk到相对高的java13，
+往后如果时机合适，我将会继续跟随最新版本jdk进行开发。
+
 ## Build
 
+#### 旧版的build方式
 这个是一个普通的maven工程，直接以maven形式导入就可以，
 但是由于功能需要的markdown组件比较多，所以下载的时间大概会长一些
 他是一个spring-boot的项目，因此可以使用 `mvn spring-boot:run`
 这样的命令进行启动。
 
+
 其实导入之后事情交给IDE就可以了，不管是IDEA还是Eclipse对maven支持的都是
 比较全面的。
+
+#### 新版的build方式
+
+请首先clone我的FXApplication类库，并且在本地install，这里面有三个maven的模块
+他们都需要install进本地的maven仓库，然后clone本仓库并且运行，我建议在运行前进行maven的
+clean操作，以防止出现bug。
+
+如果需要package，请使用maven的package操作，如果package失败，请再试一次。
 
 ## 工程结构
 

@@ -104,9 +104,12 @@ export default {
     return {
       selectMenuItem: 'overView',
       overViewText: '',
-      screenShots: [ { src: require('@/assets/screenShot0.png') },
+      screenShots: [{ src: require('@/assets/newScreenshot1.png') },
+        { src: require('@/assets/newScreenShot2.png') },
+        { src: require('@/assets/newScreenShot3.png') },
+        { src: require('@/assets/screenShot0.png') },
         { src: require('@/assets/screenShot1.png') },
-        { src: require('@/assets/screenShot2.png') } ],
+        { src: require('@/assets/screenShot2.png') }],
       commits: [],
       releaseLasted: null,
       releases: []

@@ -161,7 +161,7 @@ public class TypeSubViewController extends FXController {
 
     @FXML
     public void showHelp() {
-        File path = new File(getAssetsPath() + "/help.mdsrc");
+        File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.mdsrc");
         FileExporter exporter = articleService.getFileExporter(path,true,false);
         ArticleType type = exporter.readTypeFile(path);
         ArticleSetView setView = findView(ArticleSetView.class);
