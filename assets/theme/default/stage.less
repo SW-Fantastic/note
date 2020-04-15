@@ -403,4 +403,18 @@
     -fx-effect: dropshadow(three-pass-box,#74A982, 8, 0, 0, 0);
   }
 
+  .scroll-bar {
+    -fx-background-color: @nothing;
+    .track {
+      -fx-border-color: @primaryColor;
+      -fx-border-style: solid;
+      -fx-border-width: 0.8px;
+      -fx-border-radius: 12px;
+    }
+    .thumb {
+      -fx-background-color: @primaryColor;
+      -fx-background-radius: 12px;
+    }
+  }
+
 }

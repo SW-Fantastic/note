@@ -159,6 +159,16 @@ public class TypeSubViewController extends FXController {
         }
     }
 
+    @FXML
+    public void showHelp() {
+        File path = new File(getAssetsPath() + "/help.mdsrc");
+        FileExporter exporter = articleService.getFileExporter(path,true,false);
+        ArticleType type = exporter.readTypeFile(path);
+        ArticleSetView setView = findView(ArticleSetView.class);
+        setView.loadContent(type);
+        setView.show();
+    }
+
     public void createDocument(ActionEvent event) {
         ArticleEditorView editorView = findView(ArticleEditorView.class);
         Article article = new Article();
@@ -301,6 +311,7 @@ public class TypeSubViewController extends FXController {
         if (target == null) {
             return;
         }
+        type = articleService.getType(type.getId());
         exporter.writeType(type, target);
         UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
     }
