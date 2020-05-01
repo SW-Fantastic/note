@@ -19,17 +19,6 @@
                         <Insets top="12.0" />
                      </padding></ListView>
                </center>
-               <top>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                     <items>
-                        <Button id="btnexport" mnemonicParsing="false" onAction="#onItemExport" text="出" />
-                        <Button id="btnimport" mnemonicParsing="false" onAction="#onItemImport" text="入" />
-                        <Button id="btnimportAll" mnemonicParsing="false" text="全" />
-                     </items>
-                     <BorderPane.margin>
-                        <Insets />
-                     </BorderPane.margin></ToolBar>
-               </top>
             </BorderPane>
             <WebView fx:id="contentView" prefHeight="200.0" prefWidth="200.0" />
          </items>

@@ -2,6 +2,7 @@ package org.swdc.note.ui.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
@@ -43,8 +44,7 @@ public class ArticleSetController extends FXController {
         articles.setOnMouseClicked(e -> this.onArticleRead());
     }
 
-    @FXML
-    public void onItemExport() {
+    public void onItemExport(ActionEvent event) {
         try {
             Article article = articles.getSelectionModel().getSelectedItem();
             FileChooser chooser = new FileChooser();
@@ -60,8 +60,7 @@ public class ArticleSetController extends FXController {
         }
     }
 
-    @FXML
-    public void onItemImport() {
+    public void onItemImport(ActionEvent event) {
         try {
             ArticleEditorView editorView = findView(ArticleEditorView.class);
             Article article = articles.getSelectionModel().getSelectedItem();
