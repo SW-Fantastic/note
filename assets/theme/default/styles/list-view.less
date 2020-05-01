@@ -1,0 +1,38 @@
+@import "colors";
+.list-view-radius(@simpleBg,@simpleText) {
+
+  -fx-background-color: rgba(255,255,255,0.4);
+
+  .list-cell {
+    -fx-background-color: @nothing;
+    .simple-cell {
+      -fx-background-color: @simpleBg;
+      -fx-background-radius: 6px;
+      -fx-text-fill: @simpleText;
+    }
+  }
+
+  .list-cell:selected {
+    -fx-background-color: @nothing;
+    .simple-cell {
+      -fx-text-fill: @simpleBg;
+      -fx-background-color: @simpleText;
+    }
+  }
+
+}
+
+.list-view-simple(@background,@text,@cellActive) {
+  -fx-background-color: @background;
+  -fx-text-fill: @text;
+  .list-cell:empty{
+    -fx-background-color: @nothing;
+  }
+  .list-cell:filled {
+    -fx-background-color: @nothing;
+  }
+  .list-cell:selected,.list-cell:selected * {
+    -fx-background-color: @cellActive;
+    -fx-text-fill: @text;
+  }
+}

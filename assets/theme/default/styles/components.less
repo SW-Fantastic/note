@@ -1,0 +1,86 @@
+@import "colors";
+.combo-box(@textColor, @background) {
+  -fx-border-color: @textColor;
+  -fx-border-style: solid;
+  -fx-border-width: 0 0 1.5 0;
+  .list-view {
+    -fx-text-fill: @textColor;
+    -fx-background-color: @background;
+    .list-cell:selected *{
+      -fx-text-fill: @background;
+      -fx-background-color: @textColor;
+    }
+    .list-cell:hover{
+      -fx-text-fill: @background;
+      -fx-background-color: @textColor;
+    }
+    .list-cell:hover *{
+      -fx-text-fill: @background;
+    }
+  }
+}
+
+.text-field-without-background(@text) {
+  -fx-background-color: @nothing;
+  -fx-border-width: 0 0 2 0;
+  -fx-border-color: @text;
+  -fx-border-style: solid;
+}
+
+.check-box(@color) {
+  .box {
+    -fx-background-color: @nothing;
+    -fx-border-color: @color;
+  }
+  &:selected .mark {
+    -fx-background-color: @color;
+    -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  }
+}
+
+.scrollable(@color) {
+  -fx-background-color: @nothing;
+  .thumb {
+    -fx-background-color: @color;
+    -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  }
+  .track {
+    -fx-background-color: rgba(255,255,255,0.6);
+    -fx-border-color: @color;
+    -fx-border-radius: 12;
+  }
+}
+
+.tab-view(@color) {
+  -fx-background-color: @nothing;
+  -fx-background-radius: 8;
+  -fx-tab-min-width: 80;
+  .tab-label {
+    -fx-text-fill: @color;
+    -fx-font-size: 13;
+  }
+  .tab-header-background {
+    -fx-background-color: rgba(255,255,255,0.4);
+    -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  }
+  .tab {
+    -fx-focus-color:@nothing;
+    -fx-background-color: rgba(255,255,255,0.5);
+  }
+  .tab:selected {
+    -fx-focus-color: @nothing;
+    -fx-background-color: #FFF;
+  }
+}
+.context-menu(@fontSize, @color, @background){
+  .menu-item {
+    -fx-font-size: @fontSize;
+    -fx-accent: @color;
+  }
+  .menu-item:hover *{
+    -fx-text-fill:@background;
+  }
+  .menu-item:focused *{
+    -fx-text-fill: @background;
+  }
+}
