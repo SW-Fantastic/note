@@ -33,7 +33,9 @@
          <top>
             <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
               <items>
+                  <Button id="create" mnemonicParsing="false" onAction="#createArticle" text="建" />
                 <Button id="save" mnemonicParsing="false" onAction="#onToolSave" text="存" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" />
                   <MenuButton id="header" contentDisplay="CENTER" mnemonicParsing="false" text="标">
                     <items>
                       <MenuItem id="h1" mnemonicParsing="false" text="Header1" />

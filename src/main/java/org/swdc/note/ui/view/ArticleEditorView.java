@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import lombok.Getter;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -24,7 +25,7 @@ import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.render.HTMLResolver;
 import org.swdc.note.core.service.ArticleService;
-import org.swdc.note.ui.component.RectSelector;
+import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 
 import java.nio.ByteBuffer;
@@ -51,7 +52,8 @@ public class ArticleEditorView extends FXView {
     @Aware
     private ArticleService articleService = null;
 
-    private RectSelector rectSelector;
+    @Getter
+    private RectPopover tablePopover;
 
     private static final String[] KEYWORDS = new String[] {
             "toc","TOC","target"
@@ -112,14 +114,14 @@ public class ArticleEditorView extends FXView {
         stage.setHeight(stage.getMinHeight());
         stage.setOnCloseRequest(this::closeRequest);
 
-        rectSelector = new RectSelector();
-        rectSelector.initOwner(this.getStage());
+        tablePopover = new RectPopover();
 
         TabPane tabPane = findById("editorTab");
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         Bindings.bindContentBidirectional(tabPane.getTabs(),tabs);
         tabPane.getSelectionModel().selectedItemProperty().addListener(this::onTabChange);
 
+        this.initViewToolButton("create","add");
         this.initViewToolButton("save","save");
         this.initViewToolButton("throwLine", "format_strikethrough");
         this.initViewToolButton("listOl", "format_list_numbered");
@@ -150,7 +152,6 @@ public class ArticleEditorView extends FXView {
             selectEntry.getKey().setTitle(newStr);
             select.setText((contentView.hasSaved() ? "" : "* ") + newStr);
         });
-
     }
 
     private void closeRequest(Event event) {
@@ -197,10 +198,6 @@ public class ArticleEditorView extends FXView {
         } else {
             txtType.setText("");
         }
-    }
-
-    public RectSelector getTableSelector() {
-        return rectSelector;
     }
 
     private void initViewToolButton(String id, String icon) {

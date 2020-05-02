@@ -10,8 +10,7 @@ import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
-import org.swdc.note.ui.component.RectResult;
-import org.swdc.note.ui.component.RectSelector;
+import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.EditorContentView;
@@ -111,26 +110,30 @@ public class ArticleEditorController extends FXController {
         ArticleEditorView view = getView();
 
         Button btnTable = view.findById("table");
-        RectSelector rectSelector = view.getTableSelector();
-        rectSelector.setX(ArticleEditorView.getScreenX(btnTable));
-        rectSelector.setY(ArticleEditorView.getScreenY(btnTable) + btnTable.getHeight());
-        RectResult rectResult = rectSelector.showAndWait().orElse(new RectResult());
-        String table = "";
-        for (int i = 0;i < rectResult.getxCount() + 1; i++){
-            for (int j = 0;j < rectResult.getyCount();j++){
-                if(i!=1){
-                    table = table + "| <内容> ";
-                }else {
-                    table = table + "|:-----:";
-                }
-                if(j+1 == rectResult.getyCount()){
-                    table = table + "|";
-                }
+        RectPopover popover = view.getTablePopover();
+
+        popover.show(btnTable);
+        popover.onSelected(rectResult -> {
+            if (rectResult == null) {
+                return;
             }
-            table = table + "\n";
-        }
-        IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
-        codeArea.replaceText(rgCurr,"\n\n"+table);
+            String table = "";
+            for (int i = 0;i < rectResult.getxCount() + 1; i++){
+                for (int j = 0;j < rectResult.getyCount();j++){
+                    if(i!=1){
+                        table = table + "| <内容> ";
+                    }else {
+                        table = table + "|:-----:";
+                    }
+                    if(j+1 == rectResult.getyCount()){
+                        table = table + "|";
+                    }
+                }
+                table = table + "\n";
+            }
+            IndexRange rgCurr = new IndexRange(codeArea.getCaretPosition(),codeArea.getCaretPosition());
+            codeArea.replaceText(rgCurr,"\n\n"+table);
+        });
     }
 
     @FXML
@@ -321,6 +324,17 @@ public class ArticleEditorController extends FXController {
         Article article = view.getEditingArticle();
         article.setType(type);
         view.refresh();
+    }
+
+    @FXML
+    public void createArticle() {
+        Article article = new Article();
+        article.setTitle("未命名");
+        article.setCreateDate(new Date());
+        ArticleContent content = new ArticleContent();
+        article.setContent(content);
+        ArticleEditorView view = getView();
+        view.addArticle(article);
     }
 
 }
