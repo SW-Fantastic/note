@@ -132,7 +132,6 @@ public class ArticleService extends Service {
                 return false;
             }
         }
-
     }
 
     public void deleteArticle(Long articleId) {

@@ -1,6 +1,7 @@
 package org.swdc.note.core.proto;
 
-import org.swdc.fx.DefaultContainer;
+
+import org.swdc.fx.container.DefaultContainer;
 
 public class URLResolverManager extends DefaultContainer<URLProtoResolver> {
 

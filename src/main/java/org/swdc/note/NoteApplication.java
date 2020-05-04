@@ -2,11 +2,11 @@ package org.swdc.note;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
-import org.swdc.fx.ApplicationContainer;
 import org.swdc.fx.FXApplication;
 import org.swdc.fx.FXSplash;
 import org.swdc.fx.FXView;
 import org.swdc.fx.anno.SFXApplication;
+import org.swdc.fx.container.ApplicationContainer;
 import org.swdc.fx.properties.ConfigManager;
 import org.swdc.fx.resource.source.ModulePathResource;
 import org.swdc.fx.services.ServiceManager;
