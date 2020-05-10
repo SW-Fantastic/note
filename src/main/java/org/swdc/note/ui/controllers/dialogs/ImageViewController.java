@@ -64,7 +64,7 @@ public class ImageViewController extends FXController {
         try {
             ImagesView view = getView();
             FileChooser chooser = new FileChooser();
-            chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("图片",".jpg",".png",".bmp",".gif"));
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("图片","*.jpg","*.png","*.bmp","*.gif"));
             File file = chooser.showOpenDialog(view.getStage());
             if(file!=null&& file.exists()){
                 if(images.keySet().contains(file.getName())){
