@@ -3,7 +3,7 @@ package org.swdc.note.core.proto;
 import org.swdc.fx.AppComponent;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.render.FileExporter;
+import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.service.ArticleService;
 
 import java.io.File;
@@ -13,12 +13,12 @@ public abstract class URLProtoResolver extends AppComponent {
     public ArticleType resolveAsArticleSet(String url) {
         File tempFile = load(url);
         ArticleService articleService = findService(ArticleService.class);
-        FileExporter exporter = articleService.getFileExporter(tempFile,true,false);
-        if (exporter == null) {
+        ContentFormatter formatter = articleService.getFormatter(tempFile,ArticleType.class);
+        if (formatter == null || !formatter.readable()) {
             // 不支持
             return null;
         }
-        ArticleType target = exporter.readTypeFile(tempFile);
+        ArticleType target = (ArticleType) formatter.load(tempFile.toPath());
         if(!tempFile.delete()) {
             tempFile.deleteOnExit();
         }
@@ -28,12 +28,12 @@ public abstract class URLProtoResolver extends AppComponent {
     public Article resolveAsArticle(String url) {
         File tempFile = load(url);
         ArticleService articleService = findService(ArticleService.class);
-        FileExporter exporter = articleService.getFileExporter(tempFile,true,true);
-        if (exporter == null) {
+        ContentFormatter formatter = articleService.getFormatter(tempFile,Article.class);
+        if (formatter == null || !formatter.readable()) {
             // 不支持
             return null;
         }
-        Article target = exporter.readFile(tempFile);
+        Article target = (Article) formatter.load(tempFile.toPath());
         if(!tempFile.delete()) {
             tempFile.deleteOnExit();
         }

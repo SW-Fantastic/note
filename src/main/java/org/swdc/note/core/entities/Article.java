@@ -38,6 +38,11 @@ public class Article {
     @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.REMOVE,CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     private ArticleContent content;
 
+    @Getter
+    @Setter
+    @Transient
+    private Class contentFormatter;
+
     @Override
     public String toString() {
         return title;

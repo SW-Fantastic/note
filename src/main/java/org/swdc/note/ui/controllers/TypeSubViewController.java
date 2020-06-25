@@ -15,7 +15,7 @@ import org.swdc.fx.anno.Listener;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.render.FileExporter;
+import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.view.*;
@@ -131,39 +131,42 @@ public class TypeSubViewController extends FXController {
         }
         // 从exporter读取，存在支持的exporter那么就读进来
         // 按照分类和文档两种模式获取和处理
-        FileExporter exporter = articleService.getFileExporter(file,true,true);
-
-        if (exporter == null) {
-            exporter = articleService.getFileExporter(file, true, false);
-            if (exporter == null) {
+        ContentFormatter formatter = articleService.getFormatter(file,Article.class);
+        if (formatter != null) {
+            if (!formatter.readable()) {
                 return;
             }
-            FileExporter targetExporter = exporter;
-            CompletableFuture.supplyAsync(() -> targetExporter.readTypeFile(file))
-                .whenCompleteAsync((type, e) -> {
-                    if (e != null) {
-                        logger.error("fail to load article set: " + targetExporter.name());
-                        return;
-                    }
-                    Platform.runLater(() -> {
-                        ArticleSetView articleSetView = findView(ArticleSetView.class);
-                        articleSetView.loadContent(type);
-                        articleSetView.show();
-                    });
-            });
-        } else {
-            Article article = exporter.readFile(file);
+            Article article = (Article) formatter.load(file.toPath());
             ReaderView readerView = findView(ReaderView.class);
             readerView.addArticle(article);
             readerView.show();
+        } else {
+            formatter = articleService.getFormatter(file,ArticleType.class);
+            if (formatter == null || !formatter.readable()) {
+                // 不支持
+                return;
+            }
+            ContentFormatter contentFormatter = formatter;
+            CompletableFuture.supplyAsync(() -> contentFormatter.load(file.toPath()))
+                    .whenCompleteAsync((type,e) -> {
+                        if (e != null) {
+                            logger.error("fail to load article set: " + contentFormatter.getExtension());
+                            return;
+                        }
+                        Platform.runLater(() -> {
+                            ArticleSetView articleSetView = findView(ArticleSetView.class);
+                            articleSetView.loadContent((ArticleType) type);
+                            articleSetView.show();
+                        });
+                    });
         }
     }
 
     @FXML
     public void showHelp() {
         File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.mdsrc");
-        FileExporter exporter = articleService.getFileExporter(path,true,false);
-        ArticleType type = exporter.readTypeFile(path);
+        ContentFormatter<ArticleType> exporter = articleService.getFormatter(path,ArticleType.class);
+        ArticleType type = exporter.load(path.toPath());
         ArticleSetView setView = findView(ArticleSetView.class);
         setView.loadContent(type);
         setView.show();
@@ -214,26 +217,27 @@ public class TypeSubViewController extends FXController {
         if (articles.size() == 1) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("另存为");
-            fileChooser.getExtensionFilters().addAll(articleService.getExporterFilters(false));
+            fileChooser.getExtensionFilters()
+                    .addAll(articleService.getSupportedFilters(item -> item.getType().equals(Article.class) && item.writeable()));
             File file = fileChooser.showSaveDialog(null);
             if (file == null) {
                 return;
             }
-            FileExporter exporter = articleService.getFileExporter(file,false, true);
-            if (exporter == null) {
+            ContentFormatter formatter = articleService.getFormatter(file,Article.class);
+            if (formatter == null || !formatter.writeable()) {
                 return;
             }
             Article article = articlesList.getSelectionModel().getSelectedItem();
             if (article == null) {
                 return;
             }
-            exporter.writeFile(article,file);
+           formatter.save(file.toPath(),article);
             UIUtils.notification("文档《" + article.getTitle() + "》已经导出。", this.getView());
         } else {
             BatchExportView batchExportView = findView(BatchExportView.class);
             batchExportView.show();
-            FileExporter exporter = batchExportView.getSelected();
-            if (exporter == null) {
+            ContentFormatter formatter = batchExportView.getSelected();
+            if (formatter == null) {
                 return;
             }
 
@@ -245,8 +249,8 @@ public class TypeSubViewController extends FXController {
             }
             Path dir = directory.toPath().toAbsolutePath();
             for (Article article: articles) {
-               Path path = dir.resolve(article.getTitle() + "." + exporter.subfix());
-                exporter.writeFile(article, path);
+               Path path = dir.resolve(article.getTitle() + "." + formatter.getExtension());
+               formatter.save(path,article);
             }
             UIUtils.notification("选择的文档已经导出。", this.getView());
         }
@@ -299,20 +303,20 @@ public class TypeSubViewController extends FXController {
         }
         TypeExportView exportView = findView(TypeExportView.class);
         exportView.show();
-        FileExporter exporter = exportView.getSelected();
-        if(exporter == null) {
+        ContentFormatter formatter = exportView.getSelected();
+        if(formatter == null || !formatter.writeable()) {
             return;
         }
         FileChooser chooser = new FileChooser();
         chooser.setTitle("导出");
-        chooser.getExtensionFilters().add(exporter.typeFilter());
+        chooser.getExtensionFilters().add(formatter.getExtensionFilter());
         chooser.setInitialFileName(type.getName());
         File target = chooser.showSaveDialog(null);
         if (target == null) {
             return;
         }
         type = articleService.getType(type.getId());
-        exporter.writeType(type, target);
+        formatter.save(target.toPath(),type);
         UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
     }
 

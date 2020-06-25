@@ -6,7 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 import org.swdc.fx.FXController;
-import org.swdc.note.core.render.FileExporter;
+import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.formatter.ContentFormatter;
+import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.TypeExportView;
 
 import java.net.URL;
@@ -18,40 +20,42 @@ import java.util.ResourceBundle;
 public class TypeExportController extends FXController {
 
     @FXML
-    private ComboBox<FileExporter> renderComboBox;
+    private ComboBox<ContentFormatter> renderComboBox;
 
-    private ObservableList<FileExporter> renders = FXCollections.observableArrayList();
+    private ObservableList<ContentFormatter> renders = FXCollections.observableArrayList();
 
-    private static class RenderConvertor extends StringConverter<FileExporter> {
+    private static class RenderConvertor extends StringConverter<ContentFormatter> {
 
-        private Map<String, FileExporter> nameMap = new HashMap<>();
+        private Map<String, ContentFormatter> nameMap = new HashMap<>();
 
-        public RenderConvertor(List<FileExporter> exporters) {
-            for (FileExporter exporter: exporters) {
-                if (nameMap.containsKey(exporter.typeName())) {
+        public RenderConvertor(List<ContentFormatter> exporters) {
+            for (ContentFormatter formatter: exporters) {
+                if (nameMap.containsKey(formatter.getName())) {
                     continue;
                 }
-                nameMap.put(exporter.typeName(), exporter);
+                nameMap.put(formatter.getName(), formatter);
             }
         }
 
         @Override
-        public String toString(FileExporter render) {
-            return render == null ? null : render.typeName();
+        public String toString(ContentFormatter formatter) {
+            return formatter == null ? null : formatter.getName();
         }
 
         @Override
-        public FileExporter fromString(String s) {
+        public ContentFormatter fromString(String s) {
             return nameMap.get(s);
         }
     }
 
     @Override
     public void initialize() {
-        List<FileExporter> exporters = getScoped(FileExporter.class);
-        RenderConvertor convertor = new RenderConvertor(exporters);
+        ArticleService articleService = findService(ArticleService.class);
+        List<ContentFormatter> formatters = articleService.getAllFormatter(item -> item.getType().equals(ArticleType.class)
+                &&item.writeable());
+        RenderConvertor convertor = new RenderConvertor(formatters);
         renderComboBox.setConverter(convertor);
-        this.renders.addAll(exporters);
+        this.renders.addAll(formatters);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class TypeExportController extends FXController {
         renderComboBox.setItems(renders);
     }
 
-    public FileExporter getSelected(){
+    public ContentFormatter getSelected(){
         return renderComboBox.getSelectionModel().getSelectedItem();
     }
 

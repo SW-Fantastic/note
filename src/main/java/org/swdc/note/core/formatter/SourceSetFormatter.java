@@ -1,10 +1,7 @@
-package org.swdc.note.core.render;
+package org.swdc.note.core.formatter;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.swdc.fx.AppComponent;
 import org.swdc.fx.resource.source.ArchiveFileResource;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
@@ -19,48 +16,30 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class TextResolver extends AppComponent implements FileExporter {
+public class SourceSetFormatter extends CommonContentFormatter<ArticleType> {
 
-    private Logger logger = LoggerFactory.getLogger(TextResolver.class);
-
-    @Override
-    public String name() {
-        return "Markdown 源文件";
-    }
-
-    @Override
-    public String typeName() {
-        return "markdown 文档集";
-    }
-
-
-    @Override
-    public boolean readable(boolean type) {
-        return true;
-    }
-
-
-    @Override
-    public void writeFile(Article article, Path file) {
+    public byte[] writeAsBytes(Article article) {
         try {
-            if (Files.exists(file)) {
-                Files.delete(file);
-            }
-            byte[] data = writeAsBytes(article);
-            Files.write(file, data);
+            ArticleContent content = article.getContent();
+            ArticleContent filled = new ArticleContent();
+            filled.setResources(content.getResources());
+            filled.setSource(content.getSource());
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsBytes(filled);
         } catch (Exception e) {
-            logger.error("fail to write file", e);
+            logger.error("fail to render content :",e);
+            return null;
         }
     }
 
     @Override
-    public void writeType(ArticleType type, Path file) {
+    public void save(Path file, ArticleType entity) {
         try {
             if (Files.exists(file)) {
                 Files.delete(file);
             }
             ZipOutputStream zout = new ZipOutputStream(Files.newOutputStream(file));
-            Set<Article> articles = type.getArticles();
+            Set<Article> articles = entity.getArticles();
             Map<String,Article> indexFile = new HashMap<>();
             for (Article article: articles) {
                 UUID uuid = UUID.randomUUID();
@@ -90,27 +69,7 @@ public class TextResolver extends AppComponent implements FileExporter {
     }
 
     @Override
-    public Article readFile(Path path) {
-        if (!Files.exists(path)) {
-            logger.error("fail to load a file which not existed :" + path.toString());
-            return null;
-        }
-        try {
-            byte[] data = Files.readAllBytes(path);
-            ObjectMapper mapper = new ObjectMapper();
-            ArticleContent content = mapper.readValue(data, ArticleContent.class);
-            Article target = new Article();
-            target.setContent(content);
-            target.setTitle(path.getFileName().toString());
-            return target;
-        } catch (Exception e) {
-            logger.error("fail to load content : " + path.toString(), e);
-        }
-        return null;
-    }
-
-    @Override
-    public ArticleType readTypeFile(Path file) {
+    public ArticleType load(Path file) {
         try {
             URI url = ArchiveFileResource.getVirtualURI(file.toFile());
             FileSystem fs = ArchiveFileResource.createAFS(url);
@@ -145,28 +104,28 @@ public class TextResolver extends AppComponent implements FileExporter {
         return null;
     }
 
-    public byte[] writeAsBytes(Article article) {
-        try {
-            ArticleContent content = article.getContent();
-            ArticleContent filled = new ArticleContent();
-            filled.setResources(content.getResources());
-            filled.setSource(content.getSource());
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsBytes(filled);
-        } catch (Exception e) {
-            logger.error("fail to render content :",e);
-            return null;
-        }
+    @Override
+    public String getName() {
+        return "markdown文档集";
     }
 
     @Override
-    public String subfix() {
-        return "mdzz";
-    }
-
-    @Override
-    public String typeSubfix() {
+    public String getExtension() {
         return "mdsrc";
     }
 
+    @Override
+    public Class<ArticleType> getType() {
+        return ArticleType.class;
+    }
+
+    @Override
+    public boolean readable() {
+        return true;
+    }
+
+    @Override
+    public boolean writeable() {
+        return true;
+    }
 }

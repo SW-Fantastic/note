@@ -24,6 +24,11 @@ public class ArticleType {
     @OneToMany(mappedBy = "type", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Article> articles;
 
+    @Getter
+    @Setter
+    @Transient
+    private Class dataProvider;
+
     @Override
     public String toString() {
         return name;

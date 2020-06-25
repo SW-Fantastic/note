@@ -8,7 +8,8 @@ import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.proto.URLProtoResolver;
-import org.swdc.note.core.render.FileExporter;
+import org.swdc.note.core.formatter.CommonContentFormatter;
+import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLResolver;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
@@ -16,6 +17,7 @@ import org.swdc.note.core.repo.ArticleTypeRepo;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ArticleService extends Service {
@@ -163,14 +165,27 @@ public class ArticleService extends Service {
         return articleRepo.findByType(type);
     }
 
-    public FileExporter getFileExporter(File export, boolean read, boolean singleArticle) {
-        List<FileExporter> exporters = getScoped(FileExporter.class);
-        for (var item: exporters) {
-            if (item.support(export, !singleArticle,!read)) {
+    public ContentFormatter getFormatter(File file, Class entityClass) {
+        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+        for (var item : formatters) {
+            if (item.support(file.toPath()) && item.getType().equals(entityClass)) {
                 return item;
             }
         }
         return null;
+    }
+
+    public List<ContentFormatter> getAllFormatter(Predicate<CommonContentFormatter> predicate) {
+        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+        if (predicate != null) {
+            return formatters.stream()
+                    .filter(predicate)
+                    .collect(Collectors.toList());
+        } else {
+            return formatters.stream()
+                    .map(ContentFormatter.class::cast)
+                    .collect(Collectors.toList());
+        }
     }
 
     public URLProtoResolver getURLResolver(String url) {
@@ -187,17 +202,17 @@ public class ArticleService extends Service {
         return typeRepo.getOne(typeId);
     }
 
-    public List<FileChooser.ExtensionFilter> getExporterFilters(boolean type) {
-        List<FileExporter> exporters = getScoped(FileExporter.class);
-        if (type) {
-            return exporters.stream().map(FileExporter::typeFilter).collect(Collectors.toList());
-        } else {
-            return exporters.stream().map(FileExporter::extensionFilters).collect(Collectors.toList());
+    public List<FileChooser.ExtensionFilter> getSupportedFilters(Predicate<CommonContentFormatter> predicate) {
+        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+        if (predicate != null) {
+            return  formatters.stream()
+                    .filter(predicate)
+                    .map(CommonContentFormatter::getExtensionFilter)
+                    .collect(Collectors.toList());
         }
-    }
-
-    public List<FileExporter> getAllRenders() {
-        return getScoped(FileExporter.class);
+        return formatters.stream()
+                .map(CommonContentFormatter::getExtensionFilter)
+                .collect(Collectors.toList());
     }
 
 }

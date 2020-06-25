@@ -4,7 +4,7 @@ import org.swdc.fx.FXView;
 import org.swdc.fx.anno.Scope;
 import org.swdc.fx.anno.ScopeType;
 import org.swdc.fx.anno.View;
-import org.swdc.note.core.render.FileExporter;
+import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.ui.controllers.dialogs.BatchExportViewController;
 
 @Scope(ScopeType.MULTI)
@@ -19,7 +19,7 @@ public class BatchExportView extends FXView {
         });
     }
 
-    public FileExporter getSelected() {
+    public ContentFormatter getSelected() {
         BatchExportViewController controller = getLoader().getController();
         return controller.getSelected();
     }

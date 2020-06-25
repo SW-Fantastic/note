@@ -61,6 +61,9 @@ module noteEditor {
     opens org.swdc.note.core.render to
             fx.framework.core;
 
+    opens org.swdc.note.core.formatter to
+            fx.framework.core;
+
     opens org.swdc.note.core.service to
             fx.framework.core;
 

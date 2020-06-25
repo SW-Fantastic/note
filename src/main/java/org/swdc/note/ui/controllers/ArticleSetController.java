@@ -6,18 +6,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 import org.swdc.fx.FXController;
 import org.swdc.fx.anno.Aware;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.render.FileExporter;
 import org.swdc.note.core.render.HTMLResolver;
 import org.swdc.note.core.service.ArticleService;
-import org.swdc.note.ui.view.ArticleEditorView;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -44,7 +40,7 @@ public class ArticleSetController extends FXController {
         articles.setOnMouseClicked(e -> this.onArticleRead());
     }
 
-    public void onItemExport(ActionEvent event) {
+    /*public void onItemExport(ActionEvent event) {
         try {
             Article article = articles.getSelectionModel().getSelectedItem();
             FileChooser chooser = new FileChooser();
@@ -73,7 +69,7 @@ public class ArticleSetController extends FXController {
         } catch (Exception e) {
             logger.error("fail to load article for edit.",e);
         }
-    }
+    } */
 
     private Article copyItem(Article article) throws Exception {
         Article articleEdit = new Article();

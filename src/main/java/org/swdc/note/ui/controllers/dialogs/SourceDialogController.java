@@ -70,7 +70,7 @@ public class SourceDialogController extends FXController {
     @FXML
     public void openFiles() {
         FileChooser chooser = new FileChooser();
-        chooser.getExtensionFilters().addAll(service.getExporterFilters(false));
+        chooser.getExtensionFilters().addAll(service.getSupportedFilters(item -> item.readable()));
         chooser.setTitle("打开");
         File file = chooser.showOpenDialog(null);
         if (file == null) {
