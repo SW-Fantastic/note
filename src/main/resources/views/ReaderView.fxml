@@ -10,12 +10,12 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.ReadViewController">
    <center>
-      <TabPane id="articleTab" fx:id="articlesTab" minWidth="800.0" prefHeight="200.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
+      <TabPane id="articleTab" fx:id="articlesTab" minWidth="600.0" prefHeight="200.0" prefWidth="800.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
    </center>
-   <top>
+   <left>
       <BorderPane styleClass="tool-area" BorderPane.alignment="CENTER">
          <center>
-            <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <ToolBar orientation="VERTICAL" prefHeight="584.0" prefWidth="0.0" BorderPane.alignment="CENTER">
                <items>
                   <Button id="edit" mnemonicParsing="false" onAction="#editArticle" text="编" />
                   <Button id="delete" mnemonicParsing="false" onAction="#deleteArticle" text="删" />
@@ -26,5 +26,5 @@
             <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
          </padding>
       </BorderPane>
-   </top>
+   </left>
 </BorderPane>

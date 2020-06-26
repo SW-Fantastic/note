@@ -279,7 +279,7 @@ public class ArticleEditorController extends FXController {
         EditorContentView editor = fxViewByView(select.getContent(), EditorContentView.class);
         String source = editor.getCodeArea().getText();
         ArticleResource resource = new ArticleResource();
-        if (article.getType() == null) {
+        if (article.getType() == null && article.getContentFormatter() == null) {
             view.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
             return;
         }

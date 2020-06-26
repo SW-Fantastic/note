@@ -45,7 +45,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HTMLResolver extends ContentRender {
+public class HTMLRender extends ContentRender {
 
     @Aware
     private RenderConfig config = null;

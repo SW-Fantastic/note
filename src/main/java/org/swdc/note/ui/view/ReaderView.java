@@ -17,9 +17,11 @@ import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.render.HTMLResolver;
+import org.swdc.note.core.formatter.ContentFormatter;
+import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ public class ReaderView extends FXView {
     private Map<Article, Tab> articleTabMap = new HashMap<>();
 
     @Aware
-    private HTMLResolver render = null;
+    private HTMLRender render = null;
 
     @Aware
     private MaterialIconsService iconsService = null;
@@ -77,6 +79,20 @@ public class ReaderView extends FXView {
         return select;
     }
 
+    public Article getArticle(String path) {
+        if (path == null || path.isEmpty() || path.isBlank()) {
+            return null;
+        }
+        Article select = articleTabMap
+                .keySet()
+                .stream()
+                .filter(k -> k.getContentFormatter() != null)
+                .filter(k -> k.getLocation().equals(path))
+                .findFirst()
+                .orElse(null);
+        return select;
+    }
+
     public void refresh(Long articleId) {
         Article article = getArticle(articleId);
         if (article == null) {
@@ -87,6 +103,25 @@ public class ReaderView extends FXView {
         ArticleContent content = refreshed.getContent();
         article.setContent(content);
         WebView view = (WebView) tab.getContent();
+
+        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String renderedContext = render.renderHTML(articleSource);
+        view.getEngine().loadContent(renderedContext);
+    }
+
+    public void refresh(String path) {
+        Article article = getArticle(path);
+        if (article == null) {
+            return;
+        }
+        Tab tab = articleTabMap.get(article);
+        ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
+        Article refreshed = (Article) formatter.load(Paths.get(path));
+        article.setContent(refreshed.getContent());
+        article.setTitle(refreshed.getTitle());
+        article.setDesc(refreshed.getDesc());
+        WebView view = (WebView) tab.getContent();
+        ArticleContent content = refreshed.getContent();
 
         String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
         String renderedContext = render.renderHTML(articleSource);

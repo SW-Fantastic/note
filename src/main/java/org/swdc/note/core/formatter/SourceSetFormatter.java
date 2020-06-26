@@ -97,6 +97,7 @@ public class SourceSetFormatter extends CommonContentFormatter<ArticleType> {
             created.setArticles(hashSet);
             in.close();
             fs.close();
+            created.setFormatter(SourceFormatter.class);
             return created;
         } catch (Exception e) {
             logger.error("fail to load file:" + file, e);

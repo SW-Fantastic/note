@@ -54,6 +54,8 @@ public class SourceFormatter extends CommonContentFormatter<Article> {
             Article target = new Article();
             target.setContent(content);
             target.setTitle(path.getFileName().toString());
+            target.setContentFormatter(SourceFormatter.class);
+            target.setLocation(path.toString());
             return target;
         } catch (Exception e) {
             logger.error("fail to load content : " + path.toString(), e);

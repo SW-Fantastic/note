@@ -27,7 +27,7 @@ public class ArticleType {
     @Getter
     @Setter
     @Transient
-    private Class dataProvider;
+    private Class formatter;
 
     @Override
     public String toString() {

@@ -20,154 +20,27 @@ import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.proto.HttpURLResolver;
+import org.swdc.note.core.render.HTMLRender;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class HTMLFormatter extends CommonContentFormatter<Article> {
 
     @Aware
     private RenderConfig config = null;
 
-    private String contentStyle = "";
-
-    private DataHolder OPTIONS = null;
-    private HtmlRenderer renderer = null;
-    private Parser parser;
-
-    @Override
-    public void initialize() {
-        try {
-            Map<String, Object> configsMap = new HashMap<>();
-            configsMap.put("defaultFontSize", config.getRenderFontSize());
-            configsMap.put("headerFontSize", config.getHeaderFontSize());
-            configsMap.put("textshadow", config.getTextShadow());
-            String themePath = getThemeAssetsPath() + File.separator + "markdown.css";
-            String mdStyle = Files.readString(Paths.get(themePath));
-            logger.info("markdown style loaded.");
-            StringWriter stringWriter = new StringWriter();
-
-            freemarker.template.Configuration configuration = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_25);
-            Template template = new Template("styles",mdStyle,configuration);
-            template.process(configsMap,stringWriter);
-            logger.info("markdown style proceed.");
-
-            contentStyle = stringWriter.toString();
-
-            OPTIONS = PegdownOptionsAdapter.flexmarkOptions(true, Extensions.ALL_WITH_OPTIONALS);
-            renderer = HtmlRenderer.builder(OPTIONS).build();
-            parser = Parser.builder(OPTIONS).build();
-            logger.info("render is ready");
-        } catch (Exception e) {
-            logger.error("fail to init markdown render :", e);
-        }
-    }
-
-    public String render(String source, Map<String, ByteBuffer> resource) {
-        // 匹配双$符，在这之间的是公式
-        Pattern pattern = Pattern.compile("\\$[^$]+\\$");
-        Matcher matcher = pattern.matcher(source);
-        Map<String,String> funcsMap = new HashMap<>();
-        // 匹配到了一个
-        while (matcher.find()){
-            // 获取内容，转换为base64
-            String result = matcher.group();
-            result = result.substring(1,result.length() - 1);
-            if (result.trim().equals("")){
-                continue;
-            }
-            String funcData = compileFunc(result);
-            if (funcData != null){
-                // 准备图片
-                funcsMap.put(result,funcData);
-                source = source.replace("$"+result+"$","![func]["+result.trim()+"]");
-            }
-        }
-        StringBuilder sb = new StringBuilder(source);
-        sb.append("\n\n");
-        Base64.Encoder encoder = Base64.getEncoder();
-        resource.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey())
-                        .append("]: data:image/png;base64,")
-                        .append(encoder.encodeToString(ent.getValue().array()))
-                        .append("\n"));
-        funcsMap.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey().trim())
-                        .append("]: data:image/png;base64,")
-                        .append(ent.getValue())
-                        .append("\n"));
-        return sb.toString();
-    }
-
-    public String renderBytes(String source, Map<String, byte[]> resource) {
-        // 匹配双$符，在这之间的是公式
-        Pattern pattern = Pattern.compile("\\$[^$]+\\$");
-        Matcher matcher = pattern.matcher(source);
-        Map<String,String> funcsMap = new HashMap<>();
-        // 匹配到了一个
-        while (matcher.find()){
-            // 获取内容，转换为base64
-            String result = matcher.group();
-            result = result.substring(1,result.length() - 1);
-            if (result.trim().equals("")){
-                continue;
-            }
-            String funcData = compileFunc(result);
-            if (funcData != null){
-                // 准备图片
-                funcsMap.put(result,funcData);
-                source = source.replace("$"+result+"$","![func]["+result.trim()+"]");
-            }
-        }
-        StringBuilder sb = new StringBuilder(source);
-        sb.append("\n\n");
-        Base64.Encoder encoder = Base64.getEncoder();
-        resource.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey())
-                        .append("]: data:image/png;base64,")
-                        .append(encoder.encodeToString(ent.getValue()))
-                        .append("\n"));
-        funcsMap.entrySet().forEach(ent->
-                sb.append("[")
-                        .append(ent.getKey().trim())
-                        .append("]: data:image/png;base64,")
-                        .append(ent.getValue())
-                        .append("\n"));
-
-        return sb.toString();
-    }
-
-    public String renderHTML(String source) {
-        return "<!doctype html><html><head><meta charset='UTF-8'><style>" +
-                contentStyle + "</style></head>" +
-                "<body ondragstart='return false;'>" +
-                renderer.render(parser.parse(source)) +
-                "</body></html>";
-    }
-
-    public String generateDesc(ArticleContent content) {
-        String originMarkdown = this.renderBytes(content.getSource(), content.getResources().getImages());
-        String html = renderHTML(originMarkdown);
-        Document doc = Jsoup.parse(html);
-        String desc = doc.text().replaceAll("[\\r\\n]","");
-        return desc.length() > 20 ? desc.substring(0, 20): desc;
-    }
+    @Aware
+    private HTMLRender render = null;
 
     @Override
     public boolean writeable() {
@@ -223,7 +96,7 @@ public class HTMLFormatter extends CommonContentFormatter<Article> {
     public String renderAsText(Article article) {
         ArticleContent content = article.getContent();
         Map<String, byte[]> data = content.getResources().getImages();
-        return renderHTML(renderBytes(content.getSource(), data));
+        return render.renderHTML(render.renderBytes(content.getSource(), data));
     }
 
     @Override
@@ -282,6 +155,8 @@ public class HTMLFormatter extends CommonContentFormatter<Article> {
             article.setContent(content);
             article.setTitle(filePath.getFileName().toString());
             article.setCreateDate(new java.util.Date());
+            article.setContentFormatter(HTMLFormatter.class);
+            article.setLocation(filePath.toString());
             return article;
         } catch (Exception e) {
             logger.error("fail to read html file", e);

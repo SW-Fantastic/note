@@ -2,7 +2,6 @@ package org.swdc.note.ui.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
@@ -11,7 +10,7 @@ import org.swdc.fx.anno.Aware;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.render.HTMLResolver;
+import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 
 import java.net.URL;
@@ -26,7 +25,7 @@ public class ArticleSetController extends FXController {
     private WebView contentView;
 
     @Aware
-    private HTMLResolver render = null;
+    private HTMLRender render = null;
 
     @Aware
     private ArticleService articleService = null;

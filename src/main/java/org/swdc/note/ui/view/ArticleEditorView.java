@@ -23,7 +23,7 @@ import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
-import org.swdc.note.core.render.HTMLResolver;
+import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
@@ -47,7 +47,7 @@ public class ArticleEditorView extends FXView {
     private MaterialIconsService iconsService = null;
 
     @Aware
-    private HTMLResolver render = null;
+    private HTMLRender render = null;
 
     @Aware
     private ArticleService articleService = null;
@@ -191,7 +191,14 @@ public class ArticleEditorView extends FXView {
         TextField txtTitle = findById("title");
         TextField txtType = findById("type");
 
+        Button changeType = findById("changeType");
+
         Article article = entry.getKey();
+        if (article.getContentFormatter() != null) {
+            changeType.setDisable(true);
+        } else {
+            changeType.setDisable(false);
+        }
         txtTitle.setText(article.getTitle());
         if (article.getType() != null) {
             txtType.setText(article.getType().getName());

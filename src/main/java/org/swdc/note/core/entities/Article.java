@@ -43,6 +43,11 @@ public class Article {
     @Transient
     private Class contentFormatter;
 
+    @Transient
+    @Getter
+    @Setter
+    private String location;
+
     @Override
     public String toString() {
         return title;

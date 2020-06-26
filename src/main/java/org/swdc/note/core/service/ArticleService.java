@@ -10,11 +10,12 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.proto.URLProtoResolver;
 import org.swdc.note.core.formatter.CommonContentFormatter;
 import org.swdc.note.core.formatter.ContentFormatter;
-import org.swdc.note.core.render.HTMLResolver;
+import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
@@ -29,7 +30,7 @@ public class ArticleService extends Service {
     private ArticleRepo articleRepo = null;
 
     @Aware
-    private HTMLResolver render = null;
+    private HTMLRender render = null;
 
     public boolean createType(ArticleType type) {
         try {
@@ -70,6 +71,12 @@ public class ArticleService extends Service {
     }
 
     public boolean saveArticle(Article article, ArticleContent content) {
+        if(article.getContentFormatter() != null) {
+            ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
+            article.setContent(content);
+            formatter.save(Paths.get(article.getLocation()),article);
+            return true;
+        }
         if (article.getId() != null) {
             Article articleOld = articleRepo.getOne(article.getId());
             if (articleOld == null) {

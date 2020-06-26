@@ -37,6 +37,9 @@ public class ReadViewController extends FXController {
         }
         ReaderView readerView = getView();
         if (readerView.getArticle(article.getId()) == null) {
+            if (readerView.getArticle(article.getLocation()) != null) {
+                readerView.refresh(article.getLocation());
+            }
             return;
         }
         readerView.refresh(article.getId());
@@ -46,7 +49,7 @@ public class ReadViewController extends FXController {
     public void editArticle() {
         ReaderView readerView = getView();
         Article article = readerView.getReadingArticle();
-        if (article == null ||article.getId() == null) {
+        if (article == null ||(article.getId() == null && article.getContentFormatter() == null)) {
             return;
         }
         ArticleEditorView editorView = findView(ArticleEditorView.class);
