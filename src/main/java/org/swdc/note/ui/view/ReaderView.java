@@ -10,6 +10,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import lombok.Getter;
 import org.swdc.fx.FXView;
 import org.swdc.fx.anno.Aware;
 import org.swdc.fx.anno.View;
@@ -20,6 +22,7 @@ import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.component.TypeListPopover;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -30,6 +33,9 @@ public class ReaderView extends FXView {
 
     private ObservableList<Tab> articles = FXCollections.observableArrayList();
     private Map<Article, Tab> articleTabMap = new HashMap<>();
+
+    @Getter
+    private TypeListPopover popover;
 
     @Aware
     private HTMLRender render = null;
@@ -42,6 +48,17 @@ public class ReaderView extends FXView {
 
     @Override
     public void initialize() {
+        this.popover = new TypeListPopover();
+        this.popover.onClick(article -> {
+            Article existed = getArticle(article.getId());
+            if (existed != null) {
+                Tab tab = articleTabMap.get(existed);
+                TabPane articlesTab = findById("articleTab");
+                articlesTab.getSelectionModel().select(tab);
+            } else {
+                this.addArticle(article);
+            }
+        });
         TabPane articlesTab = findById("articleTab");
         Bindings.bindContentBidirectional(articlesTab.getTabs(), articles);
         Stage stage = getStage();
@@ -51,6 +68,9 @@ public class ReaderView extends FXView {
         this.initViewToolButton("delete","delete");
         this.initViewToolButton("toc","library_books");
         stage.setOnCloseRequest(e -> {
+            if (popover.isShowing()) {
+                popover.hide(Duration.ZERO);
+            }
             articles.clear();
             articleTabMap.clear();
         });

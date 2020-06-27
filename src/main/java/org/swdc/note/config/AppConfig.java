@@ -31,5 +31,12 @@ public class AppConfig extends DefaultUIConfigProp {
             value = "", tooltip = "在启动后显示主窗口",
             propName = "showMainView")
     private Boolean showMainView;
+
+    @Getter
+    @Setter
+    @ConfigProp(type = PropType.CHECK, name = "自动提示",
+            value = "", tooltip = "在编辑器中使用自动提示",
+            propName = "enableAutoTip")
+    private Boolean enableAutoTip;
     
 }

@@ -6,12 +6,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.Event;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import lombok.Getter;
+import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -20,22 +23,22 @@ import org.swdc.fx.anno.Aware;
 import org.swdc.fx.anno.View;
 import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.component.ContentHelper;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @View(title = "编辑", resizeable = true, background = true, style = {"editor", "keywords"})
 public class ArticleEditorView extends FXView {
@@ -103,6 +106,8 @@ public class ArticleEditorView extends FXView {
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<TITLE>" + TITLE_PATTERN + ")");
 
+    private List<String> keyWords = Arrays.asList("*","**","#","```","$","TOC",">","-","1.");
+
     @Override
     public void initialize() {
 
@@ -156,6 +161,9 @@ public class ArticleEditorView extends FXView {
 
     private void closeRequest(Event event) {
         event.consume();
+        if (tablePopover.isShowing()) {
+            tablePopover.hide(javafx.util.Duration.ZERO);
+        }
         Long unsaved = tabs.stream()
                 .map(tab->tab.getContent().getUserData())
                 .map(EditorContentView.class::cast)
@@ -279,6 +287,8 @@ public class ArticleEditorView extends FXView {
     }
 
     public Tab addArticle(Article article) {
+        AppConfig config = findProperties(AppConfig.class);
+
         Article hasOpen = getArticle(article.getId());
         TabPane tabPane = findById("editorTab");
         if(hasOpen != null) {
@@ -316,6 +326,9 @@ public class ArticleEditorView extends FXView {
         String articleSource = render.render(codeArea.getText(),editor.getImagesView().getImages());
         String renderedContext = render.renderHTML(articleSource);
         editor.getWebView().getEngine().loadContent(renderedContext);
+
+        ContentHelper helper = new ContentHelper();
+        helper.setUpTooltip(codeArea,getView(),config.getEnableAutoTip());
 
         codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
             String source = render.render(codeArea.getText(),editor.getImagesView().getImages());
@@ -434,7 +447,6 @@ public class ArticleEditorView extends FXView {
                     matcher.group("SP") != null ? "md-sp":
                     matcher.group("TITLE") != null ? "md-keyword":
                     "text-normal";
-            assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();
