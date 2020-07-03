@@ -3,16 +3,14 @@ package org.swdc.note.ui.view;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.InputMethodRequests;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import lombok.Getter;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -22,10 +20,18 @@ import org.swdc.fx.anno.Aware;
 import org.swdc.fx.anno.Scope;
 import org.swdc.fx.anno.ScopeType;
 import org.swdc.fx.anno.View;
+import org.swdc.note.config.AppConfig;
+import org.swdc.note.core.entities.Article;
+import org.swdc.note.ui.component.ContentHelper;
 import org.swdc.note.ui.view.dialogs.ImagesView;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.createMenuItem;
 
@@ -39,6 +45,46 @@ public class EditorContentView extends FXView {
     @Aware
     @Getter
     private ImagesView imagesView = null;
+
+    private List<ContentHelper.KeyWord> keyWordsTipList = Arrays.asList(
+            new ContentHelper.KeyWord("*", "无序列表"),
+            new ContentHelper.KeyWord("**", "加粗"),
+            new ContentHelper.KeyWord(">", "引用"),
+            new ContentHelper.KeyWord("#","标题1"),
+            new ContentHelper.KeyWord("##","标题2"),
+            new ContentHelper.KeyWord("###","标题3"),
+            new ContentHelper.KeyWord("####","标题4"),
+            new ContentHelper.KeyWord("#####","标题5"),
+            new ContentHelper.KeyWord("######","标题6"),
+            new ContentHelper.KeyWord("$","公式"),
+            new ContentHelper.KeyWord("- [ ] ", "待办列表"),
+            new ContentHelper.KeyWord("- [x] ","待办列表"),
+            new ContentHelper.KeyWord("* * * ", "分割线"),
+            new ContentHelper.KeyWord("- - - ", "分割线"),
+            new ContentHelper.KeyWord("~~","删除线"),
+            new ContentHelper.KeyWord("[TOC]","目录"),
+            new ContentHelper.KeyWord("![","插入图片", keyWord -> {
+                FileChooser chooser = new FileChooser();
+                chooser.setTitle("打开图片");
+                chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("图片文件","*.png","*.jpg", "*.jpeg","*.gif","*.bmp"));
+                File image = chooser.showOpenDialog(this.getStage());
+                if (image == null) {
+                    return "";
+                }
+                try {
+                    ImagesView imagesView = this.getImagesView();
+                    imagesView.addImage(image.getName(), Files.readAllBytes(image.toPath()));
+                    return "![description][" + image.getName() + "]";
+                } catch (Exception e) {
+                    logger.error("fail to read image file",e);
+                    return "";
+                }
+            })
+    );
+
+    @Getter
+    private ContentHelper helper;
+
 
     private boolean hasSaved = false;
 
@@ -110,6 +156,18 @@ public class EditorContentView extends FXView {
         this.codeArea = codeArea;
         this.createEditorMenu();
         this.codeArea.setContextMenu(this.editorMenu);
+        AppConfig config = findProperties(AppConfig.class);
+        helper = new ContentHelper();
+        helper.setUpTooltip(codeArea,this,config.getEnableAutoTip(),keyWordsTipList);
+        helper.beforeShow(list -> {
+            Set<String> images = this.getImagesView().getImages().keySet();
+            List<ContentHelper.KeyWord> imagesKeyWord = images
+                    .stream()
+                    .map(s -> new ContentHelper.KeyWord("![","图片: " + s, self-> "![description][" + s + "]"))
+                    .collect(Collectors.toList());
+            list.addAll(imagesKeyWord);
+        });
+
     }
 
     private void createEditorMenu() {

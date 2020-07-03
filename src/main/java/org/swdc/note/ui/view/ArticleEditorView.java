@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.Getter;
 import org.controlsfx.control.PopOver;
@@ -32,8 +33,11 @@ import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.ContentHelper;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.view.dialogs.ImagesView;
 
+import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -106,8 +110,6 @@ public class ArticleEditorView extends FXView {
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<TITLE>" + TITLE_PATTERN + ")");
 
-    private List<String> keyWords = Arrays.asList("*","**","#","```","$","TOC",">","-","1.");
-
     @Override
     public void initialize() {
 
@@ -164,20 +166,23 @@ public class ArticleEditorView extends FXView {
         if (tablePopover.isShowing()) {
             tablePopover.hide(javafx.util.Duration.ZERO);
         }
-        Long unsaved = tabs.stream()
+        List<EditorContentView> editors = tabs.stream()
                 .map(tab->tab.getContent().getUserData())
                 .map(EditorContentView.class::cast)
-                .filter(v->!v.hasSaved()).count();
+                .collect(Collectors.toList());
+        long unsaved = editors.stream().filter(v->!v.hasSaved()).count();
         if (unsaved > 0) {
             showAlertDialog("关闭","继续关闭将会失去所有未保存内容，继续吗？", Alert.AlertType.CONFIRMATION)
                     .ifPresent(btn -> {
                         if (btn == ButtonType.OK) {
                             tabs.clear();
                             articleTabMap.clear();
+                            editors.forEach(e -> e.getHelper().cancel());
                             this.close();
                         }
                     });
         } else {
+            editors.forEach(e -> e.getHelper().cancel());
             tabs.clear();
             articleTabMap.clear();
             this.close();
@@ -287,7 +292,6 @@ public class ArticleEditorView extends FXView {
     }
 
     public Tab addArticle(Article article) {
-        AppConfig config = findProperties(AppConfig.class);
 
         Article hasOpen = getArticle(article.getId());
         TabPane tabPane = findById("editorTab");
@@ -326,9 +330,6 @@ public class ArticleEditorView extends FXView {
         String articleSource = render.render(codeArea.getText(),editor.getImagesView().getImages());
         String renderedContext = render.renderHTML(articleSource);
         editor.getWebView().getEngine().loadContent(renderedContext);
-
-        ContentHelper helper = new ContentHelper();
-        helper.setUpTooltip(codeArea,getView(),config.getEnableAutoTip());
 
         codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
             String source = render.render(codeArea.getText(),editor.getImagesView().getImages());

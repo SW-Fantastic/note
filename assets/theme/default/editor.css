@@ -1,3 +1,10 @@
+.scene .tip-small {
+  -fx-background-color: #FFF;
+  -fx-font-size: 10px;
+}
+.scene .tip-small .label {
+  -fx-text-fill: #7ca982;
+}
 .scene .tool-area {
   -fx-background-color: rgba(245, 237, 240, 0.5);
   -fx-font-size: 12;

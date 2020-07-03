@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(indexes = {@Index(name = "typeIndex", columnList = "type_id")})
 public class Article {
 
     @Id
