@@ -166,7 +166,7 @@ public class ReaderView extends FXView {
         tab.setClosable(true);
         WebView view = new WebView();
 
-        ArticleContent content = article.getContent();
+        ArticleContent content = articleService.getContentOf(article);
 
         String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
         String renderedContext = render.renderHTML(articleSource);

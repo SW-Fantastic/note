@@ -65,7 +65,12 @@ module noteEditor {
             fx.framework.core;
 
     opens org.swdc.note.core.service to
+            fx.framework.aop,
             fx.framework.core;
+
+    exports org.swdc.note.core.service;
+    exports org.swdc.note.core.entities;
+    exports org.swdc.note.core.formatter;
 
     opens org.swdc.note.config to
             org.controlsfx.controls,

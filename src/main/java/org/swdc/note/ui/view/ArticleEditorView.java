@@ -6,16 +6,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.Event;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.Getter;
-import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -24,20 +20,15 @@ import org.swdc.fx.anno.Aware;
 import org.swdc.fx.anno.View;
 import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
-import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
-import org.swdc.note.ui.component.ContentHelper;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
-import org.swdc.note.ui.view.dialogs.ImagesView;
 
-import java.io.File;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -310,7 +301,7 @@ public class ArticleEditorView extends FXView {
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
 
-        ArticleContent content = article.getContent();
+        ArticleContent content  = articleService.getContentOf(article);;
         if (content != null) {
             ArticleResource resource = content.getResources();
             if (resource != null) {

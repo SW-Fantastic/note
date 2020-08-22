@@ -142,6 +142,7 @@ public class ContentHelper {
                     wordsList.getItems().addAll(wordKeys);
 
                     if (!(last.isBlank() || last.isEmpty()) && words.size() + wordKeys.size() > 0) {
+                        System.err.println(bound.getCenterY());
                         popOver.show((Node) view.getView(), bound.getCenterX(), bound.getCenterY());
                         wordsList.requestFocus();
                     } else {
@@ -228,8 +229,8 @@ public class ContentHelper {
                 wordsList.getItems().clear();
                 wordsList.getItems().addAll(keyWords);
                 wordsList.getItems().addAll(content);
-                area.getParent();
-                popOver.show((Node) view.getView(),location.getCenterX(),location.getCenterY());
+                BorderPane node = view.getView();
+                popOver.show(node,location.getCenterX(),location.getCenterY());
             }
         });
     }

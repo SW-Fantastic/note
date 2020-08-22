@@ -289,7 +289,7 @@ public class ArticleEditorController extends FXController {
             imageData.put(item.getKey(), item.getValue().array());
         }
         resource.setImages(imageData);
-        ArticleContent content = article.getContent();
+        ArticleContent content = articleService.getContentOf(article);
         if (content == null) {
             content = new ArticleContent();
         }

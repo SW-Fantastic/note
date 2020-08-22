@@ -2,6 +2,7 @@ package org.swdc.note.core.service;
 
 import javafx.stage.FileChooser;
 import org.swdc.fx.anno.Aware;
+import org.swdc.fx.jpa.anno.Transactional;
 import org.swdc.fx.services.Service;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
@@ -11,6 +12,7 @@ import org.swdc.note.core.proto.URLProtoResolver;
 import org.swdc.note.core.formatter.CommonContentFormatter;
 import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
+import org.swdc.note.core.repo.ArticleContentRepo;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
 
@@ -32,6 +34,20 @@ public class ArticleService extends Service {
     @Aware
     private HTMLRender render = null;
 
+    @Aware
+    private ArticleContentRepo contentRepo = null;
+
+    @Transactional
+    public ArticleContent getContentOf(Article article) {
+        if (article.getId() == null) {
+            return null;
+        }
+        article = articleRepo.getOne(article.getId());
+        ArticleContent content = contentRepo.getOne(article.getContent().getId());
+        return content;
+    }
+
+    @Transactional
     public boolean createType(ArticleType type) {
         try {
             if (type.getId() != null) {
@@ -52,6 +68,7 @@ public class ArticleService extends Service {
         }
     }
 
+    @Transactional
     public boolean saveType(ArticleType type) {
         if (type == null) {
             return false;
@@ -70,6 +87,7 @@ public class ArticleService extends Service {
         return articleRepo.searchByTitle(title);
     }
 
+    @Transactional
     public boolean saveArticle(Article article, ArticleContent content) {
         if(article.getContentFormatter() != null) {
             ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
@@ -143,6 +161,7 @@ public class ArticleService extends Service {
         }
     }
 
+    @Transactional
     public void deleteArticle(Long articleId) {
         Article article = articleRepo.getOne(articleId);
         articleRepo.remove(article);
@@ -156,6 +175,7 @@ public class ArticleService extends Service {
         return articleRepo.findRecently();
     }
 
+    @Transactional
     public void deleteType(Long articleTypeId) {
         ArticleType type = typeRepo.getOne(articleTypeId);
 
