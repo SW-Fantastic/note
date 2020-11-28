@@ -18,6 +18,7 @@ import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.ReaderView;
 
@@ -58,8 +59,8 @@ public class ArticleCell extends FXView {
     }
 
     private void deleteArticle(ActionEvent event) {
-        articleService.deleteArticle(article.getId());
-        this.emit(new RefreshEvent(article.getType(), this));
+        articleService.deleteArticle(article);
+        this.emit(new RefreshEvent(article.getType(), this, RefreshType.DELETE));
     }
 
     private void editArticle(ActionEvent event) {

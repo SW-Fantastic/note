@@ -1,11 +1,13 @@
 package org.swdc.note.ui.controllers;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.swdc.fx.FXController;
@@ -18,6 +20,7 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.*;
 import org.swdc.note.ui.view.cells.*;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
@@ -28,18 +31,23 @@ import org.swdc.note.ui.view.dialogs.TypeExportView;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class TypeSubViewController extends FXController {
 
     @Aware
     private ArticleService articleService = null;
 
+   // @FXML
+   // private ListView<ArticleType> typeList;
+
     @FXML
-    private ListView<ArticleType> typeList;
+    private TreeView<ArticleType> typeTree;
 
     @FXML
     private ListView<Article> articlesList;
@@ -58,24 +66,27 @@ public class TypeSubViewController extends FXController {
 
     private ObservableList<Article> recently = FXCollections.observableArrayList();
 
-    private ObservableList<ArticleType> typeLists = FXCollections.observableArrayList();
-
     private ObservableList<Article> articles = FXCollections.observableArrayList();
+
+    private TreeItem<ArticleType> typeRoot = new TreeItem<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        typeList.getSelectionModel().selectedItemProperty().addListener((observableValue, typeOld, typeNew) -> {
-            articles.clear();
-            if (typeNew != null) {
-                articles.addAll(articleService.getArticles(typeNew));
-            }
-        });
+        typeTree.setRoot(typeRoot);
+        typeTree.setShowRoot(false);
+        typeRoot.setExpanded(true);
     }
 
     @Override
     public void initialize() {
-        typeList.setCellFactory(list -> new ArticleTypeListCell(findView(ArticleTypeCell.class)));
-        typeList.setItems(typeLists);
+        typeTree.setOnMouseClicked(e -> {
+            if (e.getClickCount() > 1){
+                typeTree.getSelectionModel().clearSelection();
+            }
+        });
+        typeTree.getSelectionModel()
+                .selectedItemProperty()
+                .addListener(this::onTreeSelectionChange);
         articlesList.setCellFactory(list -> new ArticleListCell(findView(ArticleCell.class)));
         articlesList.setItems(articles);
         articlesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -90,22 +101,87 @@ public class TypeSubViewController extends FXController {
         recently.addAll(articleService.getRecently());
 
         if (event == null || event.getData() == null) {
-            typeLists.clear();
-            articles.clear();
-            typeLists.addAll(this.articleService.getTypes());
+            typeRoot.getChildren().clear();
+            List<ArticleType> types = this.articleService.getTypes();
+            List<TreeItem<ArticleType>> items = types.stream()
+                    .map(this::createTypeTree)
+                    .collect(Collectors.toList());
+            typeRoot.getChildren().addAll(items);
             return;
         }
+
         ArticleType type = event.getData();
-        ArticleType selected = typeList.getSelectionModel().getSelectedItem();
-        if (type != null) {
-            articles.clear();
-            articles.addAll(this.articleService.getArticles(selected));
+        if (type.getParent() != null) {
+            TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
+            if (parent != null) {
+                if (event.getType() == RefreshType.CREATION) {
+                    parent.getChildren().add(new TreeItem<>(type));
+                } else {
+                    TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+                    if (target == null) {
+                        return;
+                    }
+                    if (event.getType() == RefreshType.DELETE) {
+                        parent.getChildren().remove(target);
+                    } else if (event.getType() == RefreshType.UPDATE) {
+                        target.setValue(type);
+                    }
+                }
+            }
+        } else {
+            TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+            if (target == null) {
+                typeRoot.getChildren().add(new TreeItem<>(type));
+            } else {
+                target.setValue(type);
+            }
         }
+    }
+
+    private void onTreeSelectionChange(Observable observable, TreeItem<ArticleType> old, TreeItem<ArticleType> next) {
+        if (next == null || next.getValue() == null) {
+            return;
+        }
+        articles.clear();
+        articles.addAll(articleService.getArticles(next.getValue()));
+    }
+
+    private TreeItem<ArticleType> findTypeItem(TreeItem<ArticleType> typeNode,ArticleType type) {
+        if (typeNode.getValue() != null && typeNode.getValue().getId().equals(type.getId())) {
+            return typeNode;
+        }
+        if (typeNode.getChildren().size() > 0) {
+            for (TreeItem<ArticleType> item: typeNode.getChildren()) {
+                if (item.getValue().getId().equals(type.getId())) {
+                    return item;
+                } else if (item.getChildren().size() > 0){
+                    return findTypeItem(item,type);
+                }
+            }
+        }
+        return null;
+    }
+
+    private TreeItem<ArticleType> createTypeTree(ArticleType type) {
+        TreeItem<ArticleType> item = new TreeItem<>(type);
+        if (type.getChildren().size() > 0) {
+            for (ArticleType subType: type.getChildren()) {
+                TreeItem<ArticleType> subItem = createTypeTree(subType);
+                item.getChildren().add(subItem);
+            }
+        }
+        return item;
     }
 
     @FXML
     public void onTypeAdded() {
         TypeCreateView createView = findView(TypeCreateView.class);
+        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
+        if (typeTreeItem == null || typeTreeItem.getValue() == null) {
+            createView.setParent(null);
+        } else {
+            createView.setParent(typeTreeItem.getValue());
+        }
         createView.show();
     }
 
@@ -178,7 +254,12 @@ public class TypeSubViewController extends FXController {
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
         article.setTitle("未命名");
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
+        TreeItem<ArticleType> typeItem = typeTree.getSelectionModel().getSelectedItem();
+        ArticleType type = null;
+        if (typeItem == null) {
+            return;
+        }
+        type = typeItem.getValue();
         if (type != null) {
             article.setType(type);
         }
@@ -204,8 +285,8 @@ public class TypeSubViewController extends FXController {
         }
         for (Article article: articles) {
             ArticleType type = article.getType();
-            articleService.deleteArticle(article.getId());
-            this.emit(new RefreshEvent(type, this.getView()));
+            articleService.deleteArticle(article);
+           // this.emit(new RefreshEvent(type, this.getView(), RefreshType.DELETE));
         }
     }
 
@@ -273,31 +354,32 @@ public class TypeSubViewController extends FXController {
 
     public void deleteType(ActionEvent event) {
         FXView view = getView();
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
-        if (type == null) {
+        TreeItem<ArticleType> type = typeTree.getSelectionModel().getSelectedItem();
+        if (type == null || type.getValue() == null) {
             return;
         }
+        ArticleType target = type.getValue();
         view.showAlertDialog("提示", "删除分类将会删除分类的全部文档，确定要这样做吗？", Alert.AlertType.CONFIRMATION)
                 .ifPresent(btn -> {
                     if (btn == ButtonType.OK) {
-                        articleService.deleteType(type.getId());
-                        this.emit(new RefreshEvent(type, view));
+                        articleService.deleteType(target);
+                        this.emit(new RefreshEvent(target, view,RefreshType.DELETE));
                     }
                 });
     }
 
     public void onModifyType(ActionEvent e) {
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
-        if (type == null) {
+        TreeItem<ArticleType> type = typeTree.getSelectionModel().getSelectedItem();
+        if (type == null || type.getValue() == null) {
             return;
         }
         TypeEditView editView = findView(TypeEditView.class);
-        editView.setType(type);
+        editView.setType(type.getValue());
         editView.show();
     }
 
     public void exportType(ActionEvent e) {
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
+        /*ArticleType type = typeList.getSelectionModel().getSelectedItem();
         if (type == null) {
             return;
         }
@@ -317,7 +399,7 @@ public class TypeSubViewController extends FXController {
         }
         type = articleService.getType(type.getId());
         formatter.save(target.toPath(),type);
-        UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
+        UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());*/
     }
 
     @FXML

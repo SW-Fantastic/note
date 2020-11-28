@@ -12,4 +12,7 @@ public interface ArticleTypeRepo extends JPARepository<ArticleType, Long> {
     @SQLQuery("FROM ArticleType Where name = :name")
     List<ArticleType> findByTypeName(@Param("name") String name);
 
+    @SQLQuery("FROM ArticleType Where parent = null")
+    List<ArticleType> findRootTypes();
+
 }

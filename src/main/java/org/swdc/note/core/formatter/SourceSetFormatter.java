@@ -20,12 +20,13 @@ public class SourceSetFormatter extends CommonContentFormatter<ArticleType> {
 
     public byte[] writeAsBytes(Article article) {
         try {
-            ArticleContent content = article.getContent();
+           /* ArticleContent content = article.getContent();
             ArticleContent filled = new ArticleContent();
             filled.setResources(content.getResources());
             filled.setSource(content.getSource());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsBytes(filled);
+            return mapper.writeValueAsBytes(filled);*/
+           return new byte[0];
         } catch (Exception e) {
             logger.error("fail to render content :",e);
             return null;
@@ -71,7 +72,7 @@ public class SourceSetFormatter extends CommonContentFormatter<ArticleType> {
     @Override
     public ArticleType load(Path file) {
         try {
-            URI url = ArchiveFileResource.getVirtualURI(file.toFile());
+            /*URI url = ArchiveFileResource.getVirtualURI(file.toFile());
             FileSystem fs = ArchiveFileResource.createAFS(url);
 
             ObjectMapper mapper = new ObjectMapper();
@@ -98,7 +99,8 @@ public class SourceSetFormatter extends CommonContentFormatter<ArticleType> {
             in.close();
             fs.close();
             created.setFormatter(SourceFormatter.class);
-            return created;
+            return created;*/
+            return null;
         } catch (Exception e) {
             logger.error("fail to load file:" + file, e);
         }

@@ -183,6 +183,18 @@
             <artifactId>remark</artifactId>
             <version>1.2.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.dizitart/nitrite -->
+        <dependency>
+            <groupId>org.dizitart</groupId>
+            <artifactId>nitrite</artifactId>
+            <version>3.4.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>h2-mvstore</artifactId>
+                    <groupId>com.h2database</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>

@@ -27,6 +27,7 @@ import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 
 import java.nio.ByteBuffer;
 import java.time.Duration;
@@ -303,13 +304,12 @@ public class ArticleEditorView extends FXView {
 
         ArticleContent content  = articleService.getContentOf(article);;
         if (content != null) {
-            ArticleResource resource = content.getResources();
+
+            Map<String,byte[]> resource = content.getImages();
             if (resource != null) {
-                Map<String,byte[]> images = resource.getImages();
-                for (Map.Entry<String, byte[]> ent : images.entrySet()) {
+                for (Map.Entry<String, byte[]> ent : resource.entrySet()) {
                     editor.getImagesView().addImage(ent.getKey(), ent.getValue());
                 }
-                resource.getImages().clear();
             }
             String source = content.getSource();
             if(source != null) {
@@ -386,23 +386,27 @@ public class ArticleEditorView extends FXView {
                             return;
                         }
                         String source = editor.getCodeArea().getText();
-                        ArticleResource resource = new ArticleResource();
+
                         Map<String, ByteBuffer> images = editor.getImagesView().getImages();
                         Map<String, byte[]> imageData = new HashMap<>(images.size());
                         for (Map.Entry<String,ByteBuffer> item :images.entrySet()) {
                             imageData.put(item.getKey(), item.getValue().array());
                         }
-                        resource.setImages(imageData);
+
                         ArticleContent content = article.getContent();
                         if (content == null) {
                             content = new ArticleContent();
                         }
-                        content.setResources(resource);
+                        content.setImages(imageData);
                         content.setSource(source);
-                        if(articleService.saveArticle(article, content)) {
+                        if (article.getId() != null) {
+                            content.setArticleId(article.getId());
+                        }
+                        Article saved = articleService.saveArticle(article, content);
+                        if(saved != null) {
                             tabs.remove(tab);
                             articleTabMap.remove(article);
-                            this.emit(new RefreshEvent(article, this));
+                            this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
                         } else {
                             showAlertDialog("提示", "保存失败", Alert.AlertType.ERROR);
                         }

@@ -94,9 +94,10 @@ public class HTMLFormatter extends CommonContentFormatter<Article> {
     }
 
     public String renderAsText(Article article) {
-        ArticleContent content = article.getContent();
+        /*ArticleContent content = article.getContent();
         Map<String, byte[]> data = content.getResources().getImages();
-        return render.renderHTML(render.renderBytes(content.getSource(), data));
+        return render.renderHTML(render.renderBytes(content.getSource(), data));*/
+        return "";
     }
 
     @Override
@@ -146,17 +147,19 @@ public class HTMLFormatter extends CommonContentFormatter<Article> {
                 }
             }
             String markdown = remark.convertFragment(doc.toString());
+
+
             ArticleContent content = new ArticleContent();
-            ArticleResource contentResource = new ArticleResource();
-            contentResource.setImages(resource);
-            content.setResources(contentResource);
+            content.setImages(resource);
             content.setSource(markdown);
+
             Article article = new Article();
-            article.setContent(content);
+
             article.setTitle(filePath.getFileName().toString());
             article.setCreateDate(new java.util.Date());
             article.setContentFormatter(HTMLFormatter.class);
             article.setLocation(filePath.toString());
+
             return article;
         } catch (Exception e) {
             logger.error("fail to read html file", e);

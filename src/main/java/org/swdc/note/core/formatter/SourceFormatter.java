@@ -29,12 +29,13 @@ public class SourceFormatter extends CommonContentFormatter<Article> {
 
     public byte[] writeAsBytes(Article article) {
         try {
-            ArticleContent content = article.getContent();
+            /*ArticleContent content = article.getContent();
             ArticleContent filled = new ArticleContent();
             filled.setResources(content.getResources());
             filled.setSource(content.getSource());
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsBytes(filled);
+            return mapper.writeValueAsBytes(filled);*/
+            return new byte[0];
         } catch (Exception e) {
             logger.error("fail to render content :",e);
             return null;
@@ -43,7 +44,7 @@ public class SourceFormatter extends CommonContentFormatter<Article> {
 
     @Override
     public Article load(Path path) {
-        if (!Files.exists(path)) {
+       /* if (!Files.exists(path)) {
             logger.error("fail to load a file which not existed :" + path.toString());
             return null;
         }
@@ -59,7 +60,7 @@ public class SourceFormatter extends CommonContentFormatter<Article> {
             return target;
         } catch (Exception e) {
             logger.error("fail to load content : " + path.toString(), e);
-        }
+        }*/
         return null;
     }
 

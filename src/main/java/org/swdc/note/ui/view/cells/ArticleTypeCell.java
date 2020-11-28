@@ -20,6 +20,7 @@ import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.dialogs.TypeEditView;
 
@@ -67,7 +68,7 @@ public class ArticleTypeCell extends FXView {
         Article article = articleService.getArticle(articleId);
         article.setType(this.type);
         articleService.saveArticle(article,article.getContent());
-        this.emit(new RefreshEvent(this.type,this));
+        this.emit(new RefreshEvent(this.type, this,RefreshType.UPDATE));
     }
 
     private void initViewToolButton(String id, String icon, EventHandler<ActionEvent> handler) {
@@ -92,8 +93,8 @@ public class ArticleTypeCell extends FXView {
     }
 
     private void onTypeDelete(ActionEvent event) {
-        articleService.deleteType(type.getId());
-        this.emit(new RefreshEvent((ArticleType) null,this));
+        articleService.deleteType(type);
+       // this.emit(new RefreshEvent(type,this,RefreshType.DELETE));
     }
 
     private void onTypeEdit(ActionEvent event){

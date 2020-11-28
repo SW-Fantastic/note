@@ -120,11 +120,11 @@ public class ReaderView extends FXView {
         }
         Tab tab = articleTabMap.get(article);
         Article refreshed = articleService.getArticle(articleId);
-        ArticleContent content = refreshed.getContent();
+        ArticleContent content = articleService.getContentOf(refreshed);
         article.setContent(content);
         WebView view = (WebView) tab.getContent();
 
-        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
         view.getEngine().loadContent(renderedContext);
     }
@@ -143,7 +143,7 @@ public class ReaderView extends FXView {
         WebView view = (WebView) tab.getContent();
         ArticleContent content = refreshed.getContent();
 
-        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
         view.getEngine().loadContent(renderedContext);
     }
@@ -168,7 +168,7 @@ public class ReaderView extends FXView {
 
         ArticleContent content = articleService.getContentOf(article);
 
-        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
         view.getEngine().loadContent(renderedContext);
 

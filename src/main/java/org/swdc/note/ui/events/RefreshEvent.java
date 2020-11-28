@@ -9,13 +9,20 @@ public class RefreshEvent extends AppEvent<ArticleType> {
 
     private Article article;
 
-    public RefreshEvent(ArticleType type , AppComponent source) {
+    private RefreshType type;
+
+    public RefreshEvent(ArticleType type , AppComponent source, RefreshType refreshType) {
         super(type, source);
+        this.type = refreshType;
     }
 
-    public RefreshEvent(Article article, AppComponent source) {
-        this(article.getType(), source);
+    public RefreshEvent(Article article, AppComponent source, RefreshType type) {
+        this(article.getType(), source,type);
         this.article = article;
+    }
+
+    public RefreshType getType() {
+        return type;
     }
 
     public Article getArticle() {

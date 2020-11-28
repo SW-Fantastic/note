@@ -35,52 +35,36 @@ public class ArticleService extends Service {
     private HTMLRender render = null;
 
     @Aware
-    private ArticleContentRepo contentRepo = null;
+    private ContentService contentService;
 
     @Transactional
     public ArticleContent getContentOf(Article article) {
         if (article.getId() == null) {
             return null;
         }
-        article = articleRepo.getOne(article.getId());
-        ArticleContent content = contentRepo.getOne(article.getContent().getId());
-        return content;
+        return contentService.getArticleContent(article.getId());
     }
 
     @Transactional
-    public boolean createType(ArticleType type) {
-        try {
-            if (type.getId() != null) {
-                return false;
-            }
-            if (type.getName().isBlank()) {
-                return false;
-            }
-            List<ArticleType> typeEx = typeRepo.findByTypeName(type.getName());
-            if (typeEx == null || typeEx.size() == 0) {
-                typeRepo.save(type);
-                return true;
-            }
-            return false;
-        } catch (Exception ex) {
-            logger.error("fail to create article type: " + type.getName(), ex);
-            return false;
-        }
+    public ArticleType createType(ArticleType type) {
+        return this.saveType(type);
     }
 
     @Transactional
-    public boolean saveType(ArticleType type) {
+    public ArticleType saveType(ArticleType type) {
         if (type == null) {
-            return false;
+            return null;
         }
         if (type.getId() == null) {
-            return false;
+            List<ArticleType> typeEx = typeRepo.findByTypeName(type.getName());
+            if (typeEx == null || typeEx.size() == 0) {
+                return typeRepo.save(type);
+            }
         }
         if (type.getName() == null || type.getName().isBlank() || type.getName().isEmpty()) {
-            return false;
+            return null;
         }
-        typeRepo.save(type);
-        return true;
+        return typeRepo.save(type);
     }
 
     public List<Article> searchByTitle(String title) {
@@ -88,82 +72,58 @@ public class ArticleService extends Service {
     }
 
     @Transactional
-    public boolean saveArticle(Article article, ArticleContent content) {
-        if(article.getContentFormatter() != null) {
-            ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
-            article.setContent(content);
-            formatter.save(Paths.get(article.getLocation()),article);
-            return true;
-        }
+    public Article saveArticle(Article article, ArticleContent content) {
         if (article.getId() != null) {
+
             Article articleOld = articleRepo.getOne(article.getId());
-            if (articleOld == null) {
-                Article refreshed = new Article();
-                refreshed.setType(article.getType());
-                ArticleContent contentRef = new ArticleContent();
-                ArticleResource resource = content.getResources();
-                contentRef.setSource(content.getSource());
-                contentRef.setResources(resource);
-                refreshed.setContent(contentRef);
-                refreshed.setTitle(article.getTitle());
-                return saveArticle(refreshed,refreshed.getContent());
-            }
+
             if (!(article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty())) {
                 articleOld.setTitle(article.getTitle());
             }
             if (article.getType() != null) {
                 articleOld.setType(article.getType());
             }
+
             String desc = render.generateDesc(content);
             articleOld.setDesc(desc);
             articleOld.setCreateDate(new Date());
 
-            ArticleContent contentOld = articleOld.getContent();
-            if (content.getSource() != null && !content.getSource().isEmpty() && !content.getSource().isBlank()) {
-                contentOld.setSource(content.getSource());
-            }
-            if (content.getResources() != null){
-                contentOld.setResources(content.getResources());
-            }
-
-            try {
-                articleRepo.save(article);
-                return true;
-            } catch (Exception ex) {
-                logger.error("failed to save article: ",ex);
-                return false;
-            }
-
+            content.setArticleId(article.getId());
+            contentService.saveArticleContent(content);
+            return articleRepo.save(articleOld);
         } else {
             if (article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty()) {
-                return false;
+                return null;
             }
             if (article.getType() == null) {
-                return false;
+                return null;
             }
             String desc = render.generateDesc(content);
             article.setDesc(desc);
             article.setCreateDate(new Date());
             if (content.getSource() == null || content.getSource().isEmpty() || content.getSource().isBlank()) {
-                return false;
+                return null;
             }
-            if (content.getResources() == null){
-                return false;
-            }
-            article.setContent(content);
-            try {
-                articleRepo.save(article);
-                return true;
-            } catch (Exception ex) {
-                logger.error("failed to save article: ",ex);
-                return false;
-            }
+            Article saved = articleRepo.save(article);
+
+            content.setArticleId(saved.getId());
+            contentService.saveArticleContent(content);
+
+            return saved;
         }
+
+
+        /*if(article.getContentFormatter() != null) {
+            ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
+            article.setContent(content);
+            formatter.save(Paths.get(article.getLocation()),article);
+            return article;
+        }*/
     }
 
     @Transactional
-    public void deleteArticle(Long articleId) {
-        Article article = articleRepo.getOne(articleId);
+    public void deleteArticle(Article target) {
+        Article article = articleRepo.getOne(target.getId());
         articleRepo.remove(article);
     }
 
@@ -176,16 +136,15 @@ public class ArticleService extends Service {
     }
 
     @Transactional
-    public void deleteType(Long articleTypeId) {
-        ArticleType type = typeRepo.getOne(articleTypeId);
-
+    public void deleteType(ArticleType articleType) {
+        ArticleType type = typeRepo.getOne(articleType.getId());
         if (type != null) {
             typeRepo.remove(type);
         }
     }
 
     public List<ArticleType> getTypes() {
-        return typeRepo.getAll();
+        return typeRepo.findRootTypes();
     }
 
     public List<Article> getArticles(ArticleType type) {

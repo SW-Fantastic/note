@@ -47,6 +47,22 @@
 
     -fx-background-color: @nothing;
 
+    .tree-view {
+      -fx-background-color: rgba(255,255,255,0.4);
+
+      .tree-cell:empty {
+        -fx-background-color: @nothing;
+        -fx-text-fill: @darkPrimaryColor;
+      }
+      .tree-cell:filled {
+        -fx-background-color: @nothing;
+        -fx-text-fill: @darkPrimaryColor;
+      }
+      .tree-cell:selected {
+        -fx-background-color: rgba(255,255,255,0.6);
+      }
+    }
+
     .list-view {
       -fx-background-color: rgba(255,255,255,0.4);
 

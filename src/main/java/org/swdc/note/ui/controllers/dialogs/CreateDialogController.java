@@ -1,12 +1,14 @@
 package org.swdc.note.ui.controllers.dialogs;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import org.swdc.fx.FXController;
 import org.swdc.fx.anno.Aware;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.dialogs.TypeCreateView;
 
@@ -20,6 +22,7 @@ public class CreateDialogController extends FXController {
 
     @FXML
     private TextField txtName;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,11 +44,14 @@ public class CreateDialogController extends FXController {
         TypeCreateView createView = getView();
         ArticleType type = new ArticleType();
         type.setName(txtName.getText());
-        if(articleService.createType(type)) {
+        type.setParent(createView.getParent());
+        if((type = articleService.createType(type)) != null) {
             createView.close();
             UIUtils.notification("分类《" + type.getName() + "》 保存成功！",createView);
+            //this.emit(new RefreshEvent(type,this, RefreshType.CREATION));
+            txtName.setText("");
+            return;
         }
-        this.emit(new RefreshEvent((ArticleType) null,this));
         txtName.setText("");
     }
 

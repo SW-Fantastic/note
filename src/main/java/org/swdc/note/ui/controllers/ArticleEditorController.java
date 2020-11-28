@@ -12,6 +12,7 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.EditorContentView;
 import org.swdc.note.ui.view.UIUtils;
@@ -293,16 +294,17 @@ public class ArticleEditorController extends FXController {
         if (content == null) {
             content = new ArticleContent();
         }
-        content.setResources(resource);
         content.setSource(source);
+        content.setImages(imageData);
         try {
-            if(!articleService.saveArticle(article, content)) {
+            Article saved = articleService.saveArticle(article, content);
+            if(saved == null) {
                 view.showAlertDialog("提示", "保存失败, 请填写必要信息。", Alert.AlertType.ERROR);
             } else {
                 editor.setSaved();
                 select.setText(article.getTitle());
                 UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！",view);
-                this.emit(new RefreshEvent(article,this));
+                this.emit(new RefreshEvent(article,this, RefreshType.UPDATE));
             }
         } catch (Exception e) {
             PrintWriter writer = new PrintWriter(new StringWriter());
@@ -332,7 +334,7 @@ public class ArticleEditorController extends FXController {
         article.setTitle("未命名");
         article.setCreateDate(new Date());
         ArticleContent content = new ArticleContent();
-        article.setContent(content);
+        // article.setContent(content);
         ArticleEditorView view = getView();
         view.addArticle(article);
     }

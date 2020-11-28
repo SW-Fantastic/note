@@ -75,13 +75,16 @@ public class ArticleSetController extends FXController {
         articleEdit.setTitle(article.getTitle());
         articleEdit.setCreateDate(article.getCreateDate());
         articleEdit.setDesc(article.getDesc());
+
         ArticleContent content = new ArticleContent();
         ArticleContent original = articleService.getContentOf(article);
         content.setSource(original.getSource());
-        content.setResources(original.getResources());
-        content.setArticle(articleEdit);
-        article.setContent(content);
-        return article;
+        content.setImages(original.getImages());
+        content.setArticleId(article.getId());
+
+        articleEdit.setContent(content);
+
+        return articleEdit;
     }
 
     public synchronized void onArticleRead() {
