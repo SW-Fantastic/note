@@ -5,7 +5,7 @@ import javafx.scene.control.ComboBox;
 import org.swdc.fx.FXController;
 import org.swdc.fx.anno.Aware;
 import org.swdc.note.core.entities.Article;
-import org.swdc.note.core.formatter.ContentFormatter;
+//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
 
@@ -14,8 +14,8 @@ import java.util.ResourceBundle;
 
 public class BatchExportViewController extends FXController {
 
-    @FXML
-    private ComboBox<ContentFormatter> renderComboBox;
+    /*@FXML
+    private ComboBox<ContentFormatter> renderComboBox;*/
 
     @Aware
     private ArticleService service = null;
@@ -27,19 +27,19 @@ public class BatchExportViewController extends FXController {
 
     @Override
     public void initialize() {
-        renderComboBox.getItems().addAll(service.getAllFormatter(item->
-                item.getType().equals(Article.class) && item.writeable()));
+        /*renderComboBox.getItems().addAll(service.getAllFormatter(item->
+                item.getType().equals(Article.class) && item.writeable()));*/
     }
 
-    public ContentFormatter getSelected() {
+    /*public ContentFormatter getSelected() {
         return renderComboBox.getSelectionModel().getSelectedItem();
-    }
+    }*/
 
     @FXML
     public void onCancel() {
-        renderComboBox.getSelectionModel().clearSelection();
-        BatchExportView view = this.getView();
-        view.close();
+        /*renderComboBox.getSelectionModel().clearSelection();
+        BatchExportView view = this.getView();*/
+        //view.close();
     }
 
     @FXML

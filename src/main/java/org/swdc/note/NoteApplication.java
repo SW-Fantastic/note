@@ -11,6 +11,8 @@ import org.swdc.fx.properties.ConfigManager;
 import org.swdc.fx.resource.source.ModulePathResource;
 import org.swdc.fx.services.ServiceManager;
 import org.swdc.note.config.AppConfig;
+import org.swdc.note.core.files.StorageFactory;
+import org.swdc.note.core.files.StorageManager;
 import org.swdc.note.core.proto.URLResolverManager;
 import org.swdc.note.core.formatter.FormatterManager;
 import org.swdc.note.core.render.RendersManager;
@@ -48,6 +50,7 @@ public class NoteApplication extends FXApplication {
         container.register(RendersManager.class);
         container.register(FormatterManager.class);
         container.register(URLResolverManager.class);
+        container.register(StorageManager.class);
         container.getComponent(ServiceManager.class).register(GlobalKeyListener.class);
         if (SystemTray.isSupported()) {
             try {

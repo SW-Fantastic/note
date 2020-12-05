@@ -64,7 +64,7 @@ public class ArticleTypeCell extends FXView {
         name.setText(type.getName());
     }
 
-    public void updateArticle(Long articleId) {
+    public void updateArticle(String articleId) {
         Article article = articleService.getArticle(articleId);
         article.setType(this.type);
         articleService.saveArticle(article,article.getContent());

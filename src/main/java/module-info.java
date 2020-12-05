@@ -11,6 +11,7 @@ module noteEditor {
     requires javafx.web;
 
     requires java.persistence;
+    requires org.hibernate.orm.core;
     requires lombok;
     requires org.apache.tika.core;
     requires remark;
@@ -40,6 +41,20 @@ module noteEditor {
     opens org.swdc.note.core.aspect to
             fx.framework.core,
             fx.framework.aop;
+
+    opens org.swdc.note.core.files to
+            fx.framework.core;
+
+    opens org.swdc.note.core.files.factory to
+            fx.framework.core;
+
+    opens org.swdc.note.core.files.single to
+            com.fasterxml.jackson.databind,
+            fx.framework.core;
+
+    opens org.swdc.note.core.files.storages to
+            com.fasterxml.jackson.databind,
+            fx.framework.core;
 
     opens org.swdc.note to
             fx.framework.core,

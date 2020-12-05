@@ -7,7 +7,7 @@ import org.swdc.note.core.entities.ArticleType;
 
 import java.util.List;
 
-public interface ArticleTypeRepo extends JPARepository<ArticleType, Long> {
+public interface ArticleTypeRepo extends JPARepository<ArticleType, String> {
 
     @SQLQuery("FROM ArticleType Where name = :name")
     List<ArticleType> findByTypeName(@Param("name") String name);

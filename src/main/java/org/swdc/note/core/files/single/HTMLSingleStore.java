@@ -1,107 +1,68 @@
-package org.swdc.note.core.formatter;
+package org.swdc.note.core.files.single;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.profile.pegdown.Extensions;
-import com.vladsch.flexmark.profile.pegdown.PegdownOptionsAdapter;
-import com.vladsch.flexmark.util.data.DataHolder;
-import freemarker.template.Template;
+import javafx.stage.FileChooser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.scilab.forge.jlatexmath.TeXConstants;
-import org.scilab.forge.jlatexmath.TeXFormula;
 import org.swdc.fx.anno.Aware;
 import org.swdc.note.config.RenderConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
+import org.swdc.note.core.formatter.HTMLFormatter;
 import org.swdc.note.core.proto.HttpURLResolver;
 import org.swdc.note.core.render.HTMLRender;
+import org.swdc.note.core.service.ContentService;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
-public class HTMLFormatter extends CommonContentFormatter<Article> {
-
-    @Aware
-    private RenderConfig config = null;
-
-    @Aware
-    private HTMLRender render = null;
+public class HTMLSingleStore extends AbstractSingleStore {
 
     @Override
-    public boolean writeable() {
-        return true;
+    public FileChooser.ExtensionFilter getFilter() {
+        return new FileChooser.ExtensionFilter("HTML","*.html");
     }
 
     @Override
-    public boolean readable() {
-        return true;
+    public String getFileTypeName() {
+        return "HTML文本";
     }
 
     @Override
-    public Class<Article> getType() {
-        return Article.class;
-    }
+    public void save(Article article, File target) {
 
-    /**
-     * LateXMath公式生成Base64图片
-     * @param funcStr 公式
-     * @return 字符串
-     * @throws Exception
-     */
-    public String compileFunc(String funcStr) {
+        HTMLRender render = findComponent(HTMLRender.class);
+
+        ContentService contentService = findService(ContentService.class);
+        ArticleContent content = contentService.getArticleContent(article.getId());
+        String rendered = render.renderHTML(render.renderBytes(content.getSource(), content.getImages()));
+
         try {
-            TeXFormula formula = new TeXFormula(funcStr);
-            BufferedImage img = (BufferedImage) formula.createBufferedImage(funcStr, TeXConstants.STYLE_DISPLAY,18, Color.BLACK,Color.WHITE);
-            ByteArrayOutputStream bot = new ByteArrayOutputStream();
-            ImageIO.write(img,"PNG",bot);
-            byte[] buffer = bot.toByteArray();
-            return Base64.getEncoder().encodeToString(buffer);
-        }catch (Exception e){
+            if (Files.exists(target.toPath())) {
+                Files.delete(target.toPath());
+            }
+            Files.writeString(target.toPath(),rendered);
+        } catch (Exception e) {
+            logger.error("fail to write file",e);
+        }
+    }
+
+    @Override
+    public Article load(File file) {
+        if (!file.exists() || !file.getName().endsWith("htm")) {
             return null;
         }
-    }
-
-    @Override
-    public void save(Path path, Article article) {
-        try {
-            if (Files.exists(path)) {
-                Files.delete(path);
-            }
-            byte[] data = renderAsBytes(article);
-            Files.write(path, data);
-        } catch (Exception e) {
-            logger.error("fail to write file", e);
-        }
-    }
-
-    public byte[] renderAsBytes(Article article) {
-        return renderAsText(article).getBytes();
-    }
-
-    public String renderAsText(Article article) {
-        /*ArticleContent content = article.getContent();
-        Map<String, byte[]> data = content.getResources().getImages();
-        return render.renderHTML(render.renderBytes(content.getSource(), data));*/
-        return "";
-    }
-
-    @Override
-    public Article load(Path filePath) {
+        Path filePath = file.toPath();
         Remark remark = new Remark(Options.markdown());
         try {
             String source = Files.readString(filePath);
@@ -165,15 +126,5 @@ public class HTMLFormatter extends CommonContentFormatter<Article> {
             logger.error("fail to read html file", e);
         }
         return null;
-    }
-
-    @Override
-    public String getName() {
-        return "HTML文档";
-    }
-
-    @Override
-    public String getExtension() {
-        return "html";
     }
 }

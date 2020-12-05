@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeSelectController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="285.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeSelectController">
    <top>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="285.0" BorderPane.alignment="CENTER">
          <children>
@@ -28,13 +29,6 @@
          </children>
       </HBox>
    </top>
-   <center>
-      <ListView id="typelist" fx:id="typeListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <styleClass>
-            <String fx:value="select-list" />
-            <String fx:value="txt-second" />
-         </styleClass></ListView>
-   </center>
    <bottom>
       <HBox alignment="CENTER_RIGHT" prefHeight="42.0" prefWidth="285.0" spacing="6.0" BorderPane.alignment="CENTER">
          <children>
@@ -50,4 +44,7 @@
       <String fx:value="scene" />
       <String fx:value="dialog-pane" />
    </styleClass>
+   <center>
+      <TreeView id="typeTree" fx:id="typeTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>

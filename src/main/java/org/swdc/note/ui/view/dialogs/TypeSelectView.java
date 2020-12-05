@@ -3,6 +3,8 @@ package org.swdc.note.ui.view.dialogs;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import org.swdc.fx.FXView;
 import org.swdc.fx.anno.Aware;
 import org.swdc.fx.anno.View;
@@ -25,17 +27,20 @@ public class TypeSelectView extends FXView {
         add.setPadding(new Insets(4,4,4,4));
 
         getStage().setOnCloseRequest(e -> {
-            ListView<ArticleType> typeListView = findById("typelist");
+            TreeView<ArticleType> typeListView = findById("typeTree");
             typeListView.getSelectionModel().clearSelection();
         });
 
     }
 
     public ArticleType getSelected() {
-        ListView<ArticleType> typeListView = findById("typelist");
-        ArticleType type = typeListView.getSelectionModel().getSelectedItem();
-        typeListView.getSelectionModel().clearSelection();
-        return type;
+        TreeView<ArticleType> typeTree = findById("typeTree");
+        TreeItem<ArticleType> type = typeTree.getSelectionModel().getSelectedItem();
+        typeTree.getSelectionModel().clearSelection();
+        if (type == null || type.getValue() == null) {
+            return null;
+        }
+        return type.getValue();
     }
 
 }

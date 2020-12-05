@@ -19,7 +19,7 @@ import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.formatter.ContentFormatter;
+//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.TypeListPopover;
@@ -113,7 +113,7 @@ public class ReaderView extends FXView {
         return select;
     }
 
-    public void refresh(Long articleId) {
+    public void refresh(String articleId) {
         Article article = getArticle(articleId);
         if (article == null) {
             return;
@@ -129,15 +129,15 @@ public class ReaderView extends FXView {
         view.getEngine().loadContent(renderedContext);
     }
 
-    public void refresh(String path) {
+   /* public void refreshByPath(String path) {
         Article article = getArticle(path);
         if (article == null) {
             return;
-        }
-        Tab tab = articleTabMap.get(article);
-        ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
-        Article refreshed = (Article) formatter.load(Paths.get(path));
-        article.setContent(refreshed.getContent());
+        }*/
+        //Tab tab = articleTabMap.get(article);
+        //ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
+        //Article refreshed = (Article) formatter.load(Paths.get(path));
+        /*article.setContent(refreshed.getContent());
         article.setTitle(refreshed.getTitle());
         article.setDesc(refreshed.getDesc());
         WebView view = (WebView) tab.getContent();
@@ -145,8 +145,8 @@ public class ReaderView extends FXView {
 
         String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
-        view.getEngine().loadContent(renderedContext);
-    }
+        view.getEngine().loadContent(renderedContext);*/
+   // }
 
     public Tab addArticle(Article article) {
         Article hasOpen = null;
@@ -183,7 +183,7 @@ public class ReaderView extends FXView {
         return tab;
     }
 
-    public void closeTab(Long articleId) {
+    public void closeTab(String articleId) {
         Article article = getArticle(articleId);
         Tab tab = articleTabMap.get(article);
         articles.remove(tab);

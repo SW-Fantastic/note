@@ -69,7 +69,7 @@ public class SourceDialogController extends FXController {
 
     @FXML
     public void openFiles() {
-        FileChooser chooser = new FileChooser();
+        /*FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().addAll(service.getSupportedFilters(item -> item.readable()));
         chooser.setTitle("打开");
         File file = chooser.showOpenDialog(null);
@@ -80,7 +80,7 @@ public class SourceDialogController extends FXController {
                 txtURI.setText(file.toURI().toURL().toExternalForm());
             } catch (Exception e) {
             }
-        }
+        }*/
     }
 
     public String getURI() {

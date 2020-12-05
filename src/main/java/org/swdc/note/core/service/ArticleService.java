@@ -6,18 +6,18 @@ import org.swdc.fx.jpa.anno.Transactional;
 import org.swdc.fx.services.Service;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.files.SingleStorage;
+import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.note.core.files.single.AbstractSingleStore;
 import org.swdc.note.core.proto.URLProtoResolver;
 import org.swdc.note.core.formatter.CommonContentFormatter;
-import org.swdc.note.core.formatter.ContentFormatter;
+//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
-import org.swdc.note.core.repo.ArticleContentRepo;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
 
-import java.io.File;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
@@ -127,7 +127,7 @@ public class ArticleService extends Service {
         articleRepo.remove(article);
     }
 
-    public Article getArticle(Long articleId) {
+    public Article getArticle(String articleId) {
         return articleRepo.getOne(articleId);
     }
 
@@ -151,7 +151,7 @@ public class ArticleService extends Service {
         return articleRepo.findByType(type);
     }
 
-    public ContentFormatter getFormatter(File file, Class entityClass) {
+    /*public ContentFormatter getFormatter(File file, Class entityClass) {
         List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
         for (var item : formatters) {
             if (item.support(file.toPath()) && item.getType().equals(entityClass)) {
@@ -159,18 +159,16 @@ public class ArticleService extends Service {
             }
         }
         return null;
-    }
+    }*/
 
-    public List<ContentFormatter> getAllFormatter(Predicate<CommonContentFormatter> predicate) {
-        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+    public List<AbstractStorageFactory> getAllExternalStorage(Predicate<AbstractStorageFactory> predicate) {
+        List<AbstractStorageFactory> formatters = getScoped(AbstractStorageFactory.class);
         if (predicate != null) {
             return formatters.stream()
                     .filter(predicate)
                     .collect(Collectors.toList());
         } else {
-            return formatters.stream()
-                    .map(ContentFormatter.class::cast)
-                    .collect(Collectors.toList());
+            return new ArrayList<>(formatters);
         }
     }
 
@@ -184,20 +182,31 @@ public class ArticleService extends Service {
         return null;
     }
 
-    public ArticleType getType(Long typeId) {
+    public ArticleType getType(String typeId) {
         return typeRepo.getOne(typeId);
     }
 
-    public List<FileChooser.ExtensionFilter> getSupportedFilters(Predicate<CommonContentFormatter> predicate) {
-        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+    public List<FileChooser.ExtensionFilter> getSupportedFilters(Predicate<AbstractSingleStore> predicate) {
+        List<AbstractSingleStore> singleStores = getScoped(AbstractSingleStore.class);
         if (predicate != null) {
-            return  formatters.stream()
+            return  singleStores.stream()
                     .filter(predicate)
-                    .map(CommonContentFormatter::getExtensionFilter)
+                    .map(AbstractSingleStore::getFilter)
                     .collect(Collectors.toList());
         }
-        return formatters.stream()
-                .map(CommonContentFormatter::getExtensionFilter)
+        return singleStores.stream()
+                .map(AbstractSingleStore::getFilter)
+                .collect(Collectors.toList());
+    }
+
+    public List<SingleStorage> getSingleStore(Predicate<AbstractSingleStore> predicate) {
+        List<AbstractSingleStore> singleStores = getScoped(AbstractSingleStore.class);
+        if (predicate != null) {
+            return  singleStores.stream()
+                    .filter(predicate)
+                    .collect(Collectors.toList());
+        }
+        return singleStores.stream()
                 .collect(Collectors.toList());
     }
 

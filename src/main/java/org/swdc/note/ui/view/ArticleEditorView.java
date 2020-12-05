@@ -270,7 +270,7 @@ public class ArticleEditorView extends FXView {
         return entry.getKey();
     }
 
-    public Article getArticle(Long articleId) {
+    public Article getArticle(String articleId) {
         if (articleId == null) {
             return null;
         }

@@ -7,6 +7,7 @@ import org.swdc.fx.services.Service;
 import org.swdc.note.core.entities.ArticleContent;
 
 import java.io.File;
+import java.util.List;
 
 public class ContentService extends Service {
 
@@ -27,9 +28,14 @@ public class ContentService extends Service {
         }
     }
 
-    public ArticleContent getArticleContent(Long contentId) {
-        return contentRepo.find(ObjectFilters.eq("articleId",contentId))
-                .toList().get(0);
+    public ArticleContent getArticleContent(String contentId) {
+        List<ArticleContent> contents =  contentRepo.find(ObjectFilters.eq("articleId",contentId))
+                .toList();
+        if (contents.size() > 0) {
+            return contents.get(0);
+        } else {
+            return null;
+        }
     }
 
     public ArticleContent saveArticleContent(ArticleContent content) {

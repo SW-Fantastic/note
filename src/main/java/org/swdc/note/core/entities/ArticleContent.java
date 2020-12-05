@@ -11,7 +11,7 @@ public class ArticleContent {
     @Id
     @Getter
     @Setter
-    private Long articleId;
+    private String articleId;
 
     @Getter
     @Setter

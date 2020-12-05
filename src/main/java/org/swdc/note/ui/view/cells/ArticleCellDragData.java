@@ -14,11 +14,11 @@ public class ArticleCellDragData {
 
     @Getter
     @Setter
-    private Long articleId;
+    private String articleId;
 
     @Getter
     @Setter
-    private Long articleTypeId;
+    private String articleTypeId;
 
     private static final Logger logger = LoggerFactory.getLogger(ArticleCellDragData.class);
 

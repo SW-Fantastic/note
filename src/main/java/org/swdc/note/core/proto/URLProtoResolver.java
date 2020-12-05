@@ -3,7 +3,6 @@ package org.swdc.note.core.proto;
 import org.swdc.fx.AppComponent;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.service.ArticleService;
 
 import java.io.File;
@@ -11,7 +10,7 @@ import java.io.File;
 public abstract class URLProtoResolver extends AppComponent {
 
     public ArticleType resolveAsArticleSet(String url) {
-        File tempFile = load(url);
+        /*File tempFile = load(url);
         ArticleService articleService = findService(ArticleService.class);
         ContentFormatter formatter = articleService.getFormatter(tempFile,ArticleType.class);
         if (formatter == null || !formatter.readable()) {
@@ -21,12 +20,12 @@ public abstract class URLProtoResolver extends AppComponent {
         ArticleType target = (ArticleType) formatter.load(tempFile.toPath());
         if(!tempFile.delete()) {
             tempFile.deleteOnExit();
-        }
-        return target;
+        }*/
+        return null;
     }
 
     public Article resolveAsArticle(String url) {
-        File tempFile = load(url);
+        /*File tempFile = load(url);
         ArticleService articleService = findService(ArticleService.class);
         ContentFormatter formatter = articleService.getFormatter(tempFile,Article.class);
         if (formatter == null || !formatter.readable()) {
@@ -36,8 +35,8 @@ public abstract class URLProtoResolver extends AppComponent {
         Article target = (Article) formatter.load(tempFile.toPath());
         if(!tempFile.delete()) {
             tempFile.deleteOnExit();
-        }
-        return target;
+        }*/
+        return null;
     }
 
     protected abstract File load(String url);
