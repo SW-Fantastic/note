@@ -27,6 +27,7 @@ import org.swdc.note.ui.component.TypeListPopover;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @View(title = "阅读",resizeable = true,background = true,style = "editor")
 public class ReaderView extends FXView {
@@ -106,8 +107,8 @@ public class ReaderView extends FXView {
         Article select = articleTabMap
                 .keySet()
                 .stream()
-                .filter(k -> k.getContentFormatter() != null)
-                .filter(k -> k.getLocation().equals(path))
+                .filter(k -> k.getSingleStore() != null)
+                .filter(k -> k.getFullPath().equals(path))
                 .findFirst()
                 .orElse(null);
         return select;
@@ -123,6 +124,22 @@ public class ReaderView extends FXView {
         ArticleContent content = articleService.getContentOf(refreshed);
         article.setContent(content);
         WebView view = (WebView) tab.getContent();
+
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
+        String renderedContext = render.renderHTML(articleSource);
+        view.getEngine().loadContent(renderedContext);
+    }
+
+    public void refreshByExternal(Article refreshed) {
+        Article old = getArticle(refreshed.getFullPath());
+        old.setContent(refreshed.getContent());
+
+        Tab tab = articleTabMap.get(old);
+        old.setTitle(refreshed.getTitle());
+        old.setDesc(refreshed.getDesc());
+
+        WebView view = (WebView) tab.getContent();
+        ArticleContent content = refreshed.getContent();
 
         String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
@@ -166,7 +183,9 @@ public class ReaderView extends FXView {
         tab.setClosable(true);
         WebView view = new WebView();
 
-        ArticleContent content = articleService.getContentOf(article);
+        ArticleContent content = Optional
+                .ofNullable(article.getContent())
+                .orElse(articleService.getContentOf(article));
 
         String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);

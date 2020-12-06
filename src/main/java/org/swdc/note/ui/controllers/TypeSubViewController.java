@@ -20,6 +20,8 @@ import org.swdc.note.core.entities.ArticleType;
 //import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.StorageFactory;
+import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.note.core.files.single.AbstractSingleStore;
 import org.swdc.note.core.files.storages.AbstractArticleStorage;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
@@ -34,6 +36,7 @@ import org.swdc.note.ui.view.dialogs.TypeExportView;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class TypeSubViewController extends FXController {
@@ -220,6 +223,32 @@ public class TypeSubViewController extends FXController {
         File file = chooser.showOpenDialog(null);
         if (file == null) {
             return;
+        }
+        List<AbstractStorageFactory> factories = articleService.getAllExternalStorage(null);
+        for (AbstractStorageFactory factory: factories) {
+            if (!factory.support(file)) {
+                continue;
+            }
+            // 加载数据
+            return;
+        }
+        List<SingleStorage> singleStores = articleService.getSingleStore(null);
+        for (SingleStorage singleStorage: singleStores) {
+            if (!singleStorage.support(file)) {
+                continue;
+            }
+            CompletableFuture.supplyAsync(() -> singleStorage.load(file))
+                    .whenCompleteAsync((article,e) -> {
+                        if (e != null) {
+                            logger.error("fail to load article " + file.getName());
+                            return;
+                        }
+                        Platform.runLater(() -> {
+                            ReaderView readerView = findView(ReaderView.class);
+                            readerView.addArticle(article);
+                            readerView.show();
+                        });
+                    });
         }
         // 从exporter读取，存在支持的exporter那么就读进来
         // 按照分类和文档两种模式获取和处理

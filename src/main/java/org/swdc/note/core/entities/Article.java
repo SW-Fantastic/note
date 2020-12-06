@@ -3,6 +3,7 @@ package org.swdc.note.core.entities;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.swdc.note.core.files.SingleStorage;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -42,15 +43,27 @@ public class Article {
     @ManyToOne(cascade = CascadeType.DETACH)
     private ArticleType type;
 
+    /**
+     * 单独存储的处理器。
+     * 如果此对象直接来自文件的话，那么这里指定打开它
+     * 所使用的SingleStore的class。
+     * 不存入数据库。
+     */
     @Getter
     @Setter
     @Transient
-    private Class contentFormatter;
+    private Class<? extends SingleStorage> singleStore;
 
+    /**
+     * 全路径。
+     * 如果此对象直接来自文件，这里记载文件的全路径。
+     * 不存入数据库。
+     */
     @Getter
     @Setter
     @Transient
-    private String location;
+    private String fullPath;
+
 
     @Getter
     @Setter

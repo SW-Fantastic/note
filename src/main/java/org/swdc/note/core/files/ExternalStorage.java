@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface ExternalStorage {
 
+
+
     /**
      * 打开文件，做好读取数据的全部准备
      * @param file 目标文件

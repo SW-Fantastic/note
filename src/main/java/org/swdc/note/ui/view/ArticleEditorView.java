@@ -23,12 +23,14 @@ import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
+import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.*;
@@ -199,7 +201,7 @@ public class ArticleEditorView extends FXView {
         Button changeType = findById("changeType");
 
         Article article = entry.getKey();
-        if (article.getContentFormatter() != null) {
+        if (article.getSingleStore() != null) {
             changeType.setDisable(true);
         } else {
             changeType.setDisable(false);
@@ -302,7 +304,8 @@ public class ArticleEditorView extends FXView {
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
                 .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
 
-        ArticleContent content  = articleService.getContentOf(article);;
+        ArticleContent content  = Optional.ofNullable(article.getContent())
+                .orElse(articleService.getContentOf(article));
         if (content != null) {
 
             Map<String,byte[]> resource = content.getImages();
@@ -381,12 +384,7 @@ public class ArticleEditorView extends FXView {
         this.showAlertDialog("关闭","是否要保存《" + article.getTitle() + "》?", Alert.AlertType.CONFIRMATION)
                 .ifPresent(buttonType -> {
                     if (buttonType == ButtonType.OK) {
-                        if (article.getType() == null) {
-                            this.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
-                            return;
-                        }
                         String source = editor.getCodeArea().getText();
-
                         Map<String, ByteBuffer> images = editor.getImagesView().getImages();
                         Map<String, byte[]> imageData = new HashMap<>(images.size());
                         for (Map.Entry<String,ByteBuffer> item :images.entrySet()) {
@@ -402,13 +400,28 @@ public class ArticleEditorView extends FXView {
                         if (article.getId() != null) {
                             content.setArticleId(article.getId());
                         }
-                        Article saved = articleService.saveArticle(article, content);
-                        if(saved != null) {
+
+                        if (article.getSingleStore() != null) {
+                            // 文档直接从文件打开，那么保存到文件。
+                            SingleStorage storage = findComponent(article.getSingleStore());
+                            article.setContent(content);
+                            storage.save(article,new File(article.getFullPath()));
                             tabs.remove(tab);
                             articleTabMap.remove(article);
                             this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
                         } else {
-                            showAlertDialog("提示", "保存失败", Alert.AlertType.ERROR);
+                            if (article.getType() == null) {
+                                this.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
+                                return;
+                            }
+                            Article saved = articleService.saveArticle(article, content);
+                            if(saved != null) {
+                                tabs.remove(tab);
+                                articleTabMap.remove(article);
+                                this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
+                            } else {
+                                showAlertDialog("提示", "保存失败", Alert.AlertType.ERROR);
+                            }
                         }
                     } else {
                         tabs.remove(tab);

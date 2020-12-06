@@ -7,11 +7,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.swdc.fx.anno.Aware;
-import org.swdc.note.config.RenderConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.formatter.HTMLFormatter;
 import org.swdc.note.core.proto.HttpURLResolver;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ContentService;
@@ -25,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class HTMLSingleStore extends AbstractSingleStore {
 
@@ -44,7 +42,8 @@ public class HTMLSingleStore extends AbstractSingleStore {
         HTMLRender render = findComponent(HTMLRender.class);
 
         ContentService contentService = findService(ContentService.class);
-        ArticleContent content = contentService.getArticleContent(article.getId());
+        ArticleContent content = Optional.ofNullable(article.getContent())
+                .orElse(contentService.getArticleContent(article.getId()));
         String rendered = render.renderHTML(render.renderBytes(content.getSource(), content.getImages()));
 
         try {
@@ -59,8 +58,13 @@ public class HTMLSingleStore extends AbstractSingleStore {
 
     @Override
     public Article load(File file) {
-        if (!file.exists() || !file.getName().endsWith("htm")) {
+        if (!file.exists()) {
             return null;
+        }
+        if (!file.getName().toLowerCase().endsWith("html")) {
+            if (!file.getName().toLowerCase().endsWith("htm")) {
+                return null;
+            }
         }
         Path filePath = file.toPath();
         Remark remark = new Remark(Options.markdown());
@@ -118,13 +122,20 @@ public class HTMLSingleStore extends AbstractSingleStore {
 
             article.setTitle(filePath.getFileName().toString());
             article.setCreateDate(new java.util.Date());
-            article.setContentFormatter(HTMLFormatter.class);
-            article.setLocation(filePath.toString());
+            article.setSingleStore(HTMLSingleStore.class);
+            article.setContent(content);
+            article.setFullPath(file.getAbsolutePath());
 
             return article;
         } catch (Exception e) {
             logger.error("fail to read html file", e);
         }
         return null;
+    }
+
+    @Override
+    public boolean support(File file) {
+        return file.getName().toLowerCase().endsWith("htm") ||
+                file.getName().toLowerCase().endsWith("html");
     }
 }

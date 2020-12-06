@@ -9,6 +9,7 @@ import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
@@ -19,6 +20,7 @@ import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.dialogs.ImagesView;
 import org.swdc.note.ui.view.dialogs.TypeSelectView;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -280,7 +282,7 @@ public class ArticleEditorController extends FXController {
         EditorContentView editor = fxViewByView(select.getContent(), EditorContentView.class);
         String source = editor.getCodeArea().getText();
         ArticleResource resource = new ArticleResource();
-        if (article.getType() == null && article.getContentFormatter() == null) {
+        if (article.getType() == null && article.getSingleStore() == null) {
             view.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
             return;
         }
@@ -297,6 +299,17 @@ public class ArticleEditorController extends FXController {
         content.setSource(source);
         content.setImages(imageData);
         try {
+            if (article.getSingleStore() != null) {
+                // 文档直接从文件打开，那么保存到文件。
+                SingleStorage storage = findComponent(article.getSingleStore());
+                article.setContent(content);
+                storage.save(article,new File(article.getFullPath()));
+                editor.setSaved();
+                this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
+                select.setText(article.getTitle());
+                UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！",view);
+                return;
+            }
             Article saved = articleService.saveArticle(article, content);
             if(saved == null) {
                 view.showAlertDialog("提示", "保存失败, 请填写必要信息。", Alert.AlertType.ERROR);

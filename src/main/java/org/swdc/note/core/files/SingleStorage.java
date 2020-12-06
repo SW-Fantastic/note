@@ -34,4 +34,11 @@ public interface SingleStorage {
      */
     Article load(File file);
 
+    /**
+     * 是否支持此文件
+     * @param file
+     * @return
+     */
+    boolean support(File file);
+
 }
