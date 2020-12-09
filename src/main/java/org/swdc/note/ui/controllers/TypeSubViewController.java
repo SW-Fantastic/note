@@ -35,9 +35,12 @@ import org.swdc.note.ui.view.dialogs.TypeExportView;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static org.swdc.note.ui.view.UIUtils.findTypeItem;
 
 public class TypeSubViewController extends FXController {
 
@@ -105,7 +108,7 @@ public class TypeSubViewController extends FXController {
             typeRoot.getChildren().clear();
             List<ArticleType> types = this.articleService.getTypes();
             List<TreeItem<ArticleType>> items = types.stream()
-                    .map(this::createTypeTree)
+                    .map(UIUtils::createTypeTree)
                     .collect(Collectors.toList());
             typeRoot.getChildren().addAll(items);
             return;
@@ -165,32 +168,6 @@ public class TypeSubViewController extends FXController {
         articles.addAll(articleService.getArticles(next.getValue()));
     }
 
-    private TreeItem<ArticleType> findTypeItem(TreeItem<ArticleType> typeNode,ArticleType type) {
-        if (typeNode.getValue() != null && typeNode.getValue().getId().equals(type.getId())) {
-            return typeNode;
-        }
-        if (typeNode.getChildren().size() > 0) {
-            for (TreeItem<ArticleType> item: typeNode.getChildren()) {
-                if (item.getValue().getId().equals(type.getId())) {
-                    return item;
-                } else if (item.getChildren().size() > 0){
-                    return findTypeItem(item,type);
-                }
-            }
-        }
-        return null;
-    }
-
-    private TreeItem<ArticleType> createTypeTree(ArticleType type) {
-        TreeItem<ArticleType> item = new TreeItem<>(type);
-        if (type.getChildren().size() > 0) {
-            for (ArticleType subType: type.getChildren()) {
-                TreeItem<ArticleType> subItem = createTypeTree(subType);
-                item.getChildren().add(subItem);
-            }
-        }
-        return item;
-    }
 
     @FXML
     public void onTypeAdded() {
@@ -230,6 +207,9 @@ public class TypeSubViewController extends FXController {
                 continue;
             }
             // 加载数据
+            ArticleSetView articleSetView = findView(ArticleSetView.class);
+            articleSetView.loadContent(factory,file);
+            articleSetView.show();
             return;
         }
         List<SingleStorage> singleStores = articleService.getSingleStore(null);
@@ -250,37 +230,6 @@ public class TypeSubViewController extends FXController {
                         });
                     });
         }
-        // 从exporter读取，存在支持的exporter那么就读进来
-        // 按照分类和文档两种模式获取和处理
-        /*ContentFormatter formatter = articleService.getFormatter(file,Article.class);
-        if (formatter != null) {
-            if (!formatter.readable()) {
-                return;
-            }
-            Article article = (Article) formatter.load(file.toPath());
-            ReaderView readerView = findView(ReaderView.class);
-            readerView.addArticle(article);
-            readerView.show();
-        } else {
-            formatter = articleService.getFormatter(file,ArticleType.class);
-            if (formatter == null || !formatter.readable()) {
-                // 不支持
-                return;
-            }
-            ContentFormatter contentFormatter = formatter;
-            CompletableFuture.supplyAsync(() -> contentFormatter.load(file.toPath()))
-                    .whenCompleteAsync((type,e) -> {
-                        if (e != null) {
-                            logger.error("fail to load article set: " + contentFormatter.getExtension());
-                            return;
-                        }
-                        Platform.runLater(() -> {
-                            ArticleSetView articleSetView = findView(ArticleSetView.class);
-                            articleSetView.loadContent((ArticleType) type);
-                            articleSetView.show();
-                        });
-                    });
-        }*/
     }
 
     @FXML
@@ -362,11 +311,10 @@ public class TypeSubViewController extends FXController {
         } else {
             BatchExportView batchExportView = findView(BatchExportView.class);
             batchExportView.show();
-          /*  ContentFormatter formatter = batchExportView.getSelected();
-            if (formatter == null) {
+            SingleStorage store = batchExportView.getSelected();
+            if (store == null) {
                 return;
             }
-
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("另存为");
             File directory = directoryChooser.showDialog(null);
@@ -375,10 +323,10 @@ public class TypeSubViewController extends FXController {
             }
             Path dir = directory.toPath().toAbsolutePath();
             for (Article article: articles) {
-               Path path = dir.resolve(article.getTitle() + "." + formatter.getExtension());
-               formatter.save(path,article);
+                Path path = dir.resolve(article.getTitle() + "." + store.getExtension());
+                store.save(article,path.toFile());
             }
-            UIUtils.notification("选择的文档已经导出。", this.getView());*/
+            UIUtils.notification("选择的文档已经导出。", this.getView());
         }
     }
 

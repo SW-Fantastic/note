@@ -9,7 +9,10 @@ import javafx.scene.input.KeyCombination;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 import org.swdc.fx.FXView;
+import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
+
+import java.util.Set;
 
 public class UIUtils {
 
@@ -51,6 +54,26 @@ public class UIUtils {
 
     public static TreeItem<ArticleType> createTypeTree(ArticleType type) {
         TreeItem<ArticleType> item = new TreeItem<>(type);
+        if (type.getChildren().size() > 0) {
+            for (ArticleType subType: type.getChildren()) {
+                TreeItem<ArticleType> subItem = createTypeTree(subType);
+                item.getChildren().add(subItem);
+            }
+        }
+        return item;
+    }
+
+    /**
+     * 创建TypeTree，同时带着里面的Article
+     * @param type
+     * @return
+     */
+    public static TreeItem<Object> createTypeTreeExternal(ArticleType type) {
+        TreeItem item = new TreeItem<>(type);
+        Set<Article> articles = type.getArticles();
+        for (Article article:articles) {
+            item.getChildren().add(new TreeItem<>(article));
+        }
         if (type.getChildren().size() > 0) {
             for (ArticleType subType: type.getChildren()) {
                 TreeItem<ArticleType> subItem = createTypeTree(subType);

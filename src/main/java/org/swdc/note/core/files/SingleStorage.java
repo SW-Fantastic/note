@@ -19,6 +19,11 @@ public interface SingleStorage {
      */
     String getFileTypeName();
 
+    /**
+     * 获取拓展名
+     * @return
+     */
+    String getExtension();
 
     /**
      * 保存文件

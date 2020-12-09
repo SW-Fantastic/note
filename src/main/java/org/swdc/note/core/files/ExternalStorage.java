@@ -2,6 +2,7 @@ package org.swdc.note.core.files;
 
 import javafx.stage.FileChooser;
 import org.swdc.note.core.entities.Article;
+import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 
 import java.io.File;
@@ -9,13 +10,11 @@ import java.util.List;
 
 public interface ExternalStorage {
 
-
-
     /**
      * 打开文件，做好读取数据的全部准备
      * @param file 目标文件
      */
-    void open(File file);
+    boolean open(File file);
 
     /**
      * 关闭文档，清理数据
@@ -44,6 +43,13 @@ public interface ExternalStorage {
      * @return Article的Id
      */
     String addArticle(Article article);
+
+    /**
+     * 文档id
+     * @param articleId
+     * @return
+     */
+    ArticleContent getContent(String articleId);
 
     /**
      * 删除文档

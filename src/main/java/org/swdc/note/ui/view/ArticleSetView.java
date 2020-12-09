@@ -11,7 +11,10 @@ import org.swdc.fx.anno.View;
 import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.files.factory.AbstractStorageFactory;
 import org.swdc.note.ui.controllers.ArticleSetController;
+
+import java.io.File;
 
 @Scope(ScopeType.MULTI)
 @View(title = "文档集",background = true,resizeable = true)
@@ -26,9 +29,9 @@ public class ArticleSetView extends FXView {
         stage.setHeight(stage.getMinHeight());
     }
 
-    public void loadContent(ArticleType articleSet) {
+    public void loadContent(AbstractStorageFactory factory, File file) {
         ArticleSetController controller = getLoader().getController();
-        controller.loadArticleType(articleSet);
+        controller.loadContent(factory,file);
     }
 
 }

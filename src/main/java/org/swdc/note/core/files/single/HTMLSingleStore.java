@@ -37,6 +37,11 @@ public class HTMLSingleStore extends AbstractSingleStore {
     }
 
     @Override
+    public String getExtension() {
+        return "html";
+    }
+
+    @Override
     public void save(Article article, File target) {
 
         HTMLRender render = findComponent(HTMLRender.class);
@@ -137,5 +142,10 @@ public class HTMLSingleStore extends AbstractSingleStore {
     public boolean support(File file) {
         return file.getName().toLowerCase().endsWith("htm") ||
                 file.getName().toLowerCase().endsWith("html");
+    }
+
+    @Override
+    public String toString() {
+        return getFileTypeName();
     }
 }

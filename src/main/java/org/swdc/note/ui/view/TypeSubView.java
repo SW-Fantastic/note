@@ -52,15 +52,7 @@ public class TypeSubView extends FXView {
         itemExport.disableProperty().bind(typeNotSelectProp);
 
         typeContextMenu.getItems().addAll(itemCreate, itemDelete,itemRename, itemExport);
-        /*ListView<ArticleType> typeList = findById("typeList");
-        typeList.getSelectionModel().selectedItemProperty().addListener((ob, item, newItem) -> {
-            if (newItem == null) {
-                typeNotSelectProp.set(true);
-            } else {
-                typeNotSelectProp.set(false);
-            }
-        });
-        typeList.setContextMenu(typeContextMenu);*/
+
         TreeView<ArticleType> typeTree = findById("typeTree");
         typeTree.getSelectionModel().selectedItemProperty().addListener((ob, item, newItem) -> {
             if (newItem == null) {

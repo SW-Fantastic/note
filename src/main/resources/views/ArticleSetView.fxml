@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.web.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.web.WebView?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="705.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.ArticleSetController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="705.0" styleClass="scene" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.ArticleSetController">
    <center>
-      <SplitPane dividerPositions="0.30867709815078237" prefHeight="200.0" prefWidth="200.0" styleClass="sub-view" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.3541963015647226" prefHeight="200.0" prefWidth="200.0" styleClass="sub-view" BorderPane.alignment="CENTER">
          <items>
-            <BorderPane minWidth="240.0" prefHeight="200.0" prefWidth="200.0" styleClass="tool-second">
+            <BorderPane maxWidth="360.0" minWidth="240.0" prefHeight="200.0" prefWidth="200.0" styleClass="tool-second">
                <center>
-                  <ListView fx:id="articles" prefHeight="200.0" prefWidth="200.0" styleClass="txt-second" BorderPane.alignment="CENTER">
-                     <padding>
-                        <Insets top="12.0" />
-                     </padding></ListView>
+                  <TreeView fx:id="typeTree" prefHeight="472.0" prefWidth="269.0" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
             <WebView fx:id="contentView" prefHeight="200.0" prefWidth="200.0" />

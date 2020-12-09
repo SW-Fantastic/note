@@ -14,9 +14,7 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ContentService;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -54,14 +52,19 @@ public class NoSqlExtStorage extends AbstractArticleStorage {
     private ObjectRepository<ArticleContent> contentRepository;
 
     @Override
-    public void open(File file) {
-        this.nitrite = Nitrite.builder()
-                .filePath(file)
-                .openOrCreate();
+    public boolean open(File file) {
+        try {
+            this.nitrite = Nitrite.builder()
+                    .filePath(file)
+                    .openOrCreate();
 
-        typeRepository = nitrite.getRepository(ExArticleType.class);
-        articleRepository = nitrite.getRepository(ExArticle.class);
-        contentRepository = nitrite.getRepository(ArticleContent.class);
+            typeRepository = nitrite.getRepository(ExArticleType.class);
+            articleRepository = nitrite.getRepository(ExArticle.class);
+            contentRepository = nitrite.getRepository(ArticleContent.class);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -73,7 +76,7 @@ public class NoSqlExtStorage extends AbstractArticleStorage {
     @Override
     public List<ArticleType> loadContents() {
         return typeRepository
-                .find()
+                .find(ObjectFilters.eq("parentId",null))
                 .toList()
                 .stream()
                 .map(type -> this.mapExtType(type,null))
@@ -82,13 +85,17 @@ public class NoSqlExtStorage extends AbstractArticleStorage {
 
     private String addTypeInternal(ArticleType type, String parentId) {
 
+        if (type.getChildren().size() == 0 && type.getArticles().size() == 0) {
+            return null;
+        }
+
        ExArticleType stored = getTypeInternal(type.getId(),parentId, type.getName());
 
         if (stored == null) {
             stored = new ExArticleType();
             stored.setName(type.getName());
             stored.setTypeId(type.getId());
-            stored.setParentId(null);
+            stored.setParentId(parentId);
             typeRepository.insert(stored);
         }
 
@@ -193,26 +200,41 @@ public class NoSqlExtStorage extends AbstractArticleStorage {
         realType.setName(type.getName());
         realType.setId(type.getTypeId());
 
+        List<ArticleType> child = new ArrayList<>();
+
         // 枚举子分类，并且进行处理
         List<ExArticleType> childs = typeRepository
-                .find(ObjectFilters.eq("parentId",type.getParentId()))
+                .find(ObjectFilters.eq("parentId",type.getTypeId()))
                 .toList();
 
         for (ExArticleType articleType: childs){
-            realType.getChildren().add(mapExtType(articleType,realType));
+            child.add(mapExtType(articleType,realType));
         }
 
         List<ExArticle> articles = articleRepository
                 .find(ObjectFilters.eq("typeId",type.getTypeId())).toList();
+
+        Set<Article> articleSet = new HashSet<>();
+
         for (ExArticle article: articles) {
             Article target = new Article();
+            target.setId(article.getArticleId());
             target.setTitle(article.getTitle());
             target.setType(realType);
-            realType.getArticles().add(target);
+            articleSet.add(target);
         }
+
+        realType.setChildren(child);
+        realType.setArticles(articleSet);
         return realType;
     }
 
+    @Override
+    public ArticleContent getContent(String articleId) {
+        return contentRepository
+                .find(ObjectFilters.eq("articleId",articleId))
+                .firstOrDefault();
+    }
 
     @Override
     public FileChooser.ExtensionFilter getFilter() {
