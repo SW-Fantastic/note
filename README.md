@@ -121,4 +121,6 @@ jpackage --runtime-image [运行时路径]  --type app-image -n [应用名称] -
 
 请删除发布包的app的modes内部javafx相关包（javafx开头的那些）。
 
+然后复制assets文件夹到发布目录。
+
 那么到此为止，就全部完成了，可执行文件应该可以正确运行。
