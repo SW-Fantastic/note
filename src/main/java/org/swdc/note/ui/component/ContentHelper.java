@@ -141,8 +141,15 @@ public class ContentHelper {
                     wordsList.getItems().addAll(words);
                     wordsList.getItems().addAll(wordKeys);
 
+                    BorderPane node = view.getView();
+
                     if (!(last.isBlank() || last.isEmpty()) && words.size() + wordKeys.size() > 0) {
-                        System.err.println(bound.getCenterY());
+                        Bounds viewPosition = node.localToScreen(node.getBoundsInLocal());
+                        if (bound.getCenterY() > (viewPosition.getCenterY() + node.getHeight()) / 2) {
+                            popOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
+                        } else {
+                            popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+                        }
                         popOver.show((Node) view.getView(), bound.getCenterX(), bound.getCenterY());
                         wordsList.requestFocus();
                     } else {
@@ -230,6 +237,12 @@ public class ContentHelper {
                 wordsList.getItems().addAll(keyWords);
                 wordsList.getItems().addAll(content);
                 BorderPane node = view.getView();
+                Bounds viewPosition = node.localToScreen(node.getBoundsInLocal());
+                if (location.getCenterY() > (viewPosition.getCenterY() + node.getHeight()) / 2) {
+                    popOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
+                } else {
+                    popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+                }
                 popOver.show(node,location.getCenterX(),location.getCenterY());
             }
         });

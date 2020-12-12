@@ -38,7 +38,7 @@ current version is not good at mac or linux OS
 
 ### Bug
 
- * [ ] 自动提示功能的提示框位置不正确
+ * [x] 自动提示功能的提示框位置不正确 (Fixed 2020-12-12)
 
 旧版bug日志
 
