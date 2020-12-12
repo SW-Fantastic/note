@@ -19,7 +19,7 @@ import org.swdc.fx.resource.icons.FontSize;
 import org.swdc.fx.resource.icons.MaterialIconsService;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.formatter.ContentFormatter;
+//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.TypeListPopover;
@@ -27,6 +27,7 @@ import org.swdc.note.ui.component.TypeListPopover;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @View(title = "阅读",resizeable = true,background = true,style = "editor")
 public class ReaderView extends FXView {
@@ -106,47 +107,63 @@ public class ReaderView extends FXView {
         Article select = articleTabMap
                 .keySet()
                 .stream()
-                .filter(k -> k.getContentFormatter() != null)
-                .filter(k -> k.getLocation().equals(path))
+                .filter(k -> k.getSingleStore() != null)
+                .filter(k -> k.getFullPath().equals(path))
                 .findFirst()
                 .orElse(null);
         return select;
     }
 
-    public void refresh(Long articleId) {
+    public void refresh(String articleId) {
         Article article = getArticle(articleId);
         if (article == null) {
             return;
         }
         Tab tab = articleTabMap.get(article);
         Article refreshed = articleService.getArticle(articleId);
-        ArticleContent content = refreshed.getContent();
+        ArticleContent content = articleService.getContentOf(refreshed);
         article.setContent(content);
         WebView view = (WebView) tab.getContent();
 
-        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
         view.getEngine().loadContent(renderedContext);
     }
 
-    public void refresh(String path) {
+    public void refreshByExternal(Article refreshed) {
+        Article old = getArticle(refreshed.getFullPath());
+        old.setContent(refreshed.getContent());
+
+        Tab tab = articleTabMap.get(old);
+        old.setTitle(refreshed.getTitle());
+        old.setDesc(refreshed.getDesc());
+
+        WebView view = (WebView) tab.getContent();
+        ArticleContent content = refreshed.getContent();
+
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
+        String renderedContext = render.renderHTML(articleSource);
+        view.getEngine().loadContent(renderedContext);
+    }
+
+   /* public void refreshByPath(String path) {
         Article article = getArticle(path);
         if (article == null) {
             return;
-        }
-        Tab tab = articleTabMap.get(article);
-        ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
-        Article refreshed = (Article) formatter.load(Paths.get(path));
-        article.setContent(refreshed.getContent());
+        }*/
+        //Tab tab = articleTabMap.get(article);
+        //ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
+        //Article refreshed = (Article) formatter.load(Paths.get(path));
+        /*article.setContent(refreshed.getContent());
         article.setTitle(refreshed.getTitle());
         article.setDesc(refreshed.getDesc());
         WebView view = (WebView) tab.getContent();
         ArticleContent content = refreshed.getContent();
 
-        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
-        view.getEngine().loadContent(renderedContext);
-    }
+        view.getEngine().loadContent(renderedContext);*/
+   // }
 
     public Tab addArticle(Article article) {
         Article hasOpen = null;
@@ -166,9 +183,11 @@ public class ReaderView extends FXView {
         tab.setClosable(true);
         WebView view = new WebView();
 
-        ArticleContent content = articleService.getContentOf(article);
+        ArticleContent content = Optional
+                .ofNullable(article.getContent())
+                .orElse(articleService.getContentOf(article));
 
-        String articleSource = render.renderBytes(content.getSource(),content.getResources().getImages());
+        String articleSource = render.renderBytes(content.getSource(),content.getImages());
         String renderedContext = render.renderHTML(articleSource);
         view.getEngine().loadContent(renderedContext);
 
@@ -183,7 +202,7 @@ public class ReaderView extends FXView {
         return tab;
     }
 
-    public void closeTab(Long articleId) {
+    public void closeTab(String articleId) {
         Article article = getArticle(articleId);
         Tab tab = articleTabMap.get(article);
         articles.remove(tab);

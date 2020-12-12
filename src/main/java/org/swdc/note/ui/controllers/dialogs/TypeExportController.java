@@ -6,8 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 import org.swdc.fx.FXController;
-import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.formatter.ContentFormatter;
+import org.swdc.note.core.files.factory.AbstractStorageFactory;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.TypeExportView;
 
@@ -20,16 +19,16 @@ import java.util.ResourceBundle;
 public class TypeExportController extends FXController {
 
     @FXML
-    private ComboBox<ContentFormatter> renderComboBox;
+    private ComboBox<AbstractStorageFactory> renderComboBox;
 
-    private ObservableList<ContentFormatter> renders = FXCollections.observableArrayList();
+    private ObservableList<AbstractStorageFactory> renders = FXCollections.observableArrayList();
 
-    private static class RenderConvertor extends StringConverter<ContentFormatter> {
+    private static class RenderConvertor extends StringConverter<AbstractStorageFactory> {
 
-        private Map<String, ContentFormatter> nameMap = new HashMap<>();
+        private Map<String, AbstractStorageFactory> nameMap = new HashMap<>();
 
-        public RenderConvertor(List<ContentFormatter> exporters) {
-            for (ContentFormatter formatter: exporters) {
+        public RenderConvertor(List<AbstractStorageFactory> exporters) {
+            for (AbstractStorageFactory formatter: exporters) {
                 if (nameMap.containsKey(formatter.getName())) {
                     continue;
                 }
@@ -38,12 +37,12 @@ public class TypeExportController extends FXController {
         }
 
         @Override
-        public String toString(ContentFormatter formatter) {
+        public String toString(AbstractStorageFactory formatter) {
             return formatter == null ? null : formatter.getName();
         }
 
         @Override
-        public ContentFormatter fromString(String s) {
+        public AbstractStorageFactory fromString(String s) {
             return nameMap.get(s);
         }
     }
@@ -51,8 +50,7 @@ public class TypeExportController extends FXController {
     @Override
     public void initialize() {
         ArticleService articleService = findService(ArticleService.class);
-        List<ContentFormatter> formatters = articleService.getAllFormatter(item -> item.getType().equals(ArticleType.class)
-                &&item.writeable());
+        List<AbstractStorageFactory> formatters = articleService.getAllExternalStorage(null);
         RenderConvertor convertor = new RenderConvertor(formatters);
         renderComboBox.setConverter(convertor);
         this.renders.addAll(formatters);
@@ -63,7 +61,7 @@ public class TypeExportController extends FXController {
         renderComboBox.setItems(renders);
     }
 
-    public ContentFormatter getSelected(){
+    public AbstractStorageFactory getSelected(){
         return renderComboBox.getSelectionModel().getSelectedItem();
     }
 

@@ -4,8 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import org.swdc.fx.FXController;
 import org.swdc.fx.anno.Aware;
-import org.swdc.note.core.entities.Article;
-import org.swdc.note.core.formatter.ContentFormatter;
+import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
 
@@ -15,7 +14,7 @@ import java.util.ResourceBundle;
 public class BatchExportViewController extends FXController {
 
     @FXML
-    private ComboBox<ContentFormatter> renderComboBox;
+    private ComboBox<SingleStorage> renderComboBox;
 
     @Aware
     private ArticleService service = null;
@@ -27,11 +26,10 @@ public class BatchExportViewController extends FXController {
 
     @Override
     public void initialize() {
-        renderComboBox.getItems().addAll(service.getAllFormatter(item->
-                item.getType().equals(Article.class) && item.writeable()));
+        renderComboBox.getItems().addAll(service.getSingleStore(null));
     }
 
-    public ContentFormatter getSelected() {
+    public SingleStorage getSelected() {
         return renderComboBox.getSelectionModel().getSelectedItem();
     }
 

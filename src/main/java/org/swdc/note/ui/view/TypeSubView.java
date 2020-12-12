@@ -42,6 +42,7 @@ public class TypeSubView extends FXView {
         SimpleBooleanProperty typeNotSelectProp = new SimpleBooleanProperty(true);
         this.typeContextMenu = new ContextMenu();
         TypeSubViewController controller = getLoader().getController();
+        MenuItem itemAdd = createMenuItem("创建文档", controller::onCreateDocument,null);
         MenuItem itemCreate = createMenuItem("添加分类",controller::creatType, null);
         MenuItem itemDelete = createMenuItem("删除", controller::deleteType, null);
         MenuItem itemRename = createMenuItem("修改分类", controller::onModifyType,null);
@@ -50,17 +51,21 @@ public class TypeSubView extends FXView {
         itemDelete.disableProperty().bind(typeNotSelectProp);
         itemRename.disableProperty().bind(typeNotSelectProp);
         itemExport.disableProperty().bind(typeNotSelectProp);
+        itemAdd.disableProperty().bind(typeNotSelectProp);
 
-        typeContextMenu.getItems().addAll(itemCreate, itemDelete,itemRename, itemExport);
-        ListView<ArticleType> typeList = findById("typeList");
-        typeList.getSelectionModel().selectedItemProperty().addListener((ob, item, newItem) -> {
+        typeContextMenu.getItems().addAll(itemAdd,new SeparatorMenuItem(),
+                itemCreate, itemDelete,itemRename, itemExport);
+
+        TreeView<ArticleType> typeTree = findById("typeTree");
+        typeTree.getSelectionModel().selectedItemProperty().addListener((ob, item, newItem) -> {
             if (newItem == null) {
                 typeNotSelectProp.set(true);
             } else {
                 typeNotSelectProp.set(false);
             }
         });
-        typeList.setContextMenu(typeContextMenu);
+        typeTree.setContextMenu(typeContextMenu);
+
     }
 
     private void initArticleContextMenu() {

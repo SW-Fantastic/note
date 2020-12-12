@@ -197,7 +197,7 @@ public class HTMLRender extends ContentRender {
     }
 
     public String generateDesc(ArticleContent content) {
-        String originMarkdown = this.renderBytes(content.getSource(), content.getResources().getImages());
+        String originMarkdown = this.renderBytes(content.getSource(), content.getImages());
         String html = renderHTML(originMarkdown);
         Document doc = Jsoup.parse(html);
         String desc = doc.text().replaceAll("[\\r\\n]","");
@@ -226,7 +226,7 @@ public class HTMLRender extends ContentRender {
     @Override
     public String renderAsText(Article article) {
         ArticleContent content = article.getContent();
-        Map<String, byte[]> data = content.getResources().getImages();
+        Map<String, byte[]> data = content.getImages();
         return renderHTML(renderBytes(content.getSource(), data));
     }
 

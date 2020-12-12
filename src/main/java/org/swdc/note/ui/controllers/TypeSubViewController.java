@@ -1,11 +1,14 @@
 package org.swdc.note.ui.controllers;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.swdc.fx.FXController;
@@ -15,9 +18,15 @@ import org.swdc.fx.anno.Listener;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.formatter.ContentFormatter;
+//import org.swdc.note.core.formatter.ContentFormatter;
+import org.swdc.note.core.files.SingleStorage;
+import org.swdc.note.core.files.StorageFactory;
+import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.note.core.files.single.AbstractSingleStore;
+import org.swdc.note.core.files.storages.AbstractArticleStorage;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.*;
 import org.swdc.note.ui.view.cells.*;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
@@ -28,10 +37,11 @@ import org.swdc.note.ui.view.dialogs.TypeExportView;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import static org.swdc.note.ui.view.UIUtils.findTypeItem;
 
 public class TypeSubViewController extends FXController {
 
@@ -39,7 +49,7 @@ public class TypeSubViewController extends FXController {
     private ArticleService articleService = null;
 
     @FXML
-    private ListView<ArticleType> typeList;
+    private TreeView<ArticleType> typeTree;
 
     @FXML
     private ListView<Article> articlesList;
@@ -58,24 +68,23 @@ public class TypeSubViewController extends FXController {
 
     private ObservableList<Article> recently = FXCollections.observableArrayList();
 
-    private ObservableList<ArticleType> typeLists = FXCollections.observableArrayList();
-
     private ObservableList<Article> articles = FXCollections.observableArrayList();
+
+    private TreeItem<ArticleType> typeRoot = new TreeItem<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        typeList.getSelectionModel().selectedItemProperty().addListener((observableValue, typeOld, typeNew) -> {
-            articles.clear();
-            if (typeNew != null) {
-                articles.addAll(articleService.getArticles(typeNew));
-            }
-        });
+        typeTree.setRoot(typeRoot);
+        typeTree.setShowRoot(false);
+        typeRoot.setExpanded(true);
     }
 
     @Override
     public void initialize() {
-        typeList.setCellFactory(list -> new ArticleTypeListCell(findView(ArticleTypeCell.class)));
-        typeList.setItems(typeLists);
+        typeTree.setOnMouseClicked(this::onTypeTreeClicked);
+        typeTree.getSelectionModel()
+                .selectedItemProperty()
+                .addListener(this::onTreeSelectionChange);
         articlesList.setCellFactory(list -> new ArticleListCell(findView(ArticleCell.class)));
         articlesList.setItems(articles);
         articlesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -84,37 +93,116 @@ public class TypeSubViewController extends FXController {
         this.refresh(null);
     }
 
+    private void onTypeTreeClicked(MouseEvent e) {
+        TreeItem<ArticleType> typeItem = typeTree.getSelectionModel().getSelectedItem();
+        Object selectedView = e.getPickResult().getIntersectedNode();
+        if (e.getPickResult().getIntersectedNode() instanceof TreeCell) {
+            TreeCell<ArticleType> clickedItem = (TreeCell) selectedView;
+            if (clickedItem.getItem() == null) {
+                typeTree.getSelectionModel().clearSelection();
+            }
+        }
+    }
+
     @Listener(RefreshEvent.class)
     public void refresh(RefreshEvent event) {
         recently.clear();
         recently.addAll(articleService.getRecently());
 
         if (event == null || event.getData() == null) {
-            typeLists.clear();
-            articles.clear();
-            typeLists.addAll(this.articleService.getTypes());
+            typeRoot.getChildren().clear();
+            List<ArticleType> types = this.articleService.getTypes();
+            List<TreeItem<ArticleType>> items = types.stream()
+                    .map(UIUtils::createTypeTree)
+                    .collect(Collectors.toList());
+            typeRoot.getChildren().addAll(items);
             return;
         }
+        // 刷新分类树
         ArticleType type = event.getData();
-        ArticleType selected = typeList.getSelectionModel().getSelectedItem();
-        if (type != null) {
+        if (type.getParent() != null) {
+            TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
+            if (parent != null) {
+                if (event.getType() == RefreshType.CREATION) {
+                    parent.getChildren().add(new TreeItem<>(type));
+                } else {
+                    TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+                    if (target == null) {
+                        return;
+                    }
+                    if (event.getType() == RefreshType.DELETE) {
+                        parent.getChildren().remove(target);
+                    } else if (event.getType() == RefreshType.UPDATE) {
+                        target.setValue(type);
+                    }
+                }
+            }
+        } else {
+            TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+            if (target == null && event.getType() == RefreshType.CREATION) {
+                typeRoot.getChildren().add(new TreeItem<>(type));
+            } else if (event.getType() == RefreshType.UPDATE){
+                target.setValue(type);
+            } else if (event.getType() == RefreshType.DELETE) {
+               typeRoot.getChildren().remove(target);
+            }
+        }
+        // 刷新文档列表
+        if (articles.size() > 0) {
+            ArticleType current = articles.get(0).getType();
+            if (type.getId().equals(current.getId())) {
+                articles.clear();
+                articles.addAll(articleService.getArticles(type));
+                return;
+            }
+        }
+        TreeItem<ArticleType> selected = typeTree.getSelectionModel().getSelectedItem();
+        if (selected == null || selected.getValue() == null) {
+            return;
+        }
+        ArticleType selectedType = selected.getValue();
+        if (type.getId().equals(selectedType.getId())) {
             articles.clear();
-            articles.addAll(this.articleService.getArticles(selected));
+            articles.addAll(articleService.getArticles(type));
         }
     }
+
+    private void onTreeSelectionChange(Observable observable, TreeItem<ArticleType> old, TreeItem<ArticleType> next) {
+        if (next == null || next.getValue() == null) {
+            return;
+        }
+        articles.clear();
+        articles.addAll(articleService.getArticles(next.getValue()));
+    }
+
 
     @FXML
     public void onTypeAdded() {
         TypeCreateView createView = findView(TypeCreateView.class);
+        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
+        if (typeTreeItem == null || typeTreeItem.getValue() == null) {
+            createView.setParent(null);
+        } else {
+            createView.setParent(typeTreeItem.getValue());
+        }
         createView.show();
     }
 
     @FXML
-    public void onCreateDocument() {
+    public void onCreateDocument(ActionEvent event) {
+       this.createNewDocument();
+    }
+
+    public void createNewDocument() {
+        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
+
         ArticleEditorView editorView = findView(ArticleEditorView.class);
         Article article = new Article();
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
+        if (typeTreeItem != null && typeTreeItem.getValue() != null) {
+            article.setType(typeTreeItem.getValue());
+        }
         article.setTitle("未命名");
         editorView.addArticle(article);
         editorView.show();
@@ -129,34 +217,32 @@ public class TypeSubViewController extends FXController {
         if (file == null) {
             return;
         }
-        // 从exporter读取，存在支持的exporter那么就读进来
-        // 按照分类和文档两种模式获取和处理
-        ContentFormatter formatter = articleService.getFormatter(file,Article.class);
-        if (formatter != null) {
-            if (!formatter.readable()) {
-                return;
+        List<AbstractStorageFactory> factories = articleService.getAllExternalStorage(null);
+        for (AbstractStorageFactory factory: factories) {
+            if (!factory.support(file)) {
+                continue;
             }
-            Article article = (Article) formatter.load(file.toPath());
-            ReaderView readerView = findView(ReaderView.class);
-            readerView.addArticle(article);
-            readerView.show();
-        } else {
-            formatter = articleService.getFormatter(file,ArticleType.class);
-            if (formatter == null || !formatter.readable()) {
-                // 不支持
-                return;
+            // 加载数据
+            ArticleSetView articleSetView = findView(ArticleSetView.class);
+            articleSetView.loadContent(factory,file);
+            articleSetView.show();
+            return;
+        }
+        List<SingleStorage> singleStores = articleService.getSingleStore(null);
+        for (SingleStorage singleStorage: singleStores) {
+            if (!singleStorage.support(file)) {
+                continue;
             }
-            ContentFormatter contentFormatter = formatter;
-            CompletableFuture.supplyAsync(() -> contentFormatter.load(file.toPath()))
-                    .whenCompleteAsync((type,e) -> {
+            CompletableFuture.supplyAsync(() -> singleStorage.load(file))
+                    .whenCompleteAsync((article,e) -> {
                         if (e != null) {
-                            logger.error("fail to load article set: " + contentFormatter.getExtension());
+                            logger.error("fail to load article " + file.getName());
                             return;
                         }
                         Platform.runLater(() -> {
-                            ArticleSetView articleSetView = findView(ArticleSetView.class);
-                            articleSetView.loadContent((ArticleType) type);
-                            articleSetView.show();
+                            ReaderView readerView = findView(ReaderView.class);
+                            readerView.addArticle(article);
+                            readerView.show();
                         });
                     });
         }
@@ -164,11 +250,11 @@ public class TypeSubViewController extends FXController {
 
     @FXML
     public void showHelp() {
-        File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.mdsrc");
-        ContentFormatter<ArticleType> exporter = articleService.getFormatter(path,ArticleType.class);
-        ArticleType type = exporter.load(path.toPath());
+        File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.noteset");
+        AbstractStorageFactory storageFactory = articleService
+                .getAllExternalStorage(f -> f.support(path)).get(0);
         ArticleSetView setView = findView(ArticleSetView.class);
-        setView.loadContent(type);
+        setView.loadContent(storageFactory,path);
         setView.show();
     }
 
@@ -178,7 +264,12 @@ public class TypeSubViewController extends FXController {
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
         article.setTitle("未命名");
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
+        TreeItem<ArticleType> typeItem = typeTree.getSelectionModel().getSelectedItem();
+        ArticleType type = null;
+        if (typeItem == null) {
+            return;
+        }
+        type = typeItem.getValue();
         if (type != null) {
             article.setType(type);
         }
@@ -203,9 +294,7 @@ public class TypeSubViewController extends FXController {
             return;
         }
         for (Article article: articles) {
-            ArticleType type = article.getType();
-            articleService.deleteArticle(article.getId());
-            this.emit(new RefreshEvent(type, this.getView()));
+            articleService.deleteArticle(article);
         }
     }
 
@@ -215,32 +304,33 @@ public class TypeSubViewController extends FXController {
             return;
         }
         if (articles.size() == 1) {
+            List<SingleStorage> storageList = articleService.getSingleStore(null);
+            Map<FileChooser.ExtensionFilter,SingleStorage> filterStorageMap = new HashMap<>();
+            for (SingleStorage singleStorage: storageList) {
+                filterStorageMap.put(singleStorage.getFilter(),singleStorage);
+            }
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("另存为");
             fileChooser.getExtensionFilters()
-                    .addAll(articleService.getSupportedFilters(item -> item.getType().equals(Article.class) && item.writeable()));
+                    .addAll(filterStorageMap.keySet());
             File file = fileChooser.showSaveDialog(null);
             if (file == null) {
-                return;
-            }
-            ContentFormatter formatter = articleService.getFormatter(file,Article.class);
-            if (formatter == null || !formatter.writeable()) {
                 return;
             }
             Article article = articlesList.getSelectionModel().getSelectedItem();
             if (article == null) {
                 return;
             }
-           formatter.save(file.toPath(),article);
+            SingleStorage singleStorage = filterStorageMap.get(fileChooser.getSelectedExtensionFilter());
+            singleStorage.save(article,file);
             UIUtils.notification("文档《" + article.getTitle() + "》已经导出。", this.getView());
         } else {
             BatchExportView batchExportView = findView(BatchExportView.class);
             batchExportView.show();
-            ContentFormatter formatter = batchExportView.getSelected();
-            if (formatter == null) {
+            SingleStorage store = batchExportView.getSelected();
+            if (store == null) {
                 return;
             }
-
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("另存为");
             File directory = directoryChooser.showDialog(null);
@@ -249,8 +339,8 @@ public class TypeSubViewController extends FXController {
             }
             Path dir = directory.toPath().toAbsolutePath();
             for (Article article: articles) {
-               Path path = dir.resolve(article.getTitle() + "." + formatter.getExtension());
-               formatter.save(path,article);
+                Path path = dir.resolve(article.getTitle() + "." + store.getExtension());
+                store.save(article,path.toFile());
             }
             UIUtils.notification("选择的文档已经导出。", this.getView());
         }
@@ -273,50 +363,64 @@ public class TypeSubViewController extends FXController {
 
     public void deleteType(ActionEvent event) {
         FXView view = getView();
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
-        if (type == null) {
+        TreeItem<ArticleType> type = typeTree.getSelectionModel().getSelectedItem();
+        if (type == null || type.getValue() == null) {
             return;
         }
+        ArticleType target = type.getValue();
         view.showAlertDialog("提示", "删除分类将会删除分类的全部文档，确定要这样做吗？", Alert.AlertType.CONFIRMATION)
                 .ifPresent(btn -> {
                     if (btn == ButtonType.OK) {
-                        articleService.deleteType(type.getId());
-                        this.emit(new RefreshEvent(type, view));
+                        articleService.deleteType(target);
+                        this.emit(new RefreshEvent(target, view,RefreshType.DELETE));
                     }
                 });
     }
 
     public void onModifyType(ActionEvent e) {
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
-        if (type == null) {
+        TreeItem<ArticleType> type = typeTree.getSelectionModel().getSelectedItem();
+        if (type == null || type.getValue() == null) {
             return;
         }
         TypeEditView editView = findView(TypeEditView.class);
-        editView.setType(type);
+        editView.setType(type.getValue());
         editView.show();
     }
 
     public void exportType(ActionEvent e) {
-        ArticleType type = typeList.getSelectionModel().getSelectedItem();
-        if (type == null) {
+        TreeItem<ArticleType> typeItem = typeTree.getSelectionModel().getSelectedItem();
+        if (typeItem == null || typeItem.getValue() == null) {
             return;
         }
+        ArticleType type = typeItem.getValue();
         TypeExportView exportView = findView(TypeExportView.class);
         exportView.show();
-        ContentFormatter formatter = exportView.getSelected();
-        if(formatter == null || !formatter.writeable()) {
+
+        StorageFactory factory = exportView.getSelected();
+
+        if (factory == null) {
             return;
         }
+        AbstractArticleStorage storage = factory.getTypeStorage();
+        if (storage == null) {
+            return;
+        }
+
         FileChooser chooser = new FileChooser();
         chooser.setTitle("导出");
-        chooser.getExtensionFilters().add(formatter.getExtensionFilter());
+        chooser.getExtensionFilters().add(storage.getFilter());
         chooser.setInitialFileName(type.getName());
         File target = chooser.showSaveDialog(null);
         if (target == null) {
             return;
         }
+
+        storage.open(target);
+
         type = articleService.getType(type.getId());
-        formatter.save(target.toPath(),type);
+        storage.addType(type);
+        storage.close();
+
         UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
     }
 

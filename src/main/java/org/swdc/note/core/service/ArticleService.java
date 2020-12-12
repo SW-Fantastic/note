@@ -6,18 +6,16 @@ import org.swdc.fx.jpa.anno.Transactional;
 import org.swdc.fx.services.Service;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.files.SingleStorage;
+import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.note.core.files.single.AbstractSingleStore;
 import org.swdc.note.core.proto.URLProtoResolver;
-import org.swdc.note.core.formatter.CommonContentFormatter;
-import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
-import org.swdc.note.core.repo.ArticleContentRepo;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
 
-import java.io.File;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
@@ -35,52 +33,36 @@ public class ArticleService extends Service {
     private HTMLRender render = null;
 
     @Aware
-    private ArticleContentRepo contentRepo = null;
+    private ContentService contentService;
 
     @Transactional
     public ArticleContent getContentOf(Article article) {
         if (article.getId() == null) {
             return null;
         }
-        article = articleRepo.getOne(article.getId());
-        ArticleContent content = contentRepo.getOne(article.getContent().getId());
-        return content;
+        return contentService.getArticleContent(article.getId());
     }
 
     @Transactional
-    public boolean createType(ArticleType type) {
-        try {
-            if (type.getId() != null) {
-                return false;
-            }
-            if (type.getName().isBlank()) {
-                return false;
-            }
-            List<ArticleType> typeEx = typeRepo.findByTypeName(type.getName());
-            if (typeEx == null || typeEx.size() == 0) {
-                typeRepo.save(type);
-                return true;
-            }
-            return false;
-        } catch (Exception ex) {
-            logger.error("fail to create article type: " + type.getName(), ex);
-            return false;
-        }
+    public ArticleType createType(ArticleType type) {
+        return this.saveType(type);
     }
 
     @Transactional
-    public boolean saveType(ArticleType type) {
+    public ArticleType saveType(ArticleType type) {
         if (type == null) {
-            return false;
+            return null;
         }
         if (type.getId() == null) {
-            return false;
+            List<ArticleType> typeEx = typeRepo.findByTypeName(type.getName());
+            if (typeEx == null || typeEx.size() == 0) {
+                return typeRepo.save(type);
+            }
         }
         if (type.getName() == null || type.getName().isBlank() || type.getName().isEmpty()) {
-            return false;
+            return null;
         }
-        typeRepo.save(type);
-        return true;
+        return typeRepo.save(type);
     }
 
     public List<Article> searchByTitle(String title) {
@@ -88,86 +70,62 @@ public class ArticleService extends Service {
     }
 
     @Transactional
-    public boolean saveArticle(Article article, ArticleContent content) {
-        if(article.getContentFormatter() != null) {
-            ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
-            article.setContent(content);
-            formatter.save(Paths.get(article.getLocation()),article);
-            return true;
-        }
+    public Article saveArticle(Article article, ArticleContent content) {
         if (article.getId() != null) {
+
             Article articleOld = articleRepo.getOne(article.getId());
-            if (articleOld == null) {
-                Article refreshed = new Article();
-                refreshed.setType(article.getType());
-                ArticleContent contentRef = new ArticleContent();
-                ArticleResource resource = content.getResources();
-                contentRef.setSource(content.getSource());
-                contentRef.setResources(resource);
-                refreshed.setContent(contentRef);
-                refreshed.setTitle(article.getTitle());
-                return saveArticle(refreshed,refreshed.getContent());
-            }
+
             if (!(article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty())) {
                 articleOld.setTitle(article.getTitle());
             }
             if (article.getType() != null) {
                 articleOld.setType(article.getType());
             }
+
             String desc = render.generateDesc(content);
             articleOld.setDesc(desc);
             articleOld.setCreateDate(new Date());
 
-            ArticleContent contentOld = articleOld.getContent();
-            if (content.getSource() != null && !content.getSource().isEmpty() && !content.getSource().isBlank()) {
-                contentOld.setSource(content.getSource());
-            }
-            if (content.getResources() != null){
-                contentOld.setResources(content.getResources());
-            }
-
-            try {
-                articleRepo.save(article);
-                return true;
-            } catch (Exception ex) {
-                logger.error("failed to save article: ",ex);
-                return false;
-            }
-
+            content.setArticleId(article.getId());
+            contentService.saveArticleContent(content);
+            return articleRepo.save(articleOld);
         } else {
             if (article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty()) {
-                return false;
+                return null;
             }
             if (article.getType() == null) {
-                return false;
+                return null;
             }
             String desc = render.generateDesc(content);
             article.setDesc(desc);
             article.setCreateDate(new Date());
             if (content.getSource() == null || content.getSource().isEmpty() || content.getSource().isBlank()) {
-                return false;
+                return null;
             }
-            if (content.getResources() == null){
-                return false;
-            }
-            article.setContent(content);
-            try {
-                articleRepo.save(article);
-                return true;
-            } catch (Exception ex) {
-                logger.error("failed to save article: ",ex);
-                return false;
-            }
+            Article saved = articleRepo.save(article);
+
+            content.setArticleId(saved.getId());
+            contentService.saveArticleContent(content);
+
+            return saved;
         }
+
+
+        /*if(article.getContentFormatter() != null) {
+            ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
+            article.setContent(content);
+            formatter.save(Paths.get(article.getLocation()),article);
+            return article;
+        }*/
     }
 
     @Transactional
-    public void deleteArticle(Long articleId) {
-        Article article = articleRepo.getOne(articleId);
+    public void deleteArticle(Article target) {
+        Article article = articleRepo.getOne(target.getId());
         articleRepo.remove(article);
     }
 
-    public Article getArticle(Long articleId) {
+    public Article getArticle(String articleId) {
         return articleRepo.getOne(articleId);
     }
 
@@ -176,23 +134,22 @@ public class ArticleService extends Service {
     }
 
     @Transactional
-    public void deleteType(Long articleTypeId) {
-        ArticleType type = typeRepo.getOne(articleTypeId);
-
+    public void deleteType(ArticleType articleType) {
+        ArticleType type = typeRepo.getOne(articleType.getId());
         if (type != null) {
             typeRepo.remove(type);
         }
     }
 
     public List<ArticleType> getTypes() {
-        return typeRepo.getAll();
+        return typeRepo.findRootTypes();
     }
 
     public List<Article> getArticles(ArticleType type) {
         return articleRepo.findByType(type);
     }
 
-    public ContentFormatter getFormatter(File file, Class entityClass) {
+    /*public ContentFormatter getFormatter(File file, Class entityClass) {
         List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
         for (var item : formatters) {
             if (item.support(file.toPath()) && item.getType().equals(entityClass)) {
@@ -200,18 +157,16 @@ public class ArticleService extends Service {
             }
         }
         return null;
-    }
+    }*/
 
-    public List<ContentFormatter> getAllFormatter(Predicate<CommonContentFormatter> predicate) {
-        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+    public List<AbstractStorageFactory> getAllExternalStorage(Predicate<AbstractStorageFactory> predicate) {
+        List<AbstractStorageFactory> formatters = getScoped(AbstractStorageFactory.class);
         if (predicate != null) {
             return formatters.stream()
                     .filter(predicate)
                     .collect(Collectors.toList());
         } else {
-            return formatters.stream()
-                    .map(ContentFormatter.class::cast)
-                    .collect(Collectors.toList());
+            return new ArrayList<>(formatters);
         }
     }
 
@@ -225,20 +180,31 @@ public class ArticleService extends Service {
         return null;
     }
 
-    public ArticleType getType(Long typeId) {
+    public ArticleType getType(String typeId) {
         return typeRepo.getOne(typeId);
     }
 
-    public List<FileChooser.ExtensionFilter> getSupportedFilters(Predicate<CommonContentFormatter> predicate) {
-        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
+    public List<FileChooser.ExtensionFilter> getSupportedFilters(Predicate<AbstractSingleStore> predicate) {
+        List<AbstractSingleStore> singleStores = getScoped(AbstractSingleStore.class);
         if (predicate != null) {
-            return  formatters.stream()
+            return  singleStores.stream()
                     .filter(predicate)
-                    .map(CommonContentFormatter::getExtensionFilter)
+                    .map(AbstractSingleStore::getFilter)
                     .collect(Collectors.toList());
         }
-        return formatters.stream()
-                .map(CommonContentFormatter::getExtensionFilter)
+        return singleStores.stream()
+                .map(AbstractSingleStore::getFilter)
+                .collect(Collectors.toList());
+    }
+
+    public List<SingleStorage> getSingleStore(Predicate<AbstractSingleStore> predicate) {
+        List<AbstractSingleStore> singleStores = getScoped(AbstractSingleStore.class);
+        if (predicate != null) {
+            return  singleStores.stream()
+                    .filter(predicate)
+                    .collect(Collectors.toList());
+        }
+        return singleStores.stream()
                 .collect(Collectors.toList());
     }
 

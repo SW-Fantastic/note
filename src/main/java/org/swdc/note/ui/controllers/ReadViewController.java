@@ -8,10 +8,12 @@ import org.swdc.fx.FXController;
 import org.swdc.fx.anno.Aware;
 import org.swdc.fx.anno.Listener;
 import org.swdc.note.core.entities.Article;
+import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.TypeListPopover;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.ReaderView;
 
@@ -40,8 +42,8 @@ public class ReadViewController extends FXController {
         }
         ReaderView readerView = getView();
         if (readerView.getArticle(article.getId()) == null) {
-            if (readerView.getArticle(article.getLocation()) != null) {
-                readerView.refresh(article.getLocation());
+            if (readerView.getArticle(article.getFullPath()) != null) {
+                readerView.refreshByExternal(article);
             }
             return;
         }
@@ -52,7 +54,7 @@ public class ReadViewController extends FXController {
     public void editArticle() {
         ReaderView readerView = getView();
         Article article = readerView.getReadingArticle();
-        if (article == null ||(article.getId() == null && article.getContentFormatter() == null)) {
+        if (article == null ||(article.getId() == null && article.getSingleStore() == null)) {
             return;
         }
         ArticleEditorView editorView = findView(ArticleEditorView.class);
@@ -71,9 +73,9 @@ public class ReadViewController extends FXController {
                 .ifPresent(btn -> {
                     if (btn == ButtonType.OK) {
                         ArticleType type = article.getType();
-                        articleService.deleteArticle(article.getId());
+                        articleService.deleteArticle(article);
                         readerView.closeTab(article.getId());
-                        this.emit(new RefreshEvent(type,this));
+                        this.emit(new RefreshEvent(type,this, RefreshType.DELETE));
                     }
                 });
     }

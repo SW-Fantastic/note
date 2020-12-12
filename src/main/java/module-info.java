@@ -3,6 +3,7 @@ module noteEditor {
     requires fx.framework.core;
     requires fx.framework.jpa;
     requires fx.framework.resource;
+    requires fx.framework.aop;
 
     requires javafx.base;
     requires javafx.controls;
@@ -10,9 +11,11 @@ module noteEditor {
     requires javafx.web;
 
     requires java.persistence;
+    requires org.hibernate.orm.core;
     requires lombok;
     requires org.apache.tika.core;
     requires remark;
+    requires nitrite;
 
     requires org.fxmisc.richtext;
 
@@ -35,6 +38,24 @@ module noteEditor {
     requires org.controlsfx.controls;
     requires epublib.core;
 
+    opens org.swdc.note.core.aspect to
+            fx.framework.core,
+            fx.framework.aop;
+
+    opens org.swdc.note.core.files to
+            fx.framework.core;
+
+    opens org.swdc.note.core.files.factory to
+            fx.framework.core;
+
+    opens org.swdc.note.core.files.single to
+            com.fasterxml.jackson.databind,
+            fx.framework.core;
+
+    opens org.swdc.note.core.files.storages to
+            com.fasterxml.jackson.databind,
+            fx.framework.core;
+
     opens org.swdc.note to
             fx.framework.core,
             javafx.graphics;
@@ -45,6 +66,7 @@ module noteEditor {
     opens org.swdc.note.core.entities to
             fx.framework.jpa,
             com.fasterxml.jackson.databind,
+            nitrite,
             org.hibernate.orm.core;
 
     opens org.swdc.note.ui.controllers to
@@ -61,16 +83,12 @@ module noteEditor {
     opens org.swdc.note.core.render to
             fx.framework.core;
 
-    opens org.swdc.note.core.formatter to
-            fx.framework.core;
-
     opens org.swdc.note.core.service to
             fx.framework.aop,
             fx.framework.core;
 
     exports org.swdc.note.core.service;
     exports org.swdc.note.core.entities;
-    exports org.swdc.note.core.formatter;
 
     opens org.swdc.note.config to
             org.controlsfx.controls,

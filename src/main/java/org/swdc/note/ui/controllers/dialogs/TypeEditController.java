@@ -7,6 +7,7 @@ import org.swdc.fx.anno.Aware;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
+import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.dialogs.TypeEditView;
 
@@ -46,11 +47,12 @@ public class TypeEditController extends FXController {
         }
         type = articleService.getType(type.getId());
         type.setName(txtName.getText());
-        if(articleService.saveType(type)) {
+        ArticleType saved = articleService.saveType(type);
+        if(saved != null) {
             editView.close();
             UIUtils.notification("分类《" + type.getName() + "》 保存成功！",editView);
         }
-        this.emit(new RefreshEvent((ArticleType) null,this));
+        this.emit(new RefreshEvent(type, this,RefreshType.UPDATE));
         txtName.setText("");
     }
 
