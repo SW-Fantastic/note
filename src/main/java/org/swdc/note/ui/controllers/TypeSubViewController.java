@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.swdc.fx.FXController;
@@ -47,9 +48,6 @@ public class TypeSubViewController extends FXController {
     @Aware
     private ArticleService articleService = null;
 
-   // @FXML
-   // private ListView<ArticleType> typeList;
-
     @FXML
     private TreeView<ArticleType> typeTree;
 
@@ -83,11 +81,7 @@ public class TypeSubViewController extends FXController {
 
     @Override
     public void initialize() {
-        typeTree.setOnMouseClicked(e -> {
-            if (e.getClickCount() > 1){
-                typeTree.getSelectionModel().clearSelection();
-            }
-        });
+        typeTree.setOnMouseClicked(this::onTypeTreeClicked);
         typeTree.getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this::onTreeSelectionChange);
@@ -97,6 +91,17 @@ public class TypeSubViewController extends FXController {
         recentlyList.setCellFactory(list -> new ArticleSimpleListCell(findView(ArticleSimpleCell.class)));
         recentlyList.setItems(recently);
         this.refresh(null);
+    }
+
+    private void onTypeTreeClicked(MouseEvent e) {
+        TreeItem<ArticleType> typeItem = typeTree.getSelectionModel().getSelectedItem();
+        Object selectedView = e.getPickResult().getIntersectedNode();
+        if (e.getPickResult().getIntersectedNode() instanceof TreeCell) {
+            TreeCell<ArticleType> clickedItem = (TreeCell) selectedView;
+            if (clickedItem.getItem() == null) {
+                typeTree.getSelectionModel().clearSelection();
+            }
+        }
     }
 
     @Listener(RefreshEvent.class)
@@ -134,10 +139,12 @@ public class TypeSubViewController extends FXController {
             }
         } else {
             TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
-            if (target == null) {
+            if (target == null && event.getType() == RefreshType.CREATION) {
                 typeRoot.getChildren().add(new TreeItem<>(type));
-            } else {
+            } else if (event.getType() == RefreshType.UPDATE){
                 target.setValue(type);
+            } else if (event.getType() == RefreshType.DELETE) {
+               typeRoot.getChildren().remove(target);
             }
         }
         // 刷新文档列表
@@ -182,11 +189,20 @@ public class TypeSubViewController extends FXController {
     }
 
     @FXML
-    public void onCreateDocument() {
+    public void onCreateDocument(ActionEvent event) {
+       this.createNewDocument();
+    }
+
+    public void createNewDocument() {
+        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
+
         ArticleEditorView editorView = findView(ArticleEditorView.class);
         Article article = new Article();
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
+        if (typeTreeItem != null && typeTreeItem.getValue() != null) {
+            article.setType(typeTreeItem.getValue());
+        }
         article.setTitle("未命名");
         editorView.addArticle(article);
         editorView.show();
@@ -234,12 +250,12 @@ public class TypeSubViewController extends FXController {
 
     @FXML
     public void showHelp() {
-        /*File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.mdsrc");
-        ContentFormatter<ArticleType> exporter = articleService.getFormatter(path,ArticleType.class);
-        ArticleType type = exporter.load(path.toPath());
+        File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.noteset");
+        AbstractStorageFactory storageFactory = articleService
+                .getAllExternalStorage(f -> f.support(path)).get(0);
         ArticleSetView setView = findView(ArticleSetView.class);
-        setView.loadContent(type);
-        setView.show();*/
+        setView.loadContent(storageFactory,path);
+        setView.show();
     }
 
     public void createDocument(ActionEvent event) {

@@ -11,8 +11,6 @@ import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.factory.AbstractStorageFactory;
 import org.swdc.note.core.files.single.AbstractSingleStore;
 import org.swdc.note.core.proto.URLProtoResolver;
-import org.swdc.note.core.formatter.CommonContentFormatter;
-//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;

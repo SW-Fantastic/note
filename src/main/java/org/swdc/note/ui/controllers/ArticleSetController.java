@@ -137,10 +137,16 @@ public class ArticleSetController extends FXController {
         root.getChildren().addAll(types);
     }
 
-    @Override
-    public void destroy() {
+    public void closeArticleSet() {
         if (storage != null) {
             storage.close();
+            storage = null;
+            root.getChildren().clear();
         }
+    }
+
+    @Override
+    public void destroy() {
+        this.closeArticleSet();
     }
 }

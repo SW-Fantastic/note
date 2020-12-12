@@ -14,7 +14,6 @@ import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.core.files.StorageManager;
 import org.swdc.note.core.proto.URLResolverManager;
-import org.swdc.note.core.formatter.FormatterManager;
 import org.swdc.note.core.render.RendersManager;
 import org.swdc.note.ui.controllers.GlobalKeyListener;
 import org.swdc.note.ui.view.MainView;
@@ -48,7 +47,6 @@ public class NoteApplication extends FXApplication {
     @Override
     protected void onStart(ApplicationContainer container) {
         container.register(RendersManager.class);
-        container.register(FormatterManager.class);
         container.register(URLResolverManager.class);
         container.register(StorageManager.class);
         container.getComponent(ServiceManager.class).register(GlobalKeyListener.class);

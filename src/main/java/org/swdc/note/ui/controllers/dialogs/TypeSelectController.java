@@ -75,10 +75,12 @@ public class TypeSelectController extends FXController {
             }
         } else {
             TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
-            if (target == null) {
+            if (target == null && event.getType() == RefreshType.CREATION) {
                 typeRoot.getChildren().add(new TreeItem<>(type));
-            } else {
+            } else if (event.getType() == RefreshType.UPDATE){
                 target.setValue(type);
+            } else if (event.getType() == RefreshType.DELETE) {
+                typeRoot.getChildren().remove(target);
             }
         }
     }
@@ -87,6 +89,8 @@ public class TypeSelectController extends FXController {
     @FXML
     private void createType() {
         TypeCreateView createView = findView(TypeCreateView.class);
+        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
+        createView.setParent(typeTreeItem == null ? null : typeTreeItem.getValue());
         createView.show();
     }
 

@@ -22,11 +22,15 @@ public class ArticleSetView extends FXView {
 
     @Override
     public void initialize() {
+
+        ArticleSetController controller = getLoader().getController();
+
         Stage stage = getStage();
         stage.setMinWidth(1000);
         stage.setMinHeight(600);
         stage.setWidth(stage.getMinWidth());
         stage.setHeight(stage.getMinHeight());
+        stage.setOnCloseRequest(e -> controller.closeArticleSet());
     }
 
     public void loadContent(AbstractStorageFactory factory, File file) {

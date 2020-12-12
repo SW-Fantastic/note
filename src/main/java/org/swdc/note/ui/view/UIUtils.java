@@ -45,7 +45,10 @@ public class UIUtils {
                 if (item.getValue().getId().equals(type.getId())) {
                     return item;
                 } else if (item.getChildren().size() > 0){
-                    return findTypeItem(item,type);
+                    TreeItem<ArticleType> nested = findTypeItem(item,type);
+                    if (nested != null) {
+                        return nested;
+                    }
                 }
             }
         }
