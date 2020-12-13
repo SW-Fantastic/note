@@ -159,7 +159,6 @@ public class ContentHelper {
         }
 
         wordsList.setOnKeyPressed(e -> {
-            area.requestFollowCaret();
             if (e.getCode() == KeyCode.ENTER) {
                 KeyWord word = wordsList.getSelectionModel().getSelectedItem();
                 int end = area.getCaretPosition();

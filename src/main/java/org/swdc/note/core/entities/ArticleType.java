@@ -1,5 +1,6 @@
 package org.swdc.note.core.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -30,6 +31,7 @@ public class ArticleType {
 
     @Getter
     @Setter
+    @JsonIgnore
     @OneToMany(mappedBy = "type", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Article> articles;
 
@@ -46,6 +48,7 @@ public class ArticleType {
     @Getter
     @Setter
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "parent",fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<ArticleType> children;
 
 

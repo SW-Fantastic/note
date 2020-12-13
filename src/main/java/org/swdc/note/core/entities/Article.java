@@ -40,7 +40,7 @@ public class Article {
     @Getter
     @Setter
     @JoinColumn(name = "type_id")
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     private ArticleType type;
 
     /**
