@@ -1,5 +1,7 @@
 package org.swdc.note.ui.component;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
@@ -27,6 +30,8 @@ import java.util.stream.Collectors;
 public class ContentHelper {
 
     private Consumer<List<KeyWord>> beforeShowTips;
+
+    private Bounds prevLocation;
 
     private static class ContentTipCell extends ListCell<KeyWord> {
         @Override
@@ -121,6 +126,7 @@ public class ContentHelper {
             area.caretBoundsProperty().addListener((observableValue, bounds, newBounds) ->  {
                 Bounds bound = newBounds.isPresent() ? newBounds.get() : bounds.isPresent() ? bounds.get() : null;
                 if (bound != null) {
+                    prevLocation = area.screenToLocal(bound);
                     int end = area.getCaretPosition();
                     int start = end > 2 ? end - 2 : end > 1 ? end - 1 : end;
                     IndexRange range = new IndexRange(start, end);
@@ -141,17 +147,8 @@ public class ContentHelper {
                     wordsList.getItems().addAll(words);
                     wordsList.getItems().addAll(wordKeys);
 
-                    BorderPane node = view.getView();
-
                     if (!(last.isBlank() || last.isEmpty()) && words.size() + wordKeys.size() > 0) {
-                        Bounds viewPosition = node.localToScreen(node.getBoundsInLocal());
-                        if (bound.getCenterY() > (viewPosition.getCenterY() + node.getHeight()) / 2) {
-                            popOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
-                        } else {
-                            popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-                        }
-                        popOver.show((Node) view.getView(), bound.getCenterX(), bound.getCenterY());
-                        wordsList.requestFocus();
+                        this.doShow(view,prevLocation);
                     } else {
                         if (popOver.isShowing()) {
                             popOver.hide();
@@ -162,6 +159,7 @@ public class ContentHelper {
         }
 
         wordsList.setOnKeyPressed(e -> {
+            area.requestFollowCaret();
             if (e.getCode() == KeyCode.ENTER) {
                 KeyWord word = wordsList.getSelectionModel().getSelectedItem();
                 int end = area.getCaretPosition();
@@ -232,20 +230,40 @@ public class ContentHelper {
                     this.beforeShowTips.accept(content);
                 }
 
-                Bounds location = bounds.get();
+                if (prevLocation == null) {
+                    prevLocation = area.getBoundsInLocal();
+                }
+                Bounds location = prevLocation;
                 wordsList.getItems().clear();
                 wordsList.getItems().addAll(keyWords);
                 wordsList.getItems().addAll(content);
-                BorderPane node = view.getView();
-                Bounds viewPosition = node.localToScreen(node.getBoundsInLocal());
-                if (location.getCenterY() > (viewPosition.getCenterY() + node.getHeight()) / 2) {
-                    popOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
-                } else {
-                    popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-                }
-                popOver.show(node,location.getCenterX(),location.getCenterY());
+                doShow(view,location);
             }
         });
+    }
+
+    private void doShow(FXView view,Bounds location) {
+        BorderPane node = view.getView();
+        Bounds viewPosition = node.localToScreen(node.getBoundsInLocal());
+        if (viewPosition.getMinY() + location.getCenterY() + 150 > (viewPosition.getCenterY() + node.getHeight()) / 2) {
+            if (viewPosition.getMinX() + location.getCenterX() <= 150) {
+                popOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
+            } else if (Screen.getPrimary().getBounds().getWidth()- viewPosition.getMinX() - location.getCenterX() <= 150) {
+                popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
+            } else {
+                popOver.setArrowLocation(PopOver.ArrowLocation.BOTTOM_CENTER);
+            }
+        } else {
+            if (viewPosition.getMinX() + location.getCenterX() <= 150) {
+                popOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
+            } else if (Screen.getPrimary().getBounds().getWidth() - viewPosition.getMinX() - location.getCenterX() <= 150) {
+                popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
+            } else {
+                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+            }
+        }
+        popOver.show(node,viewPosition.getMinX() + location.getCenterX()
+                ,viewPosition.getMinY() + location.getCenterY());
     }
 
     public void beforeShow(Consumer<List<KeyWord>> beforeShow) {

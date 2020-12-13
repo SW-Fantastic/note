@@ -111,7 +111,7 @@ jdk.zipfs
 
 现在，请执行maven的package指令，依赖的jar会在build的时候被复制出来。
 
-接下来，请允许jdk14的bin目录的jpackager指令，参数如下：
+接下来，请进入jdk14的bin目录找到jpackager，请使用此工具，命令以及参数如下：
 
 ```
 jpackage --runtime-image [运行时路径]  --type app-image -n [应用名称] -p ../target/lib --icon [图标路径] -m noteEditor/org.swdc.note.NoteApplication
