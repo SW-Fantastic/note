@@ -33,7 +33,10 @@ public class ArticleService extends Service {
     private HTMLRender render = null;
 
     @Aware
-    private ContentService contentService;
+    private ContentService contentService = null;
+
+    @Aware
+    private IndexorService indexorService = null;
 
     @Transactional
     public ArticleContent getContentOf(Article article) {
@@ -87,8 +90,11 @@ public class ArticleService extends Service {
             articleOld.setCreateDate(new Date());
 
             content.setArticleId(article.getId());
+            content.setTypeId(article.getType().getId());
             contentService.saveArticleContent(content);
-            return articleRepo.save(articleOld);
+            Article saved = articleRepo.save(articleOld);
+            indexorService.updateIndex(article,content);
+            return saved;
         } else {
             if (article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty()) {
                 return null;
@@ -105,24 +111,22 @@ public class ArticleService extends Service {
             Article saved = articleRepo.save(article);
 
             content.setArticleId(saved.getId());
+            content.setTypeId(saved.getType().getId());
             contentService.saveArticleContent(content);
+            indexorService.createIndex(article,content);
 
             return saved;
         }
 
-
-        /*if(article.getContentFormatter() != null) {
-            ContentFormatter formatter = (ContentFormatter) findComponent(article.getContentFormatter());
-            article.setContent(content);
-            formatter.save(Paths.get(article.getLocation()),article);
-            return article;
-        }*/
     }
 
     @Transactional
     public void deleteArticle(Article target) {
         Article article = articleRepo.getOne(target.getId());
         articleRepo.remove(article);
+        int effect = contentService.removeContent(article.getId());
+        logger.info(target.getId() + " has deleted, " + effect + " effected");
+        indexorService.removeIndex(article);
     }
 
     public Article getArticle(String articleId) {
@@ -133,12 +137,36 @@ public class ArticleService extends Service {
         return articleRepo.findRecently();
     }
 
+    /**
+     * 删除Type
+     *
+     * @param articleType
+     */
     @Transactional
     public void deleteType(ArticleType articleType) {
         ArticleType type = typeRepo.getOne(articleType.getId());
         if (type != null) {
+            List<String> ids = getChildTypeId(articleType,null);
             typeRepo.remove(type);
+            for (String typeId: ids) {
+                indexorService.removeIndex(typeId);
+                contentService.removeByType(typeId);
+            }
         }
+    }
+
+    private List<String> getChildTypeId(ArticleType type,List<String> ids) {
+        if (ids == null) {
+            ids = new ArrayList<>();
+        }
+        List<ArticleType> child = type.getChildren();
+        for (ArticleType item: child) {
+            ids.add(item.getId());
+            if (item.getChildren() != null) {
+                getChildTypeId(item,ids);
+            }
+        }
+        return ids;
     }
 
     public List<ArticleType> getTypes() {

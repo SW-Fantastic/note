@@ -37,6 +37,8 @@ module noteEditor {
     requires java.logging;
     requires org.controlsfx.controls;
     requires epublib.core;
+    requires lucene.core;
+    requires ik.analyzer;
 
     opens org.swdc.note.core.aspect to
             fx.framework.core,

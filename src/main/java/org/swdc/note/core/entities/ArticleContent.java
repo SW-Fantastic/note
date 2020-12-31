@@ -15,6 +15,10 @@ public class ArticleContent {
 
     @Getter
     @Setter
+    private String typeId;
+
+    @Getter
+    @Setter
     private Map<String, byte[]> images;
 
     @Getter

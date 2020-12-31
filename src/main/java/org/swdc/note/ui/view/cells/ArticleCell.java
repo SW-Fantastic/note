@@ -60,7 +60,7 @@ public class ArticleCell extends FXView {
 
     private void deleteArticle(ActionEvent event) {
         articleService.deleteArticle(article);
-        this.emit(new RefreshEvent(article.getType(), this, RefreshType.DELETE));
+        //this.emit(new RefreshEvent(article.getType(), this, RefreshType.DELETE));
     }
 
     private void editArticle(ActionEvent event) {

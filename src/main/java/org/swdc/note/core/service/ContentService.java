@@ -22,6 +22,7 @@ public class ContentService extends Service {
                 .filePath(new File("./data/articleContent.db"))
                 .openOrCreate();
 
+
         contentRepo = documentDB.getRepository(ArticleContent.class);
         if (!contentRepo.hasIndex("articleId")) {
             contentRepo.createIndex("articleId", IndexOptions.indexOptions(IndexType.Unique));
@@ -39,6 +40,7 @@ public class ContentService extends Service {
     }
 
     public ArticleContent saveArticleContent(ArticleContent content) {
+        documentDB.compact();
         if (content.getArticleId() == null) {
             return null;
         }
@@ -57,9 +59,21 @@ public class ContentService extends Service {
         }
     }
 
-    public void deleteContent(Long articleId) {
-        contentRepo.remove(ObjectFilters.eq("articleId",articleId))
+    public int removeContent(String articleId) {
+        int effect = contentRepo.remove(ObjectFilters.eq("articleId",articleId))
                 .getAffectedCount();
+        documentDB.commit();
+        documentDB.compact();
+        return effect;
+    }
+
+    public int removeByType(String typeId) {
+        int effect = contentRepo
+                .remove(ObjectFilters.eq("typeId",typeId))
+                .getAffectedCount();
+        documentDB.commit();
+        documentDB.compact();
+        return effect;
     }
 
     @Override

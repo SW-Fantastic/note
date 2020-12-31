@@ -120,7 +120,8 @@ public class TypeSubViewController extends FXController {
         }
         // 刷新分类树
         ArticleType type = event.getData();
-        if (type.getParent() != null) {
+        Article article = event.getArticle();
+        if (type.getParent() != null && article == null) {
             TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
             if (parent != null) {
                 if (event.getType() == RefreshType.CREATION) {
@@ -137,7 +138,7 @@ public class TypeSubViewController extends FXController {
                     }
                 }
             }
-        } else {
+        } else if (article == null) {
             TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
             if (target == null && event.getType() == RefreshType.CREATION) {
                 typeRoot.getChildren().add(new TreeItem<>(type));
@@ -293,8 +294,8 @@ public class TypeSubViewController extends FXController {
         if (articles == null || articles.isEmpty()) {
             return;
         }
-        for (Article article: articles) {
-            articleService.deleteArticle(article);
+        for (int idx = 0; idx < articles.size();idx ++) {
+            articleService.deleteArticle(articles.get(idx));
         }
     }
 
