@@ -1,0 +1,262 @@
+@primaryColor: #7CA982;
+@secondaryColor: #8EA4D2;
+@backgroundColor: #FDFFFC;
+@backgroundSecondary: #F5EDF0;
+@darkPrimaryColor: #243E36;
+@nothing: rgba(0,0,0,0);
+
+@import "styles/list-view";
+@import "styles/components";
+@import "styles/buttons";
+@import "styles/dialog";
+
+.notification-bar .pane{
+  -fx-background-color: rgba(253,255,223,0);
+}
+
+.dialog-pane {
+  .dialog-pane-default(@backgroundColor, @primaryColor);
+  .tree-view {
+    -fx-background-color: rgba(0,0,0,0);
+    .tree-cell:empty {
+      -fx-background-color: @nothing;
+      -fx-text-fill: @darkPrimaryColor;
+    }
+    .tree-cell:filled {
+      -fx-background-color: @nothing;
+      -fx-text-fill: @darkPrimaryColor;
+    }
+    .tree-cell:selected {
+      -fx-background-color: @primaryColor;
+      -fx-text-fill: #FFF;
+      .arrow {
+        -fx-background-color: #FFF;
+      }
+    }
+  }
+}
+
+.scene {
+  -fx-background-radius: 6;
+  -fx-border-radius: 6;
+  -fx-background-color: @backgroundColor;
+  -fx-font-family: "Source Han Sans CN Normal";
+  -fx-font-size: 14px;
+
+  .txt-second {
+    -fx-font-size: 13px;
+  }
+
+  .tools {
+    -fx-background-color: @backgroundColor;
+
+    .toggle-button {
+      .toggle-button(@primaryColor);
+    }
+  }
+
+  .sccontent {
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-border-style: none;
+  }
+
+  .sub-view {
+    -fx-background-color: @nothing;
+
+    .tool-pane {
+      -fx-background-color: @primaryColor;
+      -fx-border-style: dashed;
+      -fx-border-color: @primaryColor;
+      -fx-border-width: 0 1 0 0;
+
+      .list-view {
+        -fx-background-color: @nothing;
+        -fx-border-color: @nothing;
+        .list-cell{
+          -fx-background-color: @nothing;
+          &:empty * {
+            -fx-background-color: @nothing;
+          }
+          &:filled *{
+              -fx-background-color: @nothing;
+              -fx-text-fill: #FFF;
+          }
+          &:selected *{
+            -fx-text-fill: @primaryColor;
+            -fx-background-color: #FFF;
+            -fx-background-radius: 8px;
+          }
+        }
+      }
+      .btn-primary{
+        .btn-block(#FFF,@primaryColor);
+      }
+    }
+
+    .tree-view {
+      -fx-background-color: @nothing;
+      .tree-cell:empty{
+        -fx-background-color: @backgroundColor;
+      }
+      .tree-cell:filled {
+        -fx-text-fill: @primaryColor;
+        -fx-background-color: @backgroundColor;
+      }
+      .tree-cell:selected {
+        -fx-text-fill: @backgroundColor;
+        -fx-background-color: @primaryColor;
+      }
+    }
+
+    .list-view {
+      -fx-background-color: @nothing;
+      .list-cell:empty {
+        -fx-background-color: @backgroundColor;
+      }
+      .list-cell:filled{
+        -fx-background-color: @backgroundColor;
+      }
+    }
+
+    .article-list {
+      .list-cell {
+        *{
+          -fx-text-fill: @darkPrimaryColor;
+        }
+        .cell-view {
+          -fx-background-color: @nothing;
+          .tool-btn {
+            -fx-background-color: @nothing;
+            -fx-text-fill: @primaryColor;
+            &:hover {
+              -fx-background-radius: 50;
+              -fx-background-color: @primaryColor;
+              -fx-text-fill: @backgroundColor;
+            }
+          }
+        }
+        &:filled {
+          .article-cell {
+            -fx-background-color: rgb(252,252,252);
+            -fx-effect: dropshadow(three-pass-box,rgba(204,204,204,0.6), 4, 0, 0, 0);
+          }
+        }
+        &:hover{
+          .article-cell {
+            -fx-effect: dropshadow(three-pass-box,rgba(204,204,204,0.6), 8, 0, 0, 0);
+          }
+        }
+        &:selected {
+          .article-cell{
+            -fx-background-color: @backgroundColor;
+            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+          }
+        }
+      }
+    }
+
+    .tool-second{
+      -fx-background-color: rgba(255,255,255,0.4);
+      .tool-bar {
+        -fx-background-color: rgba(255, 255, 255, 0.8);
+        -fx-background-radius: 8px;
+
+        .button {
+          .btn-circle(@primaryColor);
+        }
+
+      }
+
+    }
+
+    .split-pane, &.split-pane{
+      -fx-background-color: @nothing;
+      .split-pane-divider{
+        -fx-background-color: rgba(245,237,240, 0.8);
+        -fx-padding: 0 1 0 1;
+      }
+    }
+
+    .tab-pane {
+      .tab-view(@primaryColor);
+      .prop-sheets {
+        -fx-background: rgba(245,237,240, 0.2);
+        .tool-bar {
+          -fx-background-color: rgba(245,237,240, 0.4);
+        }
+        .text-field{
+          .text-field-without-background(@primaryColor);
+        }
+        .button {
+          .btn-block(@primaryColor,@backgroundColor);
+        }
+        .slider {
+          .scrollable(@primaryColor);
+        }
+        .check-box {
+          .check-box(@primaryColor);
+        }
+        .combo-box {
+          .combo-box(@primaryColor, #FFF);
+        }
+      }
+    }
+
+  }
+
+  .search-pane {
+    -fx-background-color: rgba(255,255,255,0.4);
+    -fx-background-radius: 8px;
+    .btn-primary-text {
+      .btn-text-only(@primaryColor);
+    }
+    .list-view {
+      .list-view-radius(@backgroundColor,@primaryColor)
+    }
+  }
+
+  .btn-primary-text {
+    .btn-no-background(#FFF,@primaryColor);
+  }
+
+  .text {
+    .text-field-without-background(@primaryColor);
+  }
+
+  .btn-primary{
+    .btn-block(@primaryColor,#FFF);
+  }
+
+  .btn-info {
+    .btn-block(@secondaryColor, #FFF);
+  }
+
+  .context-menu{
+    .context-menu(13,@primaryColor,#FFF)
+  }
+
+  .select-list {
+    .list-view-simple(#FFF, #FFF, @primaryColor);
+  }
+
+  .cbx,.combo-box {
+    .combo-box(@primaryColor,#FFF);
+    -fx-background-color: rgba(255,255,255,0.6);
+  }
+
+  .popup{
+    -fx-background-color: #FFF;
+    -fx-border-style: dashed;
+    -fx-border-color: @darkPrimaryColor;
+    -fx-border-width: 1;
+  }
+
+  .btn-circle {
+    .btn-circle(@primaryColor);
+  }
+
+  .scroll-bar {
+    .scrollable(@primaryColor);
+  }
+
+}

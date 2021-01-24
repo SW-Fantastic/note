@@ -1,0 +1,17 @@
+@import "list-view";
+.dialog-pane-default(@background,@color) {
+  -fx-font-size: 13;
+  -fx-font-family: "【嵐】西良文字改+";
+  -fx-background-color: @background;
+  .button {
+    -fx-background-color: @color;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 2 4 2 4;
+  }
+  .button:hover {
+    -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  }
+  .list-view {
+    .list-view-simple(@background,@background ,@color);
+  }
+}

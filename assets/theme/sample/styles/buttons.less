@@ -1,0 +1,67 @@
+@import "colors";
+.btn-no-background(@textColor,@backgroundColor) {
+  -fx-background-color: @backgroundColor;
+  -fx-text-fill: @textColor;
+  &:hover {
+    -fx-effect: dropshadow(three-pass-box,@textColor, 10, 0, 0, 0);
+  }
+}
+
+
+
+.btn-block(@background, @text) {
+  -fx-background-color: @background;
+  -fx-text-fill: @text;
+  -fx-background-insets: 2 4 2 4;
+  &:hover{
+    -fx-effect: dropshadow(three-pass-box,@background, 8, 0, 0, 0);
+  }
+}
+
+.btn-circle(@text) {
+  -fx-background-color: @nothing;
+  -fx-text-fill: @text;
+  -fx-border-style: dashed;
+  -fx-border-width: 1px;
+  -fx-border-color: @text;
+  -fx-border-radius: 60px;
+  &:hover {
+    -fx-effect: dropshadow(three-pass-box,@text, 8, 0, 0, 0);
+  }
+}
+
+.toggle-button(@text) {
+  -fx-border-style: none;
+  -fx-text-fill: @text;
+  -fx-border-width: 0;
+  -fx-background-color: @backgroundColor;
+
+  &:selected {
+    -fx-background-color: @backgroundColor;
+    -fx-effect: innershadow(three-pass-box,@text, 6, 0.2, 2, 3);
+    -fx-border-style: dashed;
+    -fx-border-width: 1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-color: @text;
+  }
+
+  &:hover {
+    -fx-effect: dropshadow(three-pass-box,@text, 8, 0, 0, 0);
+    -fx-border-width: 0.8;
+    -fx-border-style: none;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+  }
+
+}
+
+
+.btn-text-only(@color) {
+  -fx-text-fill: @color;
+  -fx-background-color: @nothing;
+  -fx-border-color: @nothing;
+  &:hover {
+    -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  }
+}
