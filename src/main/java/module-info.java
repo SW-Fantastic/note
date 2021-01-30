@@ -16,6 +16,7 @@ module noteEditor {
     requires org.apache.tika.core;
     requires remark;
     requires nitrite;
+    requires je;
 
     requires org.fxmisc.richtext;
 

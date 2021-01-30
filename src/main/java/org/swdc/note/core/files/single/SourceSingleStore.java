@@ -64,4 +64,9 @@ public class SourceSingleStore extends AbstractSingleStore {
     public boolean support(File file) {
         return file.getName().endsWith(this.getExtension());
     }
+
+    @Override
+    public String toString() {
+        return getFileTypeName();
+    }
 }

@@ -40,7 +40,7 @@
             <SplitPane dividerPositions="0.07285974499089254" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <items>
                   <TreeView id="typeTree" fx:id="typeTree" minWidth="280.0" prefHeight="492.0" prefWidth="280.0" />
-                  <ListView id="articleList" fx:id="articlesList" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
+                  <ListView id="articleList" fx:id="articlesList" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" styleClass="article-list" />
                </items>
             </SplitPane>
          </center>

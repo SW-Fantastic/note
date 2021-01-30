@@ -1,21 +1,27 @@
 @import "colors";
 .combo-box(@textColor, @background) {
-  -fx-border-color: @textColor;
-  -fx-border-style: solid;
-  -fx-border-width: 0 0 1.5 0;
-  .list-view {
+  -fx-background-color: @backgroundColor;
+  -fx-effect: dropshadow(three-pass-box,@textColor, 6, 0, 0, 0);
+  .list-cell {
     -fx-text-fill: @textColor;
-    -fx-background-color: @background;
-    .list-cell:selected *{
-      -fx-text-fill: @background;
-      -fx-background-color: @textColor;
-    }
-    .list-cell:hover{
-      -fx-text-fill: @background;
-      -fx-background-color: @textColor;
-    }
-    .list-cell:hover *{
-      -fx-text-fill: @background;
+  }
+  .arrow {
+    -fx-background-color: @textColor;
+  }
+  .combo-box-popup {
+    .list-view {
+      .list-cell {
+        -fx-text-fill: @textColor;
+        -fx-background-color: @background;
+        &:selected {
+          -fx-text-fill: @background;
+          -fx-background-color: @textColor;
+        }
+        &:hover {
+          -fx-text-fill: @background;
+          -fx-background-color: @textColor;
+        }
+      }
     }
   }
 }
@@ -27,14 +33,32 @@
   -fx-border-style: solid;
 }
 
-.check-box(@color) {
+.text-field-bordered(@text,@bg) {
+  -fx-background-color: @bg;
+  -fx-effect: dropshadow(three-pass-box,@text, 6, 0, 0, 0);
+  -fx-text-fill: @text;
+}
+
+.check-box-without-border(@color,@background) {
   .box {
-    -fx-background-color: @nothing;
-    -fx-border-color: @color;
+    -fx-background-color: @background;
+    -fx-border-color: @nothing;
   }
   &:selected .mark {
     -fx-background-color: @color;
+  }
+  -fx-effect: dropshadow(three-pass-box,@color, 6, 0, 0, 0);
+}
+
+.scrollable-config(@color,@background) {
+  -fx-font-size: 12;
+  -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  .thumb {
+    -fx-background-color: @color;
     -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+  }
+  .track {
+    -fx-background-color: @backgroundColor;
   }
 }
 
@@ -52,7 +76,7 @@
   }
 }
 
-.tab-view(@color) {
+.tab-view(@color,@background) {
   -fx-background-color: @nothing;
   -fx-background-radius: 8;
   -fx-tab-min-width: 80;
@@ -61,16 +85,17 @@
     -fx-font-size: 13;
   }
   .tab-header-background {
-    -fx-background-color: rgba(255,255,255,0.4);
-    -fx-effect: dropshadow(three-pass-box,@color, 8, 0, 0, 0);
+    -fx-background-color: @background;
   }
   .tab {
     -fx-focus-color:@nothing;
-    -fx-background-color: rgba(255,255,255,0.5);
-  }
-  .tab:selected {
-    -fx-focus-color: @nothing;
-    -fx-background-color: #FFF;
+    -fx-background-color: @nothing;
+    -fx-border-radius: 0;
+    &:selected {
+      -fx-focus-color: @nothing;
+      -fx-background-color: #FFF;
+      -fx-effect: innershadow(three-pass-box,@color, 4, 0.2, 2, 3);
+    }
   }
 }
 .context-menu(@fontSize, @color, @background){

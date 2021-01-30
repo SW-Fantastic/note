@@ -1,5 +1,6 @@
 @primaryColor: #7CA982;
 @darkPrimaryColor: #243E36;
+@backgroundColor: #FDFFFC;
 @nothing: rgba(0,0,0,0);
 
 .scene {
@@ -13,39 +14,35 @@
   }
 
   .tool-area {
-    -fx-background-color: rgba(245,237,240, 0.5);
+    -fx-background-color: @backgroundColor;
     -fx-font-size: 12;
     .tool-bar {
-      -fx-background-color: rgba(255,255,255, 0.8);
-      -fx-background-radius: 8px;
+      -fx-background-color: @backgroundColor;
+      -fx-effect: dropshadow(three-pass-box,#CCC, 6, 0, 0, 0);
+      -fx-background-radius: 0px;
       .button {
-        -fx-background-color: @nothing;
-        -fx-text-fill: @primaryColor;
-        -fx-border-width: 0.5;
-        -fx-border-style: dashed;
-        -fx-border-color: @primaryColor;
-        -fx-border-radius: 12;
+        -fx-background-color: @backgroundColor;
+        -fx-text-fill: @darkPrimaryColor;
+        -fx-background-radius: 0;
       }
       .button:hover {
-        -fx-effect: dropshadow(three-pass-box,@darkPrimaryColor, 8, 0, 0, 0);
+        -fx-background-color: @backgroundColor;
+        -fx-effect: dropshadow(three-pass-box,@darkPrimaryColor, 6, 0, 0, 0);
       }
       .menu-button {
-        -fx-background-color: @nothing;
-        -fx-text-fill: #74A982;
-        -fx-border-width: 0.5;
-        -fx-border-style: dashed;
-        -fx-border-color: #74A982;
-        -fx-border-radius: 12;
+        -fx-background-color: @backgroundColor;
+        -fx-text-fill: @darkPrimaryColor;
       }
       .menu-button:hover {
-        -fx-effect: dropshadow(three-pass-box,@darkPrimaryColor, 8, 0, 0, 0);
+        -fx-effect: dropshadow(three-pass-box,@darkPrimaryColor, 6, 0, 0, 0);
       }
     }
-    .text{
-      -fx-background-color: rgba(255,255,255,0.6);
-      -fx-border-width: 0 0 2 0;
-      -fx-border-color: @primaryColor;
-      -fx-border-style: solid;
+    .text-field{
+      -fx-background-color: @backgroundColor;
+      -fx-background-radius: 0px;
+      -fx-effect: dropshadow(three-pass-box,#CCC, 5, 0, 0, 0);
+      -fx-border-width: 0px;
+      -fx-font-size: 15px;
     }
   }
   .tab-pane {
@@ -57,14 +54,22 @@
       -fx-font-size: 13;
     }
     .tab-header-background {
-      -fx-background-color: rgba(255,255,255,0.4);
-      -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+      -fx-background-color: @primaryColor;
     }
     .tab {
+      .tab-label {
+        -fx-text-fill: #FFF;
+      }
       -fx-focus-color:@nothing;
-      -fx-background-color: rgba(255,255,255,0.5);
+      -fx-background-color: @primaryColor;
+      -fx-border-width: 1px;
+      -fx-border-color: #FFF;
+      -fx-border-style: dashed;
     }
     .tab:selected {
+      .tab-label {
+        -fx-text-fill: @primaryColor;
+      }
       -fx-focus-color: @nothing;
       -fx-background-color: #FFF;
     }

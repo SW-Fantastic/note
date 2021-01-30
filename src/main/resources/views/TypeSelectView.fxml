@@ -32,8 +32,8 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" prefHeight="42.0" prefWidth="285.0" spacing="6.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="26.0" prefWidth="72.0" styleClass="btn-info" text="取消" />
-            <Button mnemonicParsing="false" onAction="#ok" prefHeight="26.0" prefWidth="72.0" styleClass="btn-primary" text="确定" />
+            <Button mnemonicParsing="false" onAction="#cancel" prefHeight="32.0" prefWidth="79.0" styleClass="btn-info" text="取消" />
+            <Button mnemonicParsing="false" onAction="#ok" prefHeight="32.0" prefWidth="79.0" styleClass="btn-primary" text="确定" />
          </children>
          <padding>
             <Insets right="8.0" />
@@ -45,6 +45,9 @@
       <String fx:value="dialog-pane" />
    </styleClass>
    <center>
-      <TreeView id="typeTree" fx:id="typeTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <TreeView id="typeTree" fx:id="typeTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="4.0" right="4.0" />
+         </BorderPane.margin></TreeView>
    </center>
 </BorderPane>

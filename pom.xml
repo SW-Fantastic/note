@@ -221,6 +221,12 @@
             <scope>system</scope>
             <systemPath>${pom.basedir}/libs/ik-analyzer-8.4.0.jar</systemPath>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.sleepycat/je -->
+        <dependency>
+            <groupId>com.sleepycat</groupId>
+            <artifactId>je</artifactId>
+            <version>18.3.12</version>
+        </dependency>
     </dependencies>
 
     <build>
