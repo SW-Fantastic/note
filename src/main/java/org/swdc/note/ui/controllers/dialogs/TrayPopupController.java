@@ -1,8 +1,9 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import org.swdc.fx.FXController;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.ui.view.ArticleEditorView;
@@ -14,7 +15,11 @@ import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class TrayPopupController extends FXController {
+public class TrayPopupController extends ViewController<TrayPopupView> {
+
+    @Inject
+    private MainView mainView;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -27,14 +32,14 @@ public class TrayPopupController extends FXController {
 
     @FXML
     public void showMainView() {
-        findView(MainView.class).show();
+        mainView.show();
         TrayPopupView popupView = getView();
-        popupView.close();
+        popupView.hide();
     }
 
     @FXML
     public void createNewDoc() {
-        ArticleEditorView editorView = findView(ArticleEditorView.class);
+        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
         Article article = new Article();
         article.setTitle("未命名" + new Date().getTime());
         article.setContent(new ArticleContent());
@@ -42,15 +47,15 @@ public class TrayPopupController extends FXController {
         editorView.addArticle(article);
         editorView.show();
         TrayPopupView popupView = getView();
-        popupView.close();
+        popupView.hide();
     }
 
     @FXML
     public void openURL(){
         TrayPopupView popupView = getView();
-        popupView.close();
+        popupView.hide();
 
-        SourceDialogView sourceDialogView = findView(SourceDialogView.class);
+        SourceDialogView sourceDialogView = getView().getView(SourceDialogView.class);
         sourceDialogView.show();
 
     }

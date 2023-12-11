@@ -1,12 +1,13 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
-import org.swdc.fx.FXController;
-import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.fx.view.ViewController;
+import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.TypeExportView;
 
@@ -16,19 +17,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class TypeExportController extends FXController {
+public class TypeExportController extends ViewController<TypeExportView> {
 
     @FXML
-    private ComboBox<AbstractStorageFactory> renderComboBox;
+    private ComboBox<StorageFactory> renderComboBox;
 
-    private ObservableList<AbstractStorageFactory> renders = FXCollections.observableArrayList();
+    @Inject
+    private ArticleService articleService;
 
-    private static class RenderConvertor extends StringConverter<AbstractStorageFactory> {
+    private ObservableList<StorageFactory> renders = FXCollections.observableArrayList();
 
-        private Map<String, AbstractStorageFactory> nameMap = new HashMap<>();
+    private static class RenderConvertor extends StringConverter<StorageFactory> {
 
-        public RenderConvertor(List<AbstractStorageFactory> exporters) {
-            for (AbstractStorageFactory formatter: exporters) {
+        private Map<String, StorageFactory> nameMap = new HashMap<>();
+
+        public RenderConvertor(List<StorageFactory> exporters) {
+            for (StorageFactory formatter: exporters) {
                 if (nameMap.containsKey(formatter.getName())) {
                     continue;
                 }
@@ -37,45 +41,43 @@ public class TypeExportController extends FXController {
         }
 
         @Override
-        public String toString(AbstractStorageFactory formatter) {
+        public String toString(StorageFactory formatter) {
             return formatter == null ? null : formatter.getName();
         }
 
         @Override
-        public AbstractStorageFactory fromString(String s) {
+        public StorageFactory fromString(String s) {
             return nameMap.get(s);
         }
     }
 
     @Override
-    public void initialize() {
-        ArticleService articleService = findService(ArticleService.class);
-        List<AbstractStorageFactory> formatters = articleService.getAllExternalStorage(null);
+    protected void viewReady(URL url, ResourceBundle resourceBundle) {
+
+        renderComboBox.setItems(renders);
+
+
+        List<StorageFactory> formatters = articleService.getAllExternalStorage(null);
         RenderConvertor convertor = new RenderConvertor(formatters);
         renderComboBox.setConverter(convertor);
         this.renders.addAll(formatters);
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        renderComboBox.setItems(renders);
-    }
-
-    public AbstractStorageFactory getSelected(){
+    public StorageFactory getSelected(){
         return renderComboBox.getSelectionModel().getSelectedItem();
     }
 
     @FXML
     public void onOK() {
         TypeExportView exportView = getView();
-        exportView.close();
+        exportView.hide();
     }
 
     @FXML
     public void onCancel() {
         renderComboBox.getSelectionModel().clearSelection();
         TypeExportView exportView = getView();
-        exportView.close();
+        exportView.hide();
     }
 
 }

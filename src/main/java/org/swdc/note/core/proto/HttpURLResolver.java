@@ -2,6 +2,7 @@ package org.swdc.note.core.proto;
 
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypes;
+import org.swdc.dependency.annotations.MultipleImplement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -11,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
+@MultipleImplement(URLProtoResolver.class)
 public class HttpURLResolver extends URLProtoResolver {
 
     public static byte[] loadHttpData(String url) throws Exception{

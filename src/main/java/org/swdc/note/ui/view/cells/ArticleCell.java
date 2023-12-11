@@ -1,5 +1,7 @@
 package org.swdc.note.ui.view.cells;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -8,44 +10,38 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.service.ArticleService;
-import org.swdc.note.ui.events.RefreshEvent;
-import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.ReaderView;
 
-@Scope(ScopeType.MULTI)
-@View(stage = false)
-public class ArticleCell extends FXView {
+@View(stage = false,multiple = true,viewLocation = "views/main/ArticleCell.fxml")
+public class ArticleCell extends AbstractView {
 
-    @Aware
+    @Inject
     private ArticleEditorView editorView = null;
 
-    @Aware
+    @Inject
     private ReaderView readerView = null;
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
     private Article article;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         initViewToolButton("open","insert_drive_file", this::readArticle);
         initViewToolButton("edit","create", this::editArticle);
         initViewToolButton("delete","delete", this::deleteArticle);
-        Parent cell = this.getView();
+        Parent cell = (Parent) this.getView();
         cell.setOnMouseClicked(this::onClick);
     }
 

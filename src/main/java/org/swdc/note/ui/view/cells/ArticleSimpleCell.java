@@ -1,26 +1,24 @@
 package org.swdc.note.ui.view.cells;
 
+import jakarta.annotation.PostConstruct;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.ui.view.ReaderView;
 
 import java.text.SimpleDateFormat;
 
-@Scope(ScopeType.MULTI)
-@View(stage = false)
-public class ArticleSimpleCell extends FXView {
+@View(stage = false,multiple = true,viewLocation = "views/main/ArticleSimpleCell.fxml")
+public class ArticleSimpleCell extends AbstractView {
 
     private Article article;
 
-    @Override
+    @PostConstruct
     public void initialize() {
-        HBox view = getView();
+        HBox view = (HBox) getView();
         view.setOnMouseClicked(this::onClick);
     }
 
@@ -29,7 +27,7 @@ public class ArticleSimpleCell extends FXView {
             return;
         }
         if (event.getClickCount() >= 2) {
-            ReaderView view = findView(ReaderView.class);
+            ReaderView view = getView(ReaderView.class);
             view.addArticle(article);
             view.show();
         }

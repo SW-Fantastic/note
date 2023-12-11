@@ -1,12 +1,16 @@
 package org.swdc.note.core.files;
 
-import org.swdc.note.core.files.storages.AbstractArticleStorage;
+import org.swdc.dependency.annotations.ImplementBy;
+import org.swdc.note.core.files.factory.NoSqlStorageFactory;
 
 import java.io.File;
 
+@ImplementBy({
+        NoSqlStorageFactory.class
+})
 public interface StorageFactory {
 
-    AbstractArticleStorage getTypeStorage();
+    ExternalStorage getTypeStorage();
 
     String getName();
 

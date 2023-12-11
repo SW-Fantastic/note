@@ -1,20 +1,18 @@
 package org.swdc.note.ui.view.dialogs;
 
+import jakarta.annotation.PostConstruct;
 import javafx.scene.control.ListView;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.ui.controllers.dialogs.ImageViewController;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-@View(dialog = true, title = "图片")
-@Scope(ScopeType.MULTI)
-public class ImagesView extends FXView {
+@View(dialog = true, title = "图片",multiple = true,viewLocation = "views/main/ImagesView.fxml")
+public class ImagesView extends AbstractView {
 
-    @Override
+    @PostConstruct
     public void initialize() {
         this.getStage().setOnCloseRequest(e -> {
             this.clear();
@@ -29,12 +27,12 @@ public class ImagesView extends FXView {
     }
 
     public Map<String, ByteBuffer> getImages() {
-        ImageViewController controller = getLoader().getController();
+        ImageViewController controller = getController();
         return controller.getImages();
     }
 
     public void addImage(String name, byte[] data) {
-        ImageViewController controller = getLoader().getController();
+        ImageViewController controller = getController();
         controller.addImage(name, ByteBuffer.wrap(data));
     }
 

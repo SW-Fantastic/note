@@ -1,11 +1,11 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Listener;
+import org.swdc.dependency.annotations.EventListener;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
@@ -21,31 +21,28 @@ import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.findTypeItem;
 
-public class TypeSelectController extends FXController {
+public class TypeSelectController extends ViewController<TypeSelectView> {
 
     @FXML
     private TreeView<ArticleType> typeTree;
 
-    @Aware
+    @Inject
     private ArticleService service = null;
 
     private TreeItem<ArticleType> typeRoot = new TreeItem<>();
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void viewReady(URL url, ResourceBundle resourceBundle) {
         typeTree.setShowRoot(false);
         typeTree.setRoot(typeRoot);
         typeRoot.setExpanded(true);
-    }
-
-    @Override
-    public void initialize() {
         refresh(null);
     }
 
-    @Listener(RefreshEvent.class)
+
+    @EventListener(type = RefreshEvent.class)
     public void refresh(RefreshEvent event) {
-        if (event == null || event.getData() == null) {
+        if (event == null || event.getArticleType() == null) {
             typeRoot.getChildren().clear();
             List<ArticleType> types = this.service.getTypes();
             List<TreeItem<ArticleType>> items = types.stream()
@@ -55,7 +52,7 @@ public class TypeSelectController extends FXController {
             return;
         }
         // 刷新分类树
-        ArticleType type = event.getData();
+        ArticleType type = event.getArticleType();
         if (type.getParent() != null) {
             TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
             if (parent != null) {
@@ -88,7 +85,7 @@ public class TypeSelectController extends FXController {
 
     @FXML
     private void createType() {
-        TypeCreateView createView = findView(TypeCreateView.class);
+        TypeCreateView createView = getView().getView(TypeCreateView.class);
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
         createView.setParent(typeTreeItem == null ? null : typeTreeItem.getValue());
         createView.show();
@@ -98,13 +95,13 @@ public class TypeSelectController extends FXController {
     private void cancel() {
         typeTree.getSelectionModel().clearSelection();
         TypeSelectView selectView = getView();
-        selectView.close();
+        selectView.hide();
     }
 
     @FXML
     private void ok() {
         TypeSelectView selectView = getView();
-        selectView.close();
+        selectView.hide();
     }
 
 }

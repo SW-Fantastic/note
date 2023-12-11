@@ -1,5 +1,8 @@
 package org.swdc.note.ui.view;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
@@ -8,31 +11,35 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 
 import java.util.HashMap;
 
-@View(title = "幻想笔记", resizeable = true,background = true)
-public class MainView extends FXView {
+@View(title = "幻想笔记",viewLocation = "views/main/MainView.fxml")
+public class MainView extends AbstractView {
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
+
+    @Inject
+    private TypeSubView typeSubView;
+
+    @Inject
+    private ConfigSubView configSubView;
+
 
     private ToggleGroup group;
 
-    private HashMap<Class, FXView> subViews = new HashMap<>();
-
     private SimpleDoubleProperty subViewWidth = new SimpleDoubleProperty();
+
     private SimpleDoubleProperty subViewHeight = new SimpleDoubleProperty();
 
 
-    @Override
+    @PostConstruct
     public void initialize() {
-        super.initialize();
         this.group = new ToggleGroup();
         this.initViewToolButton("type", "list");
         this.initViewToolButton("conf","settings");
@@ -46,7 +53,19 @@ public class MainView extends FXView {
         BorderPane root = findById("rootContainer");
         subViewHeight.bind(root.heightProperty());
         subViewWidth.bind(root.widthProperty().subtract(62));
+
+        initialSizes(typeSubView);
+        initialSizes(configSubView);
+
         group.selectToggle(findById("type"));
+
+    }
+
+    private void initialSizes(AbstractView view) {
+        BorderPane root = (BorderPane) view.getView();
+        root.setPrefSize(subViewWidth.getValue(),subViewHeight.getValue());
+        root.prefWidthProperty().bind(subViewWidth);
+        root.prefHeightProperty().bind(subViewHeight);
     }
 
     private void viewToggleChange(Observable observable, Toggle oldVal, Toggle newVal) {
@@ -54,10 +73,10 @@ public class MainView extends FXView {
         ToggleButton tgNew = (ToggleButton)newVal;
         if (tgNew == null) {
             group.selectToggle(tgOld);
-            this.viewChange(tgOld.getId());
+            this.viewChange(tgOld.getId(),0);
             return;
         }
-        this.viewChange(tgNew.getId());
+        this.viewChange(tgNew.getId(),0);
     }
 
 
@@ -72,24 +91,23 @@ public class MainView extends FXView {
         group.getToggles().add(toggleButton);
     }
 
-    private void viewChange(Class viewContent) {
-        BorderPane borderPane = findById("content");
-        FXView view = subViews.get(viewContent);
-        if (view == null) {
-            view = findView(viewContent);
-            BorderPane contentRoot =  view.getView();
-            contentRoot.prefWidthProperty().bind(subViewWidth);
-            contentRoot.prefHeightProperty().bind(subViewHeight);
-            subViews.put(viewContent,view);
-        }
-        borderPane.setCenter(view.getView());
-        borderPane.requestLayout();
-    }
 
-    private void viewChange(String name) {
+
+    private void viewChange(String name, int count) {
+        BorderPane borderPane = findById("content");
+        borderPane.setCenter(null);
         switch (name) {
-            case "type": viewChange(TypeSubView.class);break;
-            case "conf": viewChange(ConfigSubView.class);break;
+            case "type" : {
+                borderPane.setCenter(typeSubView.getView());
+                break;
+            }
+            case "conf" : {
+                borderPane.setCenter(configSubView.getView());
+                break;
+            }
+        }
+        if (count < 1) {
+            viewChange(name,++count);
         }
     }
 

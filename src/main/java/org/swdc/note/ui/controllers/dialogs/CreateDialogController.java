@@ -1,23 +1,20 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
-import org.swdc.note.ui.events.RefreshEvent;
-import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.dialogs.TypeCreateView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CreateDialogController extends FXController {
+public class CreateDialogController extends ViewController<TypeCreateView> {
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
     @FXML
@@ -33,7 +30,7 @@ public class CreateDialogController extends FXController {
     public void onCancel() {
         txtName.setText("");
         TypeCreateView createView = getView();
-        createView.close();
+        createView.hide();
     }
 
     @FXML
@@ -46,8 +43,8 @@ public class CreateDialogController extends FXController {
         type.setName(txtName.getText());
         type.setParent(createView.getParent());
         if((type = articleService.createType(type)) != null) {
-            createView.close();
-            UIUtils.notification("分类《" + type.getName() + "》 保存成功！",createView);
+            createView.hide();
+            UIUtils.notification("分类《" + type.getName() + "》 保存成功！");
             //this.emit(new RefreshEvent(type,this, RefreshType.CREATION));
             txtName.setText("");
             return;

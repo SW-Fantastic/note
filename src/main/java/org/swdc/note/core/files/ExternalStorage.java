@@ -1,13 +1,19 @@
 package org.swdc.note.core.files;
 
 import javafx.stage.FileChooser;
+import org.swdc.dependency.annotations.ImplementBy;
+import org.swdc.dependency.annotations.MultipleImplement;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.files.storages.NoSqlExtStorage;
 
 import java.io.File;
 import java.util.List;
 
+@ImplementBy({
+        NoSqlExtStorage.class
+})
 public interface ExternalStorage {
 
     /**

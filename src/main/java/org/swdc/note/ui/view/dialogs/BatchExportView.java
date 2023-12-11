@@ -1,27 +1,24 @@
 package org.swdc.note.ui.view.dialogs;
 
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
-//import org.swdc.note.core.formatter.ContentFormatter;
+import jakarta.annotation.PostConstruct;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.ui.controllers.dialogs.BatchExportViewController;
 
-@Scope(ScopeType.MULTI)
-@View(title = "存储为",dialog = true)
-public class BatchExportView extends FXView {
+@View(title = "存储为",dialog = true,multiple = true,viewLocation = "views/main/BatchExportView.fxml")
+public class BatchExportView extends AbstractView {
 
-    @Override
+    @PostConstruct
     public void initialize() {
         getStage().setOnCloseRequest(e -> {
-            BatchExportViewController controller = getLoader().getController();
+            BatchExportViewController controller = getController();
             controller.onCancel();
         });
     }
 
     public SingleStorage getSelected() {
-        BatchExportViewController controller = getLoader().getController();
+        BatchExportViewController controller = getController();
         return controller.getSelected();
     }
 

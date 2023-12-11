@@ -20,7 +20,7 @@ public class ArticleSimpleListCell extends ListCell<Article> {
             return;
         }
         simpleCell.setArticle(article);
-        HBox box = simpleCell.getView();
+        HBox box = (HBox) simpleCell.getView();
         box.prefWidthProperty().bind(getListView().widthProperty().subtract(24));
         setGraphic(box);
     }

@@ -1,15 +1,22 @@
 package org.swdc.note.core.files.factory;
 
-import org.swdc.note.core.files.storages.AbstractArticleStorage;
+import jakarta.inject.Inject;
+import org.swdc.dependency.annotations.MultipleImplement;
+import org.swdc.note.core.files.ExternalStorage;
+import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.core.files.storages.NoSqlExtStorage;
 
 import java.io.File;
 
-public class NoSqlStorageFactory extends AbstractStorageFactory {
+@MultipleImplement(StorageFactory.class)
+public class NoSqlStorageFactory implements StorageFactory {
+
+    @Inject
+    private NoSqlExtStorage noSqlExtStorage;
 
     @Override
-    public AbstractArticleStorage getTypeStorage() {
-        return findComponent(NoSqlExtStorage.class);
+    public ExternalStorage getTypeStorage() {
+        return noSqlExtStorage;
     }
 
     @Override

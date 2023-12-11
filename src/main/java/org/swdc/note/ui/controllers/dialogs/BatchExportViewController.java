@@ -1,9 +1,9 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
@@ -11,21 +11,16 @@ import org.swdc.note.ui.view.dialogs.BatchExportView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class BatchExportViewController extends FXController {
+public class BatchExportViewController extends ViewController<BatchExportView> {
 
     @FXML
     private ComboBox<SingleStorage> renderComboBox;
 
-    @Aware
+    @Inject
     private ArticleService service = null;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-    }
-
-    @Override
-    public void initialize() {
+    protected void viewReady(URL url, ResourceBundle resourceBundle) {
         renderComboBox.getItems().addAll(service.getSingleStore(null));
     }
 
@@ -37,13 +32,13 @@ public class BatchExportViewController extends FXController {
     public void onCancel() {
         renderComboBox.getSelectionModel().clearSelection();
         BatchExportView view = this.getView();
-        view.close();
+        view.hide();
     }
 
     @FXML
     public void onOK() {
         BatchExportView view = this.getView();
-        view.close();
+        view.hide();
     }
 
 }

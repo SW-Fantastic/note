@@ -1,34 +1,65 @@
 package org.swdc.note.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.swdc.fx.anno.ConfigProp;
-import org.swdc.fx.anno.PropType;
-import org.swdc.fx.anno.Properties;
-import org.swdc.fx.properties.FXProperties;
+import org.swdc.config.AbstractConfig;
+import org.swdc.config.annotations.ConfigureSource;
+import org.swdc.config.annotations.Property;
+import org.swdc.config.configs.PropertiesHandler;
+import org.swdc.fx.config.PropEditor;
+import org.swdc.fx.config.editors.CheckEditor;
+import org.swdc.fx.config.editors.NumberEditor;
 
-@Properties(value = "render.properties", prefix = "markdown")
-public class RenderConfig extends FXProperties {
+@ConfigureSource(value = "assets/render.properties", handler = PropertiesHandler.class)
+public class RenderConfig extends AbstractConfig {
 
-    @Getter
-    @Setter
-    @ConfigProp(type= PropType.NUMBER_SELECTABLE,
-            value = "48",tooltip = "标题大小",
-            name = "标题大小",propName = "headerFontSize")
+
+
+    @PropEditor(
+            editor = NumberEditor.class,
+            name = "标题大小",
+            description = "标题大小",
+            resource = "12-48"
+    )
+    @Property("markdown.headerFontSize")
     private Integer headerFontSize = 24;
 
-    @Getter
-    @Setter
-    @ConfigProp(type = PropType.NUMBER_SELECTABLE,
-            name = "文本大小", value = "48",
-            tooltip = "文本大小", propName = "renderFontSize")
+    @PropEditor(
+            editor = NumberEditor.class,
+            name = "文本大小",
+            description = "文本大小",
+            resource = "12-48"
+    )
+    @Property("markdown.renderFontSize")
     private Integer renderFontSize = 14;
 
-    @Getter
-    @Setter
-    @ConfigProp(type = PropType.CHECK,
-            name = "渲染字体阴影", value = "false",
-            tooltip = "渲染字体阴影", propName = "textShadow")
+    @PropEditor(
+            editor = CheckEditor.class,
+            name = "渲染字体阴影",
+            description = "渲染字体阴影"
+    )
+    @Property("markdown.textShadow")
     private Boolean textShadow = false;
 
+    public Boolean getTextShadow() {
+        return textShadow;
+    }
+
+    public void setTextShadow(Boolean textShadow) {
+        this.textShadow = textShadow;
+    }
+
+    public void setHeaderFontSize(Integer headerFontSize) {
+        this.headerFontSize = headerFontSize;
+    }
+
+    public Integer getHeaderFontSize() {
+        return headerFontSize;
+    }
+
+    public void setRenderFontSize(Integer renderFontSize) {
+        this.renderFontSize = renderFontSize;
+    }
+
+    public Integer getRenderFontSize() {
+        return renderFontSize;
+    }
 }

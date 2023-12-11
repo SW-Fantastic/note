@@ -1,21 +1,25 @@
 package org.swdc.note.core.service;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.dizitart.no2.*;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.objects.filters.ObjectFilters;
-import org.swdc.fx.services.Service;
+import org.swdc.dependency.annotations.With;
+import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.ArticleContent;
 
 import java.io.File;
 import java.util.List;
 
-public class ContentService extends Service {
+@With(aspectBy = RefreshAspect.class)
+public class ContentService  {
 
     private Nitrite documentDB;
 
     private ObjectRepository<ArticleContent> contentRepo;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         documentDB = Nitrite.builder()
                 .compressed()
@@ -76,7 +80,7 @@ public class ContentService extends Service {
         return effect;
     }
 
-    @Override
+    @PreDestroy
     public void destroy() {
         documentDB.commit();
         documentDB.close();

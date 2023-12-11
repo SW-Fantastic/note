@@ -62,7 +62,7 @@ public class ArticleTypeListCell extends ListCell<ArticleType> {
             return;
         }
         typeCell.setType(type);
-        HBox content = typeCell.getView();
+        HBox content = (HBox) typeCell.getView();
         content.prefWidthProperty().bind(this.getListView().widthProperty().subtract(36));
         setGraphic(content);
     }

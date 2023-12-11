@@ -18,7 +18,7 @@ import javafx.stage.Screen;
 import javafx.util.Duration;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
-import org.swdc.fx.FXView;
+import org.swdc.fx.view.AbstractView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +99,7 @@ public class ContentHelper {
 
     private PopOver popOver;
 
-    public void setUpTooltip(CodeArea area, FXView view, boolean enableAutoTip,List<KeyWord> keyWords) {
+    public void setUpTooltip(CodeArea area, AbstractView view, boolean enableAutoTip, List<KeyWord> keyWords) {
         this.keyWords = keyWords;
         ListView<KeyWord> wordsList = new ListView<>();
         wordsList.setPrefHeight(240);
@@ -241,8 +241,8 @@ public class ContentHelper {
         });
     }
 
-    private void doShow(FXView view,Bounds location) {
-        BorderPane node = view.getView();
+    private void doShow(AbstractView view,Bounds location) {
+        BorderPane node = (BorderPane) view.getView();
         Bounds viewPosition = node.localToScreen(node.getBoundsInLocal());
         if (viewPosition.getMinY() + location.getCenterY() + 150 > (viewPosition.getCenterY() + node.getHeight()) / 2) {
             if (viewPosition.getMinX() + location.getCenterX() <= 150) {

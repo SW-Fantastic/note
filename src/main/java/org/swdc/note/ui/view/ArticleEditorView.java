@@ -1,5 +1,7 @@
 package org.swdc.note.ui.view;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -11,18 +13,15 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import lombok.Getter;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
@@ -38,22 +37,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@View(title = "编辑", resizeable = true, background = true, style = {"editor", "keywords"})
-public class ArticleEditorView extends FXView {
+import static org.swdc.note.ui.view.UIUtils.fxViewByView;
+
+
+@View(title = "编辑",viewLocation = "views/main/ArticleEditorView.fxml",css = {
+        "editor.css", "keywords.css"
+})
+public class ArticleEditorView extends AbstractView {
 
     private Map<Article, Tab> articleTabMap = new HashMap<>();
     private ObservableList<Tab> tabs = FXCollections.observableArrayList();
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
-    @Aware
+    @Inject
     private HTMLRender render = null;
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
-    @Getter
     private RectPopover tablePopover;
 
     private static final String[] KEYWORDS = new String[] {
@@ -104,7 +107,7 @@ public class ArticleEditorView extends FXView {
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
                     + "|(?<TITLE>" + TITLE_PATTERN + ")");
 
-    @Override
+    @PostConstruct
     public void initialize() {
 
         Stage stage = this.getStage();
@@ -135,7 +138,7 @@ public class ArticleEditorView extends FXView {
         this.initViewToolButton("italic", "format_italic");
         this.initViewToolButton("quote","format_quote");
         MenuButton header = findById("header");
-        header.setFont(iconsService.getFont(FontSize.SMALL));
+        header.setFont(iconsService.getFont(org.swdc.fx.font.FontSize.SMALL));
         header.setText(iconsService.getFontIcon("title"));
         header.getItems().forEach(this::initHeaderMenu);
 
@@ -166,20 +169,20 @@ public class ArticleEditorView extends FXView {
                 .collect(Collectors.toList());
         long unsaved = editors.stream().filter(v->!v.hasSaved()).count();
         if (unsaved > 0) {
-            showAlertDialog("关闭","继续关闭将会失去所有未保存内容，继续吗？", Alert.AlertType.CONFIRMATION)
-                    .ifPresent(btn -> {
+            alert("关闭","继续关闭将会失去所有未保存内容，继续吗？", Alert.AlertType.CONFIRMATION)
+                    .showAndWait().ifPresent(btn -> {
                         if (btn == ButtonType.OK) {
                             tabs.clear();
                             articleTabMap.clear();
                             editors.forEach(e -> e.getHelper().cancel());
-                            this.close();
+                            this.hide();
                         }
                     });
         } else {
             editors.forEach(e -> e.getHelper().cancel());
             tabs.clear();
             articleTabMap.clear();
-            this.close();
+            this.hide();
         }
     }
 
@@ -297,7 +300,7 @@ public class ArticleEditorView extends FXView {
         Tab tab = new Tab();
         tab.setText(article.getTitle());
         tab.setClosable(true);
-        EditorContentView editor = findView(EditorContentView.class);
+        EditorContentView editor = getView(EditorContentView.class);
 
         CodeArea codeArea = editor.getCodeArea();
         codeArea.setWrapText(true);
@@ -348,7 +351,8 @@ public class ArticleEditorView extends FXView {
             }
         });
 
-        BorderPane borderPane = editor.getView();
+        BorderPane borderPane = (BorderPane) editor.getView();
+        borderPane.setUserData(editor);
         tab.setContent(borderPane);
         articleTabMap.put(article, tab);
         tabs.add(tab);
@@ -381,7 +385,8 @@ public class ArticleEditorView extends FXView {
             }
             return;
         }
-        this.showAlertDialog("关闭","是否要保存《" + article.getTitle() + "》?", Alert.AlertType.CONFIRMATION)
+        this.alert("关闭","是否要保存《" + article.getTitle() + "》?", Alert.AlertType.CONFIRMATION)
+                .showAndWait()
                 .ifPresent(buttonType -> {
                     if (buttonType == ButtonType.OK) {
                         String source = editor.getCodeArea().getText();
@@ -403,7 +408,7 @@ public class ArticleEditorView extends FXView {
 
                         if (article.getSingleStore() != null) {
                             // 文档直接从文件打开，那么保存到文件。
-                            SingleStorage storage = findComponent(article.getSingleStore());
+                            SingleStorage storage = articleService.getSingleStoreBy(article.getSingleStore());
                             article.setContent(content);
                             storage.save(article,new File(article.getFullPath()));
                             tabs.remove(tab);
@@ -411,7 +416,8 @@ public class ArticleEditorView extends FXView {
                             this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
                         } else {
                             if (article.getType() == null) {
-                                this.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
+                                this.alert("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR)
+                                        .showAndWait();
                                 return;
                             }
                             Article saved = articleService.saveArticle(article, content);
@@ -420,7 +426,8 @@ public class ArticleEditorView extends FXView {
                                 articleTabMap.remove(article);
                                 this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
                             } else {
-                                showAlertDialog("提示", "保存失败", Alert.AlertType.ERROR);
+                                this.alert("提示", "保存失败", Alert.AlertType.ERROR)
+                                        .showAndWait();
                             }
                         }
                     } else {
@@ -484,4 +491,7 @@ public class ArticleEditorView extends FXView {
         return text.replaceAll("\\s","");
     }
 
+    public RectPopover getTablePopover() {
+        return tablePopover;
+    }
 }

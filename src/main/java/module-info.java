@@ -1,9 +1,13 @@
 module noteEditor {
 
-    requires fx.framework.core;
-    requires fx.framework.jpa;
-    requires fx.framework.resource;
-    requires fx.framework.aop;
+    requires swdc.application.fx;
+    requires swdc.application.dependency;
+    requires swdc.application.configs;
+    requires swdc.application.data;
+    requires jakarta.inject;
+    requires jakarta.annotation;
+
+    requires org.slf4j;
 
     requires javafx.base;
     requires javafx.controls;
@@ -12,16 +16,17 @@ module noteEditor {
 
     requires java.persistence;
     requires org.hibernate.orm.core;
-    requires lombok;
     requires org.apache.tika.core;
     requires remark;
     requires nitrite;
     requires je;
+    requires undofx;
+    requires reactfx;
+    requires java.sql;
 
     requires org.fxmisc.richtext;
 
     // require that access loggers
-    requires slf4j.api;
     requires flowless;
     requires flexmark.util.data;
     requires flexmark.profile.pegdown;
@@ -41,88 +46,100 @@ module noteEditor {
     requires lucene.core;
     requires ik.analyzer;
 
+    opens org.swdc.note.core to
+            swdc.application.dependency;
+
     opens org.swdc.note.core.aspect to
-            fx.framework.core,
-            fx.framework.aop;
+            swdc.application.dependency;
 
     opens org.swdc.note.core.files to
-            fx.framework.core;
+            swdc.application.dependency;
 
     opens org.swdc.note.core.files.factory to
-            fx.framework.core;
+            swdc.application.dependency;
 
     opens org.swdc.note.core.files.single to
             com.fasterxml.jackson.databind,
-            fx.framework.core;
+            swdc.application.dependency;
 
     opens org.swdc.note.core.files.storages to
             com.fasterxml.jackson.databind,
-            fx.framework.core;
+            swdc.application.dependency;
 
     opens org.swdc.note to
-            fx.framework.core,
+            swdc.application.dependency,
+            swdc.application.fx,
             javafx.graphics;
 
     opens org.swdc.note.core.proto to
-            fx.framework.core;
+            swdc.application.dependency;
 
     opens org.swdc.note.core.entities to
-            fx.framework.jpa,
+            swdc.application.data,
             com.fasterxml.jackson.databind,
             nitrite,
             org.hibernate.orm.core;
 
     opens org.swdc.note.ui.controllers to
-            fx.framework.core,
+            swdc.application.dependency,
+            swdc.application.fx,
             javafx.fxml;
 
     opens org.swdc.note.ui.controllers.dialogs to
-            fx.framework.core,
+            swdc.application.fx,
+            swdc.application.dependency,
             javafx.fxml;
 
     opens org.swdc.note.ui.component to
-            fx.framework.core;
+            swdc.application.fx,
+            swdc.application.dependency;
 
     opens org.swdc.note.core.render to
-            fx.framework.core;
+            swdc.application.dependency;
 
     opens org.swdc.note.core.service to
-            fx.framework.aop,
-            fx.framework.core;
+            swdc.application.dependency,
+            swdc.application.fx;
 
     exports org.swdc.note.core.service;
     exports org.swdc.note.core.entities;
 
     opens org.swdc.note.config to
             org.controlsfx.controls,
-            fx.framework.core;
+            swdc.application.dependency,
+            swdc.application.configs,
+            swdc.application.fx;
 
     opens org.swdc.note.core.repo to
-            fx.framework.jpa,
-            fx.framework.core;
+            swdc.application.data,
+            swdc.application.dependency;
 
     opens org.swdc.note.ui.view to
-            fx.framework.core,
+            swdc.application.dependency,
+            swdc.application.fx,
             javafx.controls,
             javafx.graphics;
 
     opens org.swdc.note.ui.view.cells to
-            fx.framework.core,
+            swdc.application.dependency,
+            swdc.application.fx,
             com.fasterxml.jackson.databind,
             javafx.controls,
             javafx.graphics;
 
     opens org.swdc.note.ui.view.dialogs to
-            fx.framework.core,
+            swdc.application.dependency,
+            swdc.application.fx,
             javafx.controls,
             javafx.graphics;
 
-    opens views to
-            fx.framework.core,
+    opens views.main to
+            swdc.application.dependency,
+            swdc.application.fx,
             javafx.graphics;
 
-    opens appIcons to
-            fx.framework.resource,
-            fx.framework.core;
+    opens icons to
+            swdc.application.dependency,
+            swdc.application.fx;
 
 }

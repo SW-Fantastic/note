@@ -1,25 +1,26 @@
 package org.swdc.note.ui.view.dialogs;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.ArticleType;
 
 
-@View(title = "分类", dialog = true)
-public class TypeSelectView extends FXView {
+@View(title = "分类", dialog = true,viewLocation = "views/main/TypeSelectView.fxml")
+public class TypeSelectView extends AbstractView {
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         Button add = findById("add");
         add.setFont(iconsService.getFont(FontSize.MIDDLE_SMALL));

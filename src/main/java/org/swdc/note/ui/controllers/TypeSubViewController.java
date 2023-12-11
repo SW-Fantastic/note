@@ -1,5 +1,6 @@
 package org.swdc.note.ui.controllers;
 
+import jakarta.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -7,23 +8,21 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import org.swdc.fx.FXController;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Listener;
+import org.slf4j.Logger;
+import org.swdc.dependency.annotations.EventListener;
+import org.swdc.fx.FXResources;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 //import org.swdc.note.core.formatter.ContentFormatter;
+import org.swdc.note.core.files.ExternalStorage;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.StorageFactory;
-import org.swdc.note.core.files.factory.AbstractStorageFactory;
-import org.swdc.note.core.files.single.AbstractSingleStore;
-import org.swdc.note.core.files.storages.AbstractArticleStorage;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
@@ -43,9 +42,15 @@ import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.findTypeItem;
 
-public class TypeSubViewController extends FXController {
+public class TypeSubViewController extends ViewController<TypeSubView> {
 
-    @Aware
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private FXResources resources;
+
+    @Inject
     private ArticleService articleService = null;
 
     @FXML
@@ -60,10 +65,10 @@ public class TypeSubViewController extends FXController {
     @FXML
     private TextField txtSearch;
 
-    @Aware
+    @Inject
     private ReaderView readerView = null;
 
-    @Aware
+    @Inject
     private ArticleEditorView editorView = null;
 
     private ObservableList<Article> recently = FXCollections.observableArrayList();
@@ -73,22 +78,19 @@ public class TypeSubViewController extends FXController {
     private TreeItem<ArticleType> typeRoot = new TreeItem<>();
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    protected void viewReady(URL url, ResourceBundle resourceBundle) {
         typeTree.setRoot(typeRoot);
         typeTree.setShowRoot(false);
         typeRoot.setExpanded(true);
-    }
 
-    @Override
-    public void initialize() {
         typeTree.setOnMouseClicked(this::onTypeTreeClicked);
         typeTree.getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this::onTreeSelectionChange);
-        articlesList.setCellFactory(list -> new ArticleListCell(findView(ArticleCell.class)));
+        articlesList.setCellFactory(list -> new ArticleListCell(getView().getView(ArticleCell.class)));
         articlesList.setItems(articles);
         articlesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        recentlyList.setCellFactory(list -> new ArticleSimpleListCell(findView(ArticleSimpleCell.class)));
+        recentlyList.setCellFactory(list -> new ArticleSimpleListCell(getView().getView(ArticleSimpleCell.class)));
         recentlyList.setItems(recently);
         this.refresh(null);
     }
@@ -104,12 +106,12 @@ public class TypeSubViewController extends FXController {
         }
     }
 
-    @Listener(RefreshEvent.class)
+    @EventListener(type = RefreshEvent.class)
     public void refresh(RefreshEvent event) {
         recently.clear();
         recently.addAll(articleService.getRecently());
 
-        if (event == null || event.getData() == null) {
+        if (event == null || event.getArticleType() == null) {
             typeRoot.getChildren().clear();
             List<ArticleType> types = this.articleService.getTypes();
             List<TreeItem<ArticleType>> items = types.stream()
@@ -119,7 +121,7 @@ public class TypeSubViewController extends FXController {
             return;
         }
         // 刷新分类树
-        ArticleType type = event.getData();
+        ArticleType type = event.getArticleType();
         Article article = event.getArticle();
         if (type.getParent() != null && article == null) {
             TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
@@ -149,23 +151,18 @@ public class TypeSubViewController extends FXController {
             }
         }
         // 刷新文档列表
-        if (articles.size() > 0) {
-            ArticleType current = articles.get(0).getType();
-            if (type.getId().equals(current.getId())) {
-                articles.clear();
-                articles.addAll(articleService.getArticles(type));
-                return;
-            }
-        }
         TreeItem<ArticleType> selected = typeTree.getSelectionModel().getSelectedItem();
         if (selected == null || selected.getValue() == null) {
             return;
         }
-        ArticleType selectedType = selected.getValue();
-        if (type.getId().equals(selectedType.getId())) {
+
+        ArticleType current = selected.getValue();
+        List<Article> articlesList = articleService.getArticles(current);
+        if (type.getId().equals(current.getId()) || articles.size() != articlesList.size()) {
             articles.clear();
-            articles.addAll(articleService.getArticles(type));
+            articles.addAll(articlesList);
         }
+
     }
 
     private void onTreeSelectionChange(Observable observable, TreeItem<ArticleType> old, TreeItem<ArticleType> next) {
@@ -179,7 +176,7 @@ public class TypeSubViewController extends FXController {
 
     @FXML
     public void onTypeAdded() {
-        TypeCreateView createView = findView(TypeCreateView.class);
+        TypeCreateView createView = getView().getView(TypeCreateView.class);
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
         if (typeTreeItem == null || typeTreeItem.getValue() == null) {
             createView.setParent(null);
@@ -197,7 +194,7 @@ public class TypeSubViewController extends FXController {
     public void createNewDocument() {
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
 
-        ArticleEditorView editorView = findView(ArticleEditorView.class);
+        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
         Article article = new Article();
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
@@ -218,13 +215,13 @@ public class TypeSubViewController extends FXController {
         if (file == null) {
             return;
         }
-        List<AbstractStorageFactory> factories = articleService.getAllExternalStorage(null);
-        for (AbstractStorageFactory factory: factories) {
+        List<StorageFactory> factories = articleService.getAllExternalStorage(null);
+        for (StorageFactory factory: factories) {
             if (!factory.support(file)) {
                 continue;
             }
             // 加载数据
-            ArticleSetView articleSetView = findView(ArticleSetView.class);
+            ArticleSetView articleSetView = getView().getView(ArticleSetView.class);
             articleSetView.loadContent(factory,file);
             articleSetView.show();
             return;
@@ -241,7 +238,7 @@ public class TypeSubViewController extends FXController {
                             return;
                         }
                         Platform.runLater(() -> {
-                            ReaderView readerView = findView(ReaderView.class);
+                            ReaderView readerView = getView().getView(ReaderView.class);
                             readerView.addArticle(article);
                             readerView.show();
                         });
@@ -251,16 +248,17 @@ public class TypeSubViewController extends FXController {
 
     @FXML
     public void showHelp() {
-        File path = new File(new File(getAssetsPath()).getAbsolutePath() + "/help.noteset");
-        AbstractStorageFactory storageFactory = articleService
+
+        File path = new File(resources.getAssetsFolder().getAbsolutePath() + "/help.noteset");
+        StorageFactory storageFactory = articleService
                 .getAllExternalStorage(f -> f.support(path)).get(0);
-        ArticleSetView setView = findView(ArticleSetView.class);
+        ArticleSetView setView = getView().getView(ArticleSetView.class);
         setView.loadContent(storageFactory,path);
         setView.show();
     }
 
     public void createDocument(ActionEvent event) {
-        ArticleEditorView editorView = findView(ArticleEditorView.class);
+        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
         Article article = new Article();
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
@@ -324,9 +322,9 @@ public class TypeSubViewController extends FXController {
             }
             SingleStorage singleStorage = filterStorageMap.get(fileChooser.getSelectedExtensionFilter());
             singleStorage.save(article,file);
-            UIUtils.notification("文档《" + article.getTitle() + "》已经导出。", this.getView());
+            UIUtils.notification("文档《" + article.getTitle() + "》已经导出。");
         } else {
-            BatchExportView batchExportView = findView(BatchExportView.class);
+            BatchExportView batchExportView = getView().getView(BatchExportView.class);
             batchExportView.show();
             SingleStorage store = batchExportView.getSelected();
             if (store == null) {
@@ -343,7 +341,7 @@ public class TypeSubViewController extends FXController {
                 Path path = dir.resolve(article.getTitle() + "." + store.getExtension());
                 store.save(article,path.toFile());
             }
-            UIUtils.notification("选择的文档已经导出。", this.getView());
+            UIUtils.notification("选择的文档已经导出。");
         }
     }
 
@@ -363,17 +361,18 @@ public class TypeSubViewController extends FXController {
     }
 
     public void deleteType(ActionEvent event) {
-        FXView view = getView();
+        AbstractView view = getView();
         TreeItem<ArticleType> type = typeTree.getSelectionModel().getSelectedItem();
         if (type == null || type.getValue() == null) {
             return;
         }
         ArticleType target = type.getValue();
-        view.showAlertDialog("提示", "删除分类将会删除分类的全部文档，确定要这样做吗？", Alert.AlertType.CONFIRMATION)
+        view.alert("提示", "删除分类将会删除分类的全部文档，确定要这样做吗？", Alert.AlertType.CONFIRMATION)
+                .showAndWait()
                 .ifPresent(btn -> {
                     if (btn == ButtonType.OK) {
                         articleService.deleteType(target);
-                        this.emit(new RefreshEvent(target, view,RefreshType.DELETE));
+                        this.getView().emit(new RefreshEvent(target, view,RefreshType.DELETE));
                     }
                 });
     }
@@ -383,7 +382,7 @@ public class TypeSubViewController extends FXController {
         if (type == null || type.getValue() == null) {
             return;
         }
-        TypeEditView editView = findView(TypeEditView.class);
+        TypeEditView editView = getView().getView(TypeEditView.class);
         editView.setType(type.getValue());
         editView.show();
     }
@@ -394,7 +393,7 @@ public class TypeSubViewController extends FXController {
             return;
         }
         ArticleType type = typeItem.getValue();
-        TypeExportView exportView = findView(TypeExportView.class);
+        TypeExportView exportView = getView().getView(TypeExportView.class);
         exportView.show();
 
         StorageFactory factory = exportView.getSelected();
@@ -402,7 +401,7 @@ public class TypeSubViewController extends FXController {
         if (factory == null) {
             return;
         }
-        AbstractArticleStorage storage = factory.getTypeStorage();
+        ExternalStorage storage = factory.getTypeStorage();
         if (storage == null) {
             return;
         }
@@ -422,7 +421,7 @@ public class TypeSubViewController extends FXController {
         storage.addType(type);
         storage.close();
 
-        UIUtils.notification("分类《" + type.getName() + "》已经导出。", this.getView());
+        UIUtils.notification("分类《" + type.getName() + "》已经导出。");
     }
 
     @FXML
@@ -430,7 +429,7 @@ public class TypeSubViewController extends FXController {
         if (txtSearch.getText().isBlank()) {
             return;
         }
-        SearchView searchView = findView(SearchView.class);
+        SearchView searchView = getView().getView(SearchView.class);
         searchView.search(txtSearch.getText());
         searchView.show();
         txtSearch.clear();

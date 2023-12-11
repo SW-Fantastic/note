@@ -1,7 +1,10 @@
 package org.swdc.note.core.files.single;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.inject.Inject;
 import javafx.stage.FileChooser;
+import org.slf4j.Logger;
+import org.swdc.dependency.annotations.MultipleImplement;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.service.ContentService;
@@ -9,7 +12,14 @@ import org.swdc.note.core.service.ContentService;
 import java.io.File;
 import java.nio.file.Files;
 
+@MultipleImplement(AbstractSingleStore.class)
 public class SourceSingleStore extends AbstractSingleStore {
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private ContentService contentService;
 
     @Override
     public FileChooser.ExtensionFilter getFilter() {
@@ -29,7 +39,6 @@ public class SourceSingleStore extends AbstractSingleStore {
     @Override
     public void save(Article article, File target) {
 
-        ContentService contentService = findService(ContentService.class);
         ArticleContent content = contentService.getArticleContent(article.getId());
         article.setContent(content);
 

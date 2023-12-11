@@ -2,11 +2,14 @@ package org.swdc.note.core.files.single;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
+import jakarta.inject.Inject;
 import javafx.stage.FileChooser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.swdc.dependency.annotations.MultipleImplement;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.proto.HttpURLResolver;
@@ -24,7 +27,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@MultipleImplement(AbstractSingleStore.class)
 public class HTMLSingleStore extends AbstractSingleStore {
+
+    @Inject
+    private HTMLRender htmlRender;
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private ContentService contentService;
 
     @Override
     public FileChooser.ExtensionFilter getFilter() {
@@ -44,12 +57,10 @@ public class HTMLSingleStore extends AbstractSingleStore {
     @Override
     public void save(Article article, File target) {
 
-        HTMLRender render = findComponent(HTMLRender.class);
 
-        ContentService contentService = findService(ContentService.class);
         ArticleContent content = Optional.ofNullable(article.getContent())
                 .orElse(contentService.getArticleContent(article.getId()));
-        String rendered = render.renderHTML(render.renderBytes(content.getSource(), content.getImages()));
+        String rendered = htmlRender.renderHTML(htmlRender.renderBytes(content.getSource(), content.getImages()));
 
         try {
             if (Files.exists(target.toPath())) {

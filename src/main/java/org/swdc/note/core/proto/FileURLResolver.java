@@ -1,10 +1,18 @@
 package org.swdc.note.core.proto;
 
+import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.swdc.dependency.annotations.MultipleImplement;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
 
+@MultipleImplement(FileURLResolver.class)
 public class FileURLResolver extends URLProtoResolver {
+
+    @Inject
+    private Logger logger;
 
 
     @Override

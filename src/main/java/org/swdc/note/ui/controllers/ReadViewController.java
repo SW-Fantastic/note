@@ -1,14 +1,13 @@
 package org.swdc.note.ui.controllers;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Listener;
+import org.swdc.dependency.annotations.EventListener;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
-import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.TypeListPopover;
@@ -21,17 +20,20 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
-public class ReadViewController extends FXController {
+public class ReadViewController extends ViewController<ReaderView> {
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
+
+    @Inject
+    private ArticleEditorView articleEditorView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
 
-    @Listener(RefreshEvent.class)
+    @EventListener(type = RefreshEvent.class)
     public void onRefresh(RefreshEvent event) {
         if (event == null) {
             return;
@@ -57,7 +59,7 @@ public class ReadViewController extends FXController {
         if (article == null ||(article.getId() == null && article.getSingleStore() == null)) {
             return;
         }
-        ArticleEditorView editorView = findView(ArticleEditorView.class);
+        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
         editorView.addArticle(article);
         editorView.show();
     }
@@ -69,13 +71,14 @@ public class ReadViewController extends FXController {
         if (article == null || article.getId() == null) {
             return;
         }
-        readerView.showAlertDialog("删除","的确要删除《" + article.getTitle() + "》吗？", Alert.AlertType.CONFIRMATION)
+        readerView.alert("删除","的确要删除《" + article.getTitle() + "》吗？", Alert.AlertType.CONFIRMATION)
+                .showAndWait()
                 .ifPresent(btn -> {
                     if (btn == ButtonType.OK) {
                         ArticleType type = article.getType();
                         articleService.deleteArticle(article);
                         readerView.closeTab(article.getId());
-                        this.emit(new RefreshEvent(type,this, RefreshType.DELETE));
+                        readerView.emit(new RefreshEvent(type,this.getView(), RefreshType.DELETE));
                     }
                 });
     }

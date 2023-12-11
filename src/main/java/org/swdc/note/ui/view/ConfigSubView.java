@@ -1,27 +1,62 @@
 package org.swdc.note.ui.view;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.View;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import org.controlsfx.control.PropertySheet;
+import org.slf4j.Logger;
+import org.swdc.config.AbstractConfig;
+import org.swdc.fx.FXResources;
+import org.swdc.fx.config.ConfigViews;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.Toast;
+import org.swdc.fx.view.View;
 import org.swdc.note.config.AppConfig;
 import org.swdc.note.config.RenderConfig;
 
-@View(stage = false)
-public class ConfigSubView extends FXView {
+@View(viewLocation = "views/main/ConfigSubView.fxml",stage = false)
+public class ConfigSubView extends AbstractView {
 
-    @Override
+    @Inject
+    private AppConfig config;
+
+    @Inject
+    private FXResources resources;
+
+    @Inject
+    private RenderConfig renderConfig;
+
+    @Inject
+    private Logger logger;
+
+    @PostConstruct
     public void initialize() {
-        AppConfig config = findComponent(AppConfig.class);
         TabPane tabPane = findById("tabs");
-
-        Tab tabMainCfg = new Tab("默认配置");
-        tabMainCfg.setContent(config.getEditor());
-        tabPane.getTabs().add(tabMainCfg);
-
-        RenderConfig renderConfig = findComponent(RenderConfig.class);
-        Tab tabRenderCfg = new Tab("渲染配置");
-        tabRenderCfg.setContent(renderConfig.getEditor());
-        tabPane.getTabs().add(tabRenderCfg);
+        createToggleSettingView(tabPane,config,"通用");
+        createToggleSettingView(tabPane,renderConfig,"渲染");
     }
+
+    private void createToggleSettingView(TabPane tabPane, AbstractConfig config,String name) {
+        ObservableList confGenerals = ConfigViews.parseConfigs(resources,config);
+        PropertySheet generalConfSheet = new PropertySheet(confGenerals);
+        generalConfSheet.setPropertyEditorFactory(ConfigViews.factory(resources));
+
+        generalConfSheet.setModeSwitcherVisible(false);
+        generalConfSheet.setSearchBoxVisible(false);
+        generalConfSheet.getStyleClass().add("prop-sheet");
+
+        Tab tab = new Tab(name);
+        tab.setContent(generalConfSheet);
+        tabPane.getTabs().add(tab);
+    }
+
+
+
 }

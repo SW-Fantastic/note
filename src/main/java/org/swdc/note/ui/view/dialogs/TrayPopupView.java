@@ -1,28 +1,29 @@
 package org.swdc.note.ui.view.dialogs;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import org.swdc.fx.PopupView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractSwingView;
+import org.swdc.fx.view.View;
 
 
-@View
-public class TrayPopupView extends PopupView {
+@View(viewLocation = "views/main/TrayPopupView.fxml")
+public class TrayPopupView extends AbstractSwingView {
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         this.initViewToolButton("mainView","home");
         this.initViewToolButton("create","edit");
         this.initViewToolButton("open","attach_file");
-        ((Parent)getView()).setOnMouseExited(e -> {
-            this.close();
+        getView().setOnMouseExited(e -> {
+            this.hide();
         });
     }
 

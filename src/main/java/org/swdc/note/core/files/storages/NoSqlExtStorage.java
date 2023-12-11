@@ -1,23 +1,23 @@
 package org.swdc.note.core.files.storages;
 
+import jakarta.inject.Inject;
 import javafx.stage.FileChooser;
-import lombok.Data;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.objects.Id;
 import org.dizitart.no2.objects.ObjectRepository;
 import org.dizitart.no2.objects.filters.ObjectFilters;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
+import org.swdc.dependency.annotations.MultipleImplement;
+import org.swdc.dependency.annotations.Prototype;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.files.ExternalStorage;
 import org.swdc.note.core.service.ContentService;
 
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Data
 class ExArticleType {
 
     private String typeId;
@@ -30,26 +30,93 @@ class ExArticleType {
 
     private List<ExArticle> articles;
 
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<ExArticleType> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ExArticleType> children) {
+        this.children = children;
+    }
+
+    public List<ExArticle> getArticles() {
+        return articles;
+    }
+
+    public void setArticles(List<ExArticle> articles) {
+        this.articles = articles;
+    }
 }
 
-@Data
 class ExArticle {
+    public String getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(String articleId) {
+        this.articleId = articleId;
+    }
+
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Id
     private String articleId;
     private String typeId;
     private String title;
 
+
+
 }
 
-@Scope(ScopeType.MULTI)
-public class NoSqlExtStorage extends AbstractArticleStorage {
+@Prototype
+@MultipleImplement(ExternalStorage.class)
+public class NoSqlExtStorage implements ExternalStorage {
 
     private Nitrite nitrite;
 
     private ObjectRepository<ExArticleType> typeRepository;
     private ObjectRepository<ExArticle> articleRepository;
     private ObjectRepository<ArticleContent> contentRepository;
+
+    @Inject
+    private ContentService contentService;
 
     @Override
     public boolean open(File file) {
@@ -114,8 +181,6 @@ public class NoSqlExtStorage extends AbstractArticleStorage {
     }
 
     private String addArticleInternal(Article article, String typeId) {
-
-        ContentService contentService = findService(ContentService.class);
 
         ExArticle stored = articleRepository.find(ObjectFilters.and(
                 ObjectFilters.eq("articleId",article.getId()),

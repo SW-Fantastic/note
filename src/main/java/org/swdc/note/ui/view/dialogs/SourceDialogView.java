@@ -1,34 +1,35 @@
 package org.swdc.note.ui.view.dialogs;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.ui.controllers.dialogs.SourceDialogController;
 
-@View(title = "载入")
-public class SourceDialogView extends FXView {
+@View(title = "载入",viewLocation = "views/main/SourceDialogView.fxml")
+public class SourceDialogView extends AbstractView {
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         Button open = findById("btnOpen");
         open.setPadding(new Insets(4,4,4,4));
         open.setFont(iconsService.getFont(FontSize.MIDDLE_SMALL));
         open.setText(iconsService.getFontIcon("folder"));
         this.getStage().setOnCloseRequest(e -> {
-            SourceDialogController controller = getLoader().getController();
+            SourceDialogController controller = getController();
             controller.onCancel();
         });
     }
 
     public String getText() {
-        SourceDialogController controller = getLoader().getController();
+        SourceDialogController controller = getController();
         return controller.getURI();
     }
 

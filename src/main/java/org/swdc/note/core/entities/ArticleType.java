@@ -1,8 +1,6 @@
 package org.swdc.note.core.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -19,38 +17,73 @@ public class ArticleType {
      * 或者在NoSQL上面使用。
      */
     @Id
-    @Getter
-    @Setter
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid")
     private String id;
 
-    @Getter
-    @Setter
     private String name;
 
-    @Getter
-    @Setter
     @JsonIgnore
-    @OneToMany(mappedBy = "type", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.REMOVE)
     private Set<Article> articles;
 
-    @Getter
-    @Setter
     @Transient
     private Class formatter;
 
-    @Getter
-    @Setter
     @ManyToOne(cascade = CascadeType.DETACH)
     private ArticleType parent;
 
-    @Getter
-    @Setter
-    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "parent",fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "parent")
     @JsonIgnore
     private List<ArticleType> children;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Article> getArticles() {
+        return articles;
+    }
+
+    public void setArticles(Set<Article> articles) {
+        this.articles = articles;
+    }
+
+    public Class getFormatter() {
+        return formatter;
+    }
+
+    public void setFormatter(Class formatter) {
+        this.formatter = formatter;
+    }
+
+    public ArticleType getParent() {
+        return parent;
+    }
+
+    public void setParent(ArticleType parent) {
+        this.parent = parent;
+    }
+
+    public List<ArticleType> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ArticleType> children) {
+        this.children = children;
+    }
 
     @Override
     public String toString() {

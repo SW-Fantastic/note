@@ -1,18 +1,21 @@
 package org.swdc.note.ui.controllers;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
-import org.swdc.fx.anno.Listener;
-import org.swdc.fx.event.ConfigRefreshEvent;
-import org.swdc.fx.services.Service;
+import org.swdc.dependency.annotations.EventListener;
 import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.ui.component.KeyboardPropertyEditor;
+import org.swdc.note.ui.events.ConfigRefreshEvent;
 import org.swdc.note.ui.view.ArticleEditorView;
+import org.swdc.note.ui.view.UIUtils;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -20,7 +23,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class GlobalKeyListener extends Service implements NativeKeyListener {
+public class GlobalKeyListener implements NativeKeyListener {
 
     private HashMap<Integer, Boolean> keyMap = new HashMap<>();
 
@@ -28,14 +31,24 @@ public class GlobalKeyListener extends Service implements NativeKeyListener {
 
     private List<Integer> editorKeys = new ArrayList<>();
 
-    @Listener(ConfigRefreshEvent.class)
+    @Inject
+    private ArticleEditorView articleEditorView;
+
+    @Inject
+    private AppConfig config;
+
+    @Inject
+    private org.slf4j.Logger logger;
+
+    @EventListener(type = ConfigRefreshEvent.class)
     public void onKeyRefresh(ConfigRefreshEvent event) {
-        AppConfig config = findComponent(AppConfig.class);
-        String keys = config.getFastEditKey();
-        editorKeys = Arrays.asList(KeyboardPropertyEditor.stringToKeyCode(keys));
+        if (event.getMessage() instanceof AppConfig) {
+            String keys = config.getFastEditKey();
+            editorKeys = Arrays.asList(UIUtils.stringToKeyCode(keys));
+        }
     }
 
-    @Override
+    @PostConstruct
     public void initialize() {
         try {
             LogManager.getLogManager().reset();
@@ -45,15 +58,14 @@ public class GlobalKeyListener extends Service implements NativeKeyListener {
             GlobalScreen.addNativeKeyListener(this);
             logger.info("native hook is registered.");
 
-            AppConfig config = findComponent(AppConfig.class);
             String keys = config.getFastEditKey();
-            editorKeys = Arrays.asList(KeyboardPropertyEditor.stringToKeyCode(keys));
+            editorKeys = Arrays.asList(UIUtils.stringToKeyCode(keys));
         } catch (Exception e) {
             logger.error("fail to register native hook: ", e);
         }
     }
 
-    @Override
+    @PreDestroy
     public void destroy() {
         try {
             GlobalScreen.removeNativeKeyListener(this);
@@ -77,11 +89,15 @@ public class GlobalKeyListener extends Service implements NativeKeyListener {
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
+
         int code = nativeKeyEvent.getKeyCode();
+
         Integer[] pressed = keyMap.entrySet().stream()
-                .filter(e -> e.getValue())
-                .map(e -> e.getKey())
-                .collect(Collectors.toList()).toArray(new Integer[0]);
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .toList()
+                .toArray(new Integer[0]);
+
         boolean valTriggered = false;
         for (ObjectProperty<Integer[]> target : bindsMap.keySet()) {
             if (bindsMap.get(target)) {
@@ -101,9 +117,8 @@ public class GlobalKeyListener extends Service implements NativeKeyListener {
                     article.setTitle("无标题：" + new Date().getTime());
                     article.setContent(new ArticleContent());
                     Platform.runLater(() -> {
-                        ArticleEditorView editorView = findView(ArticleEditorView.class);
-                        editorView.addArticle(article);
-                        editorView.show();
+                        articleEditorView.addArticle(article);
+                        articleEditorView.show();
                     });
                 }
             }

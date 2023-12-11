@@ -1,30 +1,31 @@
 package org.swdc.note.ui.view;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.ui.controllers.TypeSubViewController;
 
 import static org.swdc.note.ui.view.UIUtils.createMenuItem;
 
-@View(stage = false)
-public class TypeSubView extends FXView {
+@View(viewLocation = "views/main/TypeSubView.fxml")
+public class TypeSubView extends AbstractView {
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
     private ContextMenu typeContextMenu;
 
     private ContextMenu articleContextMenu;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         Button btnSearch = findById("search");
         btnSearch.setFont(iconsService.getFont(FontSize.MIDDLE));
@@ -41,7 +42,7 @@ public class TypeSubView extends FXView {
     private void initTypeControlMenu() {
         SimpleBooleanProperty typeNotSelectProp = new SimpleBooleanProperty(true);
         this.typeContextMenu = new ContextMenu();
-        TypeSubViewController controller = getLoader().getController();
+        TypeSubViewController controller = getController();
         MenuItem itemAdd = createMenuItem("创建文档", controller::onCreateDocument,null);
         MenuItem itemCreate = createMenuItem("添加分类",controller::creatType, null);
         MenuItem itemDelete = createMenuItem("删除", controller::deleteType, null);
@@ -69,7 +70,7 @@ public class TypeSubView extends FXView {
     }
 
     private void initArticleContextMenu() {
-        TypeSubViewController controller = getLoader().getController();
+        TypeSubViewController controller = getController();
         SimpleBooleanProperty articleNotSelectProp = new SimpleBooleanProperty(true);
 
         this.articleContextMenu = new ContextMenu();

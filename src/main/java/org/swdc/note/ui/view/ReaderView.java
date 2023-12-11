@@ -1,5 +1,7 @@
 package org.swdc.note.ui.view;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,43 +13,38 @@ import javafx.scene.control.TabPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import lombok.Getter;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.TypeListPopover;
 
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@View(title = "阅读",resizeable = true,background = true,style = "editor")
-public class ReaderView extends FXView {
+@View(title = "阅读",css = "editor.css",viewLocation = "views/main/ReaderView.fxml")
+public class ReaderView extends AbstractView {
 
     private ObservableList<Tab> articles = FXCollections.observableArrayList();
     private Map<Article, Tab> articleTabMap = new HashMap<>();
 
-    @Getter
     private TypeListPopover popover;
 
-    @Aware
+    @Inject
     private HTMLRender render = null;
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         this.popover = new TypeListPopover();
         this.popover.onClick(article -> {
@@ -234,4 +231,7 @@ public class ReaderView extends FXView {
         return;
     }
 
+    public TypeListPopover getPopover() {
+        return popover;
+    }
 }

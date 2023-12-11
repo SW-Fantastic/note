@@ -1,21 +1,21 @@
 package org.swdc.note.ui.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.web.WebView;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.files.ExternalStorage;
-import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.view.ArticleSetView;
 import org.swdc.note.ui.view.UIUtils;
 
 import java.io.File;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class ArticleSetController extends FXController {
+public class ArticleSetController extends ViewController<ArticleSetView> {
 
     @FXML
     private TreeView<Object> typeTree;
@@ -32,10 +32,10 @@ public class ArticleSetController extends FXController {
     @FXML
     private WebView contentView;
 
-    @Aware
+    @Inject
     private HTMLRender render = null;
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
     private TreeItem<Object> root;
@@ -120,7 +120,7 @@ public class ArticleSetController extends FXController {
         }
     }
 
-    public void loadContent(AbstractStorageFactory factory, File file)  {
+    public void loadContent(StorageFactory factory, File file)  {
         if (storage != null) {
             storage.close();
             storage = null;
@@ -145,7 +145,7 @@ public class ArticleSetController extends FXController {
         }
     }
 
-    @Override
+    @PreDestroy
     public void destroy() {
         this.closeArticleSet();
     }

@@ -1,29 +1,21 @@
 package org.swdc.note.ui.view;
 
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
+import jakarta.annotation.PostConstruct;
 import javafx.stage.Stage;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
-import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.files.factory.AbstractStorageFactory;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
+import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.ui.controllers.ArticleSetController;
 
 import java.io.File;
 
-@Scope(ScopeType.MULTI)
-@View(title = "文档集",background = true,resizeable = true)
-public class ArticleSetView extends FXView {
+@View(title = "文档集",multiple = true,viewLocation = "views/main/ArticleSetView.fxml")
+public class ArticleSetView extends AbstractView {
 
-    @Override
+    @PostConstruct
     public void initialize() {
 
-        ArticleSetController controller = getLoader().getController();
+        ArticleSetController controller = getController();
 
         Stage stage = getStage();
         stage.setMinWidth(1000);
@@ -33,8 +25,8 @@ public class ArticleSetView extends FXView {
         stage.setOnCloseRequest(e -> controller.closeArticleSet());
     }
 
-    public void loadContent(AbstractStorageFactory factory, File file) {
-        ArticleSetController controller = getLoader().getController();
+    public void loadContent(StorageFactory factory, File file) {
+        ArticleSetController controller = getController();
         controller.loadContent(factory,file);
     }
 

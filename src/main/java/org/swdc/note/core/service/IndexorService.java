@@ -1,5 +1,8 @@
 package org.swdc.note.core.service;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -13,10 +16,11 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSLockFactory;
 import org.apache.lucene.store.NIOFSDirectory;
-import org.swdc.fx.services.Service;
+import org.slf4j.Logger;
+import org.swdc.dependency.annotations.With;
+import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleType;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import java.io.File;
@@ -25,7 +29,8 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.Map;
 
-public class IndexorService extends Service {
+@With(aspectBy = RefreshAspect.class)
+public class IndexorService {
 
     private IndexReader reader = null;
 
@@ -33,7 +38,10 @@ public class IndexorService extends Service {
 
     private FileSystem indexFs = null;
 
-    @Override
+    @Inject
+    private Logger logger;
+
+    @PostConstruct
     public void initialize() {
         try{
             logger.info("lucene initializing..");
@@ -196,7 +204,7 @@ public class IndexorService extends Service {
         }
     }
 
-    @Override
+    @PreDestroy
     public void destroy() {
         try {
             logger.info("saving index..");

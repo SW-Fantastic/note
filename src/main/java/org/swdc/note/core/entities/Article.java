@@ -1,7 +1,5 @@
 package org.swdc.note.core.entities;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.swdc.note.core.files.SingleStorage;
 
@@ -19,26 +17,16 @@ public class Article {
      * 或者在NoSQL上面使用。
      */
     @Id
-    @Getter
-    @Setter
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "uuid")
     private String Id;
 
-    @Getter
-    @Setter
     private String title;
 
-    @Getter
-    @Setter
     private Date createDate;
 
-    @Getter
-    @Setter
     private String desc;
 
-    @Getter
-    @Setter
     @JoinColumn(name = "type_id")
     @ManyToOne(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     private ArticleType type;
@@ -49,8 +37,6 @@ public class Article {
      * 所使用的SingleStore的class。
      * 不存入数据库。
      */
-    @Getter
-    @Setter
     @Transient
     private Class<? extends SingleStorage> singleStore;
 
@@ -59,19 +45,79 @@ public class Article {
      * 如果此对象直接来自文件，这里记载文件的全路径。
      * 不存入数据库。
      */
-    @Getter
-    @Setter
     @Transient
     private String fullPath;
 
 
-    @Getter
-    @Setter
     @Transient
     private ArticleContent content;
 
     @Override
     public String toString() {
         return title;
+    }
+
+    public String getId() {
+        return Id;
+    }
+
+    public void setId(String id) {
+        Id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public ArticleType getType() {
+        return type;
+    }
+
+    public void setType(ArticleType type) {
+        this.type = type;
+    }
+
+    public Class<? extends SingleStorage> getSingleStore() {
+        return singleStore;
+    }
+
+    public void setSingleStore(Class<? extends SingleStorage> singleStore) {
+        this.singleStore = singleStore;
+    }
+
+    public String getFullPath() {
+        return fullPath;
+    }
+
+    public void setFullPath(String fullPath) {
+        this.fullPath = fullPath;
+    }
+
+    public ArticleContent getContent() {
+        return content;
+    }
+
+    public void setContent(ArticleContent content) {
+        this.content = content;
     }
 }

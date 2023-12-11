@@ -1,5 +1,7 @@
 package org.swdc.note.ui.view;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -11,17 +13,13 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import lombok.Getter;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
+import org.slf4j.Logger;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.config.AppConfig;
-import org.swdc.note.core.entities.Article;
 import org.swdc.note.ui.component.ContentHelper;
 import org.swdc.note.ui.view.dialogs.ImagesView;
 
@@ -35,16 +33,19 @@ import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.createMenuItem;
 
-@Scope(ScopeType.MULTI)
-@View(stage = false)
-public class EditorContentView extends FXView {
+@View(stage = false,viewLocation = "views/main/EditorContentView.fxml",multiple = true)
+public class EditorContentView extends AbstractView {
 
-    @Getter
     private CodeArea codeArea;
 
-    @Aware
-    @Getter
+    @Inject
     private ImagesView imagesView = null;
+
+    @Inject
+    private AppConfig appConfig;
+
+    @Inject
+    private Logger logger;
 
     private List<ContentHelper.KeyWord> keyWordsTipList = Arrays.asList(
             new ContentHelper.KeyWord("*", "无序列表"),
@@ -82,7 +83,6 @@ public class EditorContentView extends FXView {
             })
     );
 
-    @Getter
     private ContentHelper helper;
 
 
@@ -139,7 +139,7 @@ public class EditorContentView extends FXView {
         }
     }
 
-    @Override
+    @PostConstruct
     public void initialize() {
         BorderPane borderPane = findById("editor");
         CodeArea codeArea = new CodeArea();
@@ -156,9 +156,8 @@ public class EditorContentView extends FXView {
         this.codeArea = codeArea;
         this.createEditorMenu();
         this.codeArea.setContextMenu(this.editorMenu);
-        AppConfig config = findProperties(AppConfig.class);
         helper = new ContentHelper();
-        helper.setUpTooltip(codeArea,this,config.getEnableAutoTip(),keyWordsTipList);
+        helper.setUpTooltip(codeArea,this,appConfig.getEnableAutoTip(),keyWordsTipList);
         helper.beforeShow(list -> {
             Set<String> images = this.getImagesView().getImages().keySet();
             List<ContentHelper.KeyWord> imagesKeyWord = images
@@ -179,12 +178,12 @@ public class EditorContentView extends FXView {
         MenuItem redoItem = createMenuItem("重做   ", this::onRedo, new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
         menuItems.add(redoItem);
         codeArea.textProperty().addListener(e -> {
-            if (codeArea.getUndoManager().isUndoAvailable()) {
+            if (codeArea.isUndoAvailable()) {
                 undoItem.setDisable(false);
             } else {
                 undoItem.setDisable(true);
             }
-            if (codeArea.getUndoManager().isRedoAvailable()) {
+            if (codeArea.isRedoAvailable()) {
                 redoItem.setDisable(false);
             } else {
                 redoItem.setDisable(true);
@@ -236,4 +235,15 @@ public class EditorContentView extends FXView {
         return findById("wView");
     }
 
+    public CodeArea getCodeArea() {
+        return codeArea;
+    }
+
+    public ImagesView getImagesView() {
+        return imagesView;
+    }
+
+    public ContentHelper getHelper() {
+        return helper;
+    }
 }

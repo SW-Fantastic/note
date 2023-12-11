@@ -2,25 +2,37 @@ package org.swdc.note.ui.view.cells;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.swdc.note.core.entities.Article;
 
-@NoArgsConstructor
 public class ArticleCellDragData {
 
-    @Getter
-    @Setter
     private String articleId;
 
-    @Getter
-    @Setter
     private String articleTypeId;
 
     private static final Logger logger = LoggerFactory.getLogger(ArticleCellDragData.class);
+
+    public ArticleCellDragData() {
+
+    }
+
+    public String getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(String articleId) {
+        this.articleId = articleId;
+    }
+
+    public String getArticleTypeId() {
+        return articleTypeId;
+    }
+
+    public void setArticleTypeId(String articleTypeId) {
+        this.articleTypeId = articleTypeId;
+    }
 
     public ArticleCellDragData(Article article) {
         this.articleId = article.getId();

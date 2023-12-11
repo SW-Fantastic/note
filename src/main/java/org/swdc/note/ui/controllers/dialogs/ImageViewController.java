@@ -1,12 +1,14 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import org.swdc.fx.FXController;
+import org.slf4j.Logger;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.ui.view.dialogs.ImagesView;
 
 import java.io.ByteArrayInputStream;
@@ -20,13 +22,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class ImageViewController extends FXController {
+public class ImageViewController extends ViewController<ImagesView> {
 
     @FXML
     private ListView<String> listView;
 
     @FXML
     private ScrollPane scrPane;
+
+    @Inject
+    private Logger logger;
 
     private Map<String, ByteBuffer> images = new HashMap<>();
 
@@ -46,7 +51,7 @@ public class ImageViewController extends FXController {
     private void cancel() {
         this.listView.getSelectionModel().clearSelection();
         ImagesView view = getView();
-        view.close();
+        view.hide();
     }
 
     @FXML
@@ -97,7 +102,7 @@ public class ImageViewController extends FXController {
     @FXML
     private void insertSelected() {
         ImagesView view = getView();
-        view.close();
+        view.hide();
     }
 
 }

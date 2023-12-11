@@ -7,96 +7,128 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.editor.PropertyEditor;
 import org.jnativehook.keyboard.NativeKeyEvent;
-import org.swdc.fx.AppComponent;
-import org.swdc.fx.anno.ConfigProperty;
-import org.swdc.fx.properties.AbstractPropEditor;
+import org.swdc.fx.config.ConfigPropertiesItem;
+import org.swdc.fx.config.PropEditorView;
 import org.swdc.note.ui.controllers.GlobalKeyListener;
+import org.swdc.note.ui.view.UIUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class KeyboardPropertyEditor extends AbstractPropEditor {
+public class KeyboardPropertyEditor extends PropEditorView {
 
-    public KeyboardPropertyEditor(ConfigProperty prop, AppComponent component) {
-        super(prop, component);
+    private HBox hbox;
+
+    private TextField field;
+
+    private List<Integer> codes = new ArrayList<>();
+
+    public KeyboardPropertyEditor(ConfigPropertiesItem item) {
+        super(item);
     }
 
-    @Override
-    protected PropertyEditor<String> createEditor() {
-        HBox hbox = new HBox();
+    protected void createEditor() {
+        hbox = new HBox();
         hbox.setSpacing(8);
-        TextField field = new TextField();
+        field = new TextField();
         Button select = new Button();
         select.setText("修改");
-        ObjectProperty<Integer[]> data = new SimpleObjectProperty<>();
-        GlobalKeyListener listener = getParent().findComponent(GlobalKeyListener.class);
-        listener.bindPressedKeys(data);
 
         select.setOnAction(e-> {
+            field.requestFocus();
             select.setDisable(true);
-            listener.enable(data,true);
         });
 
         HBox.setHgrow(hbox, Priority.ALWAYS);
         hbox.getChildren().addAll(field, select);
 
-        field.setText(getProp().getPropData().value());
+        ConfigPropertiesItem item = getItem();
+        field.setText(item.getValue() == null ? "" : item.getValue().toString());
         field.setEditable(false);
-
-        String original = getProp().getValue().toString();
-        Integer[] codeData = stringToKeyCode(original);
-
-        data.addListener(((observableValue, integers, newVal) -> {
-            if (integers == null || newVal == null) {
+        field.setOnKeyPressed(e -> {
+            if (!select.isDisabled()) {
                 return;
             }
-            String text = "";
-            for (Integer code: integers) {
-                text = text + NativeKeyEvent.getKeyText(code) + " ";
-            }
-            field.setText(text);
-            listener.enable(data,false);
-            String propData = keyCodeToString(data.getValue());
-            getProp().setValue(propData);
-            select.setDisable(false);
-        }));
-        data.setValue(codeData);
-        return new PropertyEditor<>() {
-            @Override
-            public Node getEditor() {
-                return hbox;
-            }
-
-            @Override
-            public String getValue() {
-                return keyCodeToString(data.getValue());
-            }
-
-            @Override
-            public void setValue(String o) {
-                if (o == null){
-                    return;
+            int nCode = UIUtils.getNativeKeyCode(e.getCode());
+            codes.add(nCode);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int code : codes) {
+                if (stringBuilder.isEmpty()) {
+                    stringBuilder.append(UIUtils.getKeyCodeFromNative(code).getName());
+                } else {
+                    stringBuilder.append(" + ").append(UIUtils.getKeyCodeFromNative(code));
                 }
-                Integer[] codeData = stringToKeyCode(o);
-                data.setValue(codeData);
             }
-        };
+            field.setText(stringBuilder.toString());
+        });
+
+        field.focusedProperty().addListener(e -> {
+            if (!select.isDisabled()) {
+                return;
+            }
+            if (codes.isEmpty()) {
+                return;
+            }
+            getItem().setValue(UIUtils.keyCodeToString(codes.toArray(new Integer[0])));
+            codes.clear();
+            select.setDisable(false);
+        });
+
+        field.setOnKeyReleased(e -> {
+            if (!select.isDisabled()) {
+                return;
+            }
+            if (codes.isEmpty()) {
+                return;
+            }
+            getItem().setValue(UIUtils.keyCodeToString(codes.toArray(new Integer[0])));
+            codes.clear();
+            select.setDisable(false);
+        });
+
     }
 
-    public static String keyCodeToString(Integer[] codes) {
-        return Stream.of(codes)
-                .map(cd->cd + "")
-                .reduce((cdA, cdB) -> cdA + "," + cdB)
-                .orElse("");
+
+    @Override
+    public Node getEditor() {
+        if (hbox == null) {
+            createEditor();
+        }
+        return hbox;
     }
 
-    public static Integer[] stringToKeyCode(String data) {
-        return Stream.of(data.split(","))
-                .map(Integer::valueOf)
-                .collect(Collectors.toList())
-                .toArray(new Integer[0]);
+    @Override
+    public Object getValue() {
+        if (hbox == null) {
+            createEditor();
+        }
+        return field.getText();
     }
 
+    @Override
+    public void setValue(Object o) {
+        if (o == null) {
+            return;
+        }
+        if (hbox == null) {
+            createEditor();
+        }
+        String text = o.toString();
+        Integer[] codes = UIUtils.stringToKeyCode(text);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int code : codes) {
+            if (stringBuilder.isEmpty()) {
+                stringBuilder.append(UIUtils.getKeyCodeFromNative(code).getName());
+            } else {
+                stringBuilder.append(" + ").append(UIUtils.getKeyCodeFromNative(code));
+            }
+        }
+        field.setText(stringBuilder.toString());
+    }
 }

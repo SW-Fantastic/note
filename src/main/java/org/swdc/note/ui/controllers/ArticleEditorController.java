@@ -1,10 +1,11 @@
 package org.swdc.note.ui.controllers;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.fxmisc.richtext.CodeArea;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
+import org.slf4j.Logger;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleResource;
@@ -23,24 +24,23 @@ import org.swdc.note.ui.view.dialogs.TypeSelectView;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static org.swdc.fx.FXView.fxViewByView;
+import static org.swdc.note.ui.view.UIUtils.fxViewByView;
 
-public class ArticleEditorController extends FXController {
+
+public class ArticleEditorController extends ViewController<ArticleEditorView> {
 
     @FXML
     private TabPane articlesTab;
 
-    @Aware
+    @Inject
+    private Logger logger;
+
+    @Inject
     private ArticleService articleService = null;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-    }
 
     @FXML
     private void onToolBold() {
@@ -283,7 +283,8 @@ public class ArticleEditorController extends FXController {
         String source = editor.getCodeArea().getText();
         ArticleResource resource = new ArticleResource();
         if (article.getType() == null && article.getSingleStore() == null) {
-            view.showAlertDialog("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR);
+            view.alert("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR)
+                    .showAndWait();
             return;
         }
         Map<String, ByteBuffer> images = editor.getImagesView().getImages();
@@ -301,35 +302,37 @@ public class ArticleEditorController extends FXController {
         try {
             if (article.getSingleStore() != null) {
                 // 文档直接从文件打开，那么保存到文件。
-                SingleStorage storage = findComponent(article.getSingleStore());
+                SingleStorage storage = articleService.getSingleStoreBy(article.getSingleStore());
                 article.setContent(content);
                 storage.save(article,new File(article.getFullPath()));
                 editor.setSaved();
-                this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
+                getView().emit(new RefreshEvent(article, getView(), RefreshType.UPDATE));
                 select.setText(article.getTitle());
-                UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！",view);
+                UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！");
                 return;
             }
             Article saved = articleService.saveArticle(article, content);
             if(saved == null) {
-                view.showAlertDialog("提示", "保存失败, 请填写必要信息。", Alert.AlertType.ERROR);
+                view.alert("提示", "保存失败, 请填写必要信息。", Alert.AlertType.ERROR)
+                        .showAndWait();
             } else {
                 editor.setSaved();
                 select.setText(article.getTitle());
-                UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！",view);
-                this.emit(new RefreshEvent(article,this, RefreshType.UPDATE));
+                UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！");
+                this.getView().emit(new RefreshEvent(article,getView(), RefreshType.UPDATE));
             }
         } catch (Exception e) {
             PrintWriter writer = new PrintWriter(new StringWriter());
             e.printStackTrace(writer);
-            view.showAlertDialog("提示", "保存失败: 存储遇到异常 - \n" + writer.toString(), Alert.AlertType.ERROR);
+            view.alert("提示", "保存失败: 存储遇到异常 - \n" + writer, Alert.AlertType.ERROR)
+                    .showAndWait();
             logger.error("fail to save article ", e);
         }
     }
 
     @FXML
     private void changeType() {
-        TypeSelectView selectView = findView(TypeSelectView.class);
+        TypeSelectView selectView = getView().getView(TypeSelectView.class);
         selectView.show();
         ArticleType type = selectView.getSelected();
         if (type == null) {
@@ -346,8 +349,6 @@ public class ArticleEditorController extends FXController {
         Article article = new Article();
         article.setTitle("未命名");
         article.setCreateDate(new Date());
-        ArticleContent content = new ArticleContent();
-        // article.setContent(content);
         ArticleEditorView view = getView();
         view.addArticle(article);
     }

@@ -1,9 +1,9 @@
 package org.swdc.note.ui.controllers.dialogs;
 
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import org.swdc.fx.FXController;
-import org.swdc.fx.anno.Aware;
+import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
@@ -14,9 +14,9 @@ import org.swdc.note.ui.view.dialogs.TypeEditView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class TypeEditController extends FXController {
+public class TypeEditController extends ViewController<TypeEditView> {
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
     @FXML
@@ -33,7 +33,7 @@ public class TypeEditController extends FXController {
     public void onCancel() {
         txtName.setText("");
         TypeEditView editView = getView();
-        editView.close();
+        editView.hide();
     }
 
     @FXML
@@ -49,10 +49,10 @@ public class TypeEditController extends FXController {
         type.setName(txtName.getText());
         ArticleType saved = articleService.saveType(type);
         if(saved != null) {
-            editView.close();
-            UIUtils.notification("分类《" + type.getName() + "》 保存成功！",editView);
+            editView.hide();
+            UIUtils.notification("分类《" + type.getName() + "》 保存成功！");
         }
-        this.emit(new RefreshEvent(type, this,RefreshType.UPDATE));
+        this.getView().emit(new RefreshEvent(type, this,RefreshType.UPDATE));
         txtName.setText("");
     }
 

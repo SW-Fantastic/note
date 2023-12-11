@@ -1,10 +1,13 @@
 package org.swdc.note.core.render;
 
-import org.swdc.fx.AppComponent;
+import org.swdc.dependency.annotations.ImplementBy;
 import org.swdc.note.core.entities.Article;
 
 
-public abstract class ContentRender extends AppComponent {
+@ImplementBy({
+    HTMLRender.class
+})
+public abstract class ContentRender {
 
     public abstract String renderAsText(Article article);
 

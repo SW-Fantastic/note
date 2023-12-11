@@ -8,6 +8,8 @@ import com.vladsch.flexmark.profile.pegdown.Extensions;
 import com.vladsch.flexmark.profile.pegdown.PegdownOptionsAdapter;
 import com.vladsch.flexmark.util.data.DataHolder;
 import freemarker.template.Template;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 import org.jsoup.Jsoup;
@@ -16,9 +18,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Listener;
-import org.swdc.fx.event.ConfigRefreshEvent;
+import org.slf4j.Logger;
+import org.swdc.dependency.annotations.EventListener;
+import org.swdc.dependency.annotations.MultipleImplement;
+import org.swdc.fx.FXResources;
+import org.swdc.fx.view.Theme;
+import org.swdc.note.config.AppConfig;
 import org.swdc.note.config.RenderConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
@@ -45,10 +50,20 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@MultipleImplement(ContentRender.class)
 public class HTMLRender extends ContentRender {
 
-    @Aware
+    @Inject
     private RenderConfig config = null;
+
+    @Inject
+    private FXResources resources;
+
+    @Inject
+    private AppConfig appConfig;
+
+    @Inject
+    private Logger logger;
 
     private String contentStyle = "";
 
@@ -56,14 +71,16 @@ public class HTMLRender extends ContentRender {
     private HtmlRenderer renderer = null;
     private Parser parser;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         try {
             Map<String, Object> configsMap = new HashMap<>();
             configsMap.put("defaultFontSize", config.getRenderFontSize());
             configsMap.put("headerFontSize", config.getHeaderFontSize());
             configsMap.put("textshadow", config.getTextShadow());
-            String themePath = getThemeAssetsPath() + File.separator + "markdown.css";
+
+            Theme current = Theme.getTheme(appConfig.getTheme(),resources.getAssetsFolder());
+            String themePath = current.getThemeFolder().getAbsoluteFile() + File.separator + "markdown.css";
             String mdStyle = Files.readString(Paths.get(themePath));
             logger.info("markdown style loaded.");
             StringWriter stringWriter = new StringWriter();
@@ -84,7 +101,7 @@ public class HTMLRender extends ContentRender {
         }
     }
 
-    @Listener(ConfigRefreshEvent.class)
+    /*@EventListener(ConfigRefreshEvent.class)
     public void refreshStyles(ConfigRefreshEvent configRefreshEvent) {
         if (!(configRefreshEvent.getData() instanceof RenderConfig)) {
             return;
@@ -109,7 +126,7 @@ public class HTMLRender extends ContentRender {
         } catch (Exception e) {
             logger.error("fail to refresh style", e);
         }
-    }
+    }*/
 
     public String render(String source, Map<String, ByteBuffer> resource) {
         // 匹配双$符，在这之间的是公式

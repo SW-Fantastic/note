@@ -1,5 +1,7 @@
 package org.swdc.note.ui.view.cells;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -8,13 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import org.swdc.fx.FXView;
-import org.swdc.fx.anno.Aware;
-import org.swdc.fx.anno.Scope;
-import org.swdc.fx.anno.ScopeType;
-import org.swdc.fx.anno.View;
-import org.swdc.fx.resource.icons.FontSize;
-import org.swdc.fx.resource.icons.MaterialIconsService;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.MaterialIconsService;
+import org.swdc.fx.view.AbstractView;
+import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
@@ -26,27 +25,26 @@ import org.swdc.note.ui.view.dialogs.TypeEditView;
 
 import java.util.Date;
 
-@View(stage = false)
-@Scope(ScopeType.MULTI)
-public class ArticleTypeCell extends FXView {
+@View(stage = false,multiple = true,viewLocation = "views/main/ArticleTypeCell.fxml")
+public class ArticleTypeCell extends AbstractView {
 
     private ArticleType type;
 
-    @Aware
+    @Inject
     private MaterialIconsService iconsService = null;
 
-    @Aware
+    @Inject
     private ArticleService articleService = null;
 
-    @Aware
+    @Inject
     private ArticleEditorView editorView = null;
 
-    @Override
+    @PostConstruct
     public void initialize() {
         initViewToolButton("add", "add", this::onArticleAdd);
         initViewToolButton("edit", "edit", this::onTypeEdit);
         initViewToolButton("delete", "delete", this::onTypeDelete);
-        ((Parent)this.getView()).setOnMouseClicked(this::onClick);
+        (this.getView()).setOnMouseClicked(this::onClick);
     }
 
     private void onClick(MouseEvent event) {
@@ -98,7 +96,7 @@ public class ArticleTypeCell extends FXView {
     }
 
     private void onTypeEdit(ActionEvent event){
-        TypeEditView editView = findView(TypeEditView.class);
+        TypeEditView editView = getView(TypeEditView.class);
         editView.setType(this.type);
         editView.show();
     }
