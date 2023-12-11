@@ -1,11 +1,13 @@
 package org.swdc.note;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import org.swdc.data.EMFProviderFactory;
 import org.swdc.dependency.DependencyContext;
 import org.swdc.dependency.EnvironmentLoader;
 import org.swdc.fx.FXApplication;
+import org.swdc.fx.FXResources;
 import org.swdc.fx.SWFXApplication;
 import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.EntityManagerProviderImpl;
@@ -28,7 +30,8 @@ import java.util.List;
 public class NoteApplication extends FXApplication {
 
     public static void main(String[] args) {
-        launch(args);
+        NoteApplication application = new NoteApplication();
+        application.applicationLaunch(args);
     }
 
     @Override
@@ -41,6 +44,41 @@ public class NoteApplication extends FXApplication {
 
         EMFProviderFactory factory = dependencyContext.getByClass(EMFProviderFactory.class);
         factory.create();
+
+        FXResources resources = dependencyContext.getByClass(FXResources.class);
+
+        dependencyContext.getByClass(GlobalKeyListener.class);
+
+        if (SystemTray.isSupported()) {
+            try {
+                SystemTray tray = SystemTray.getSystemTray();
+                TrayIcon icon = new TrayIcon(SwingFXUtils.fromFXImage(resources.getIcons().get(1), null));
+                icon.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() >= 2) {
+                            if (e.getButton() == MouseEvent.BUTTON1) {
+                                Platform.runLater(()-> {
+                                    MainView mainView = dependencyContext.getByClass(MainView.class);
+                                    mainView.show();
+                                });
+                            }
+                        } else if (e.getButton() == MouseEvent.BUTTON3){
+                            Platform.runLater(() -> {
+                                TrayPopupView view = dependencyContext.getByClass(TrayPopupView.class);
+                                view.show(e);
+                            });
+                        }
+                    }
+                });
+
+                tray.add(icon);
+                Platform.setImplicitExit(false);
+
+            } catch (Exception e) {
+
+            }
+        }
 
         AppConfig config = dependencyContext.getByClass(AppConfig.class);
         if (config.getShowMainView()) {

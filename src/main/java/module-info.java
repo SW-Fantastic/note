@@ -13,6 +13,7 @@ module noteEditor {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
+    requires javafx.swing;
 
     requires java.persistence;
     requires org.hibernate.orm.core;

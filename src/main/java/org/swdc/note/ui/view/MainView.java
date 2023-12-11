@@ -18,7 +18,7 @@ import org.swdc.fx.view.View;
 
 import java.util.HashMap;
 
-@View(title = "幻想笔记",viewLocation = "views/main/MainView.fxml")
+@View(title = "幻想笔记",viewLocation = "views/main/MainView.fxml",background = "background.jpg")
 public class MainView extends AbstractView {
 
     @Inject
