@@ -125,7 +125,9 @@ public class UIUtils {
                 } else if (theCode.isModifierKey()) {
                     if (theCode == KeyCode.ALT_GRAPH) {
                         nativeField = "VC_ALT";
-                    } else {
+                    } else if (theCode == KeyCode.COMMAND || theCode == KeyCode.META) {
+                        nativeField = "VC_META";
+                    }else {
                         nativeField = "VC_" + theCode.name();
                     }
                 }

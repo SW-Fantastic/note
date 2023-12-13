@@ -50,7 +50,7 @@ public class ConfigSubView extends AbstractView {
 
         generalConfSheet.setModeSwitcherVisible(false);
         generalConfSheet.setSearchBoxVisible(false);
-        generalConfSheet.getStyleClass().add("prop-sheet");
+        generalConfSheet.getStyleClass().add("prop-sheets");
 
         Tab tab = new Tab(name);
         tab.setContent(generalConfSheet);

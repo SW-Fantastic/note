@@ -143,4 +143,6 @@ module noteEditor {
             swdc.application.dependency,
             swdc.application.fx;
 
+    opens database to swdc.application.data;
+
 }

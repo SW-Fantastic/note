@@ -14,6 +14,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FSLockFactory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @With(aspectBy = RefreshAspect.class)
@@ -45,8 +47,6 @@ public class IndexorService {
     public void initialize() {
         try{
             logger.info("lucene initializing..");
-            File fileFs = new File("data/indexes/indexed.zip");
-            indexFs = FileSystems.newFileSystem(fileFs.toPath(), Map.of("create", "true"));
             if(!DirectoryReader.indexExists(getIndexDir())) {
                 IndexWriter writer = getLuceneWriter();
                 writer.commit();
@@ -186,8 +186,7 @@ public class IndexorService {
 
 
     private Directory getIndexDir() throws IOException {
-        //return FSDirectory.open(Paths.get("data/index"));
-        return new NIOFSDirectory(indexFs.getPath("lucene_index"), FSLockFactory.getDefault());
+        return FSDirectory.open(Paths.get("data/index"));
     }
 
     private IndexReader getLuceneReader() throws IOException {

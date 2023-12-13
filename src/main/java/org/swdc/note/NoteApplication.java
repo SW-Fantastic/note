@@ -52,7 +52,7 @@ public class NoteApplication extends FXApplication {
         if (SystemTray.isSupported()) {
             try {
                 SystemTray tray = SystemTray.getSystemTray();
-                TrayIcon icon = new TrayIcon(SwingFXUtils.fromFXImage(resources.getIcons().get(1), null));
+                TrayIcon icon = new TrayIcon(SwingFXUtils.fromFXImage(resources.getIcons().get(0), null));
                 icon.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {

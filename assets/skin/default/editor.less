@@ -115,3 +115,81 @@
   -c-border-color: #999;
   -c-fill-color: rgb(208,242,179);
 }
+.versionsPane {
+    -fx-background-color: #FFF;
+    .sideArrow {
+        -fx-background-color: #FFF;
+        -fx-background-radius: 0 6 6 0;
+        -fx-text-fill: @primaryColor;
+        -fx-border-color: @primaryColor;
+        -fx-border-style: solid;
+        -fx-border-width: 1 1 1 0;
+        -fx-border-radius: 0 6 6 0;
+        &:hover {
+            -fx-background-color: @primaryColor;
+            -fx-text-fill: #FFF;
+        }
+    }
+    .table-view {
+        -fx-background-color: @nothing;
+        -fx-border-style: dashed;
+        -fx-border-width: 1.2 1 0 0;
+        -fx-border-radius: 0 0 5 0;
+        -fx-border-color: @primaryColor;
+        -fx-focus-color: rgba(0,0,0,0);
+        -fx-faint-focus-color: rgba(0,0,0,0);
+
+        .column-header-background {
+            -fx-background-color:  rgba(255,255,255,0);
+            .filler {
+                -fx-background-color:@primaryColor;
+                -fx-background-radius: 0;
+            }
+        }
+
+        .column-header {
+            -fx-font-size: 14px;
+            -fx-background-color: #FFF;
+            -fx-border-color: @primaryColor;
+            -fx-border-style: dashed;
+            -fx-border-width: 0 0 1 0;
+            .label {
+                -fx-text-fill: @primaryColor;
+            }
+        }
+        .table-row-cell{
+            -fx-table-cell-border-color:@nothing;
+            -fx-font-size: 14;
+            .text {
+                -fx-fill:@primaryColor;
+            }
+            .cell {
+                -fx-alignment: center;
+                .button {
+                    -fx-background-color: @nothing;
+                    -fx-text-fill: @primaryColor;
+                    &:hover {
+                        -fx-effect: dropshadow(three-pass-box, @primaryColor, 12, 0.0, 0, 3);
+                    }
+                }
+            }
+
+            -fx-background-color:@nothing;
+            &:empty {
+               -fx-text-fill:@primaryColor;
+            }
+            &:selected:filled {
+                -fx-background-color:@primaryColor;
+                .text {
+                    -fx-fill:#FFF;
+                }
+                .cell {
+                    .button {
+                        -fx-text-fill:#FFF;
+                    }
+                }
+            }
+
+        }
+    }
+}

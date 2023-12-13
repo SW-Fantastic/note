@@ -4,31 +4,36 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.InputMethodRequests;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.slf4j.Logger;
+import org.swdc.fx.font.FontSize;
+import org.swdc.fx.font.Fontawsome5Service;
 import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.View;
 import org.swdc.note.config.AppConfig;
+import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.ui.component.ContentHelper;
 import org.swdc.note.ui.view.dialogs.ImagesView;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.createMenuItem;
@@ -46,6 +51,9 @@ public class EditorContentView extends AbstractView {
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private Fontawsome5Service fontawsome5Service;
 
     private List<ContentHelper.KeyWord> keyWordsTipList = Arrays.asList(
             new ContentHelper.KeyWord("*", "无序列表"),
@@ -85,8 +93,11 @@ public class EditorContentView extends AbstractView {
 
     private ContentHelper helper;
 
+    private ContextMenu editorMenu = null;
 
     private boolean hasSaved = false;
+
+    private boolean versionsVisible = false;
 
     public void setSaved() {
         hasSaved = true;
@@ -100,7 +111,6 @@ public class EditorContentView extends AbstractView {
         return hasSaved;
     }
 
-    private ContextMenu editorMenu = null;
 
     /**
      * 如果inputRequest为null，那么MAC系统将会出现无法输入中文的问题。
@@ -167,6 +177,97 @@ public class EditorContentView extends AbstractView {
             list.addAll(imagesKeyWord);
         });
 
+        Button arrowButton = findById("sideArrow");
+        arrowButton.setPadding(new Insets(4));
+        arrowButton.setFont(fontawsome5Service.getSolidFont(FontSize.SMALL));
+        arrowButton.setText(fontawsome5Service.getFontIcon("angle-right"));
+        toggleVersionPane(this.versionsVisible);
+        arrowButton.setOnAction(e -> {
+            this.versionsVisible = !this.versionsVisible;
+            toggleVersionPane(versionsVisible);
+            arrowButton.setText(fontawsome5Service.getFontIcon(versionsVisible ? "angle-left" : "angle-right"));
+        });
+
+        TableColumn<ArticleContent,Integer> colVersion = findById("colVersionId");
+        colVersion.setCellValueFactory(new PropertyValueFactory<>("version"));
+        TableColumn<ArticleContent,String> colVersionDate = findById("colVersionDate");
+        colVersionDate.setCellValueFactory(new PropertyValueFactory<>("updateDate"));
+
+        TableView<ArticleContent> contentTableView = findById("versionTable");
+        contentTableView.setOnMouseClicked(e -> {
+            ArticleContent content = contentTableView.getSelectionModel().getSelectedItem();
+            if (content == null || e.getClickCount() < 2) {
+                return;
+            }
+            Alert alert = alert("提示","的确要回滚到此版本吗？如果存在当前尚未保存的更改将会全部丢失", Alert.AlertType.CONFIRMATION);
+            alert.showAndWait().ifPresent(t -> {
+                if (t.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                    loadArticleData(content);
+                }
+            });
+        });
+
+        Button latestVersion = findById("latestVersion");
+        latestVersion.setOnAction(e -> {
+            Alert alert = alert("提示","的确要返回最新版本吗？如果存在当前尚未保存的更改将会全部丢失", Alert.AlertType.CONFIRMATION);
+            alert.showAndWait().ifPresent(t -> {
+                if (t.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                    latestVersion();
+                }
+            });
+        });
+    }
+
+    private int extractVersion(ArticleContent content) {
+        return content.getVersion() == null ? 0 : content.getVersion();
+    }
+
+    public void latestVersion() {
+        TableView<ArticleContent> contentTableView = findById("versionTable");
+        if (contentTableView.getItems().isEmpty()) {
+            return;
+        }
+        contentTableView.getItems().stream().sorted((cA,cB) ->
+                extractVersion(cB) - extractVersion(cA)
+        ).findFirst().ifPresent(this::loadArticleData);
+    }
+
+    public void setVersions(List<ArticleContent> versions) {
+        TableView<ArticleContent> versionTable = findById("versionTable");
+        versionTable.getItems().clear();
+        versionTable.getItems().addAll(versions);
+    }
+
+    public void loadArticleData(ArticleContent content) {
+        imagesView.getImages().clear();
+        codeArea.clear();
+
+        Map<String,byte[]> resource = content.getImages();
+        if (resource != null) {
+            for (Map.Entry<String, byte[]> ent : resource.entrySet()) {
+                imagesView.addImage(ent.getKey(), ent.getValue());
+            }
+        }
+
+        String source = content.getSource();
+        if(source != null) {
+            codeArea.appendText(source);
+        }
+
+        setSaved();
+        codeArea.getUndoManager().forgetHistory();
+    }
+
+    public void toggleVersionPane(boolean visible) {
+        StackPane versionPane = findById("versions");
+        VBox versionVBox = findById("versionVBox");
+        versionVBox.setPadding(new Insets(0));
+        if (visible) {
+            versionPane.setPrefWidth(200);
+        } else {
+            versionPane.setPrefWidth(1);
+        }
+        versionVBox.setVisible(visible);
     }
 
     private void createEditorMenu() {

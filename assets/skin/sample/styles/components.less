@@ -92,6 +92,10 @@
     -fx-background-color: @nothing;
     -fx-border-radius: 0;
     &:selected {
+       .tab-label {
+        -fx-text-fill:@background;
+        -fx-font-size: 13;
+      }
       -fx-focus-color: @nothing;
       -fx-background-color: #FFF;
       -fx-effect: innershadow(three-pass-box,@color, 4, 0.2, 2, 3);

@@ -76,8 +76,6 @@ public class ArticleCell extends AbstractView {
         }
         Label title = findById("title");
         title.setText(article.getTitle());
-        Label desc = findById("desc");
-        desc.setText(article.getDesc());
     }
 
     private void initViewToolButton(String id, String icon, EventHandler<ActionEvent> handler) {

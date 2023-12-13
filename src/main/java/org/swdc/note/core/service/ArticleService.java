@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.swdc.data.StatelessHelper;
 import org.swdc.data.anno.Transactional;
 import org.swdc.dependency.annotations.With;
+import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
@@ -54,6 +55,7 @@ public class ArticleService  {
 
     @Inject
     private IndexorService indexorService = null;
+
 
     @Transactional
     public ArticleContent getContentOf(Article article) {
@@ -262,8 +264,7 @@ public class ArticleService  {
                     .filter(predicate)
                     .collect(Collectors.toList());
         }
-        return singleStores.stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(singleStores);
     }
 
     public SingleStorage getSingleStoreBy(Class<? extends SingleStorage> type) {

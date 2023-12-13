@@ -7,6 +7,8 @@ import java.util.Map;
 public class ArticleContent {
 
     @Id
+    private String id;
+
     private String articleId;
 
     private String typeId;
@@ -14,6 +16,18 @@ public class ArticleContent {
     private Map<String, byte[]> images;
 
     private String source;
+
+    private Integer version;
+
+    private String updateDate;
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     public String getArticleId() {
         return articleId;
@@ -45,5 +59,21 @@ public class ArticleContent {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
     }
 }

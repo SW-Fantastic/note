@@ -22,6 +22,14 @@ public class AppConfig extends ApplicationConfig {
 
     @PropEditor(
             editor = CheckEditor.class,
+            name = "启用文档版本管理",
+            description= "保存文档的时候将会存储为新版本，可以回溯各个版本的文档。"
+    )
+    @Property("versionsControl")
+    private Boolean versionsControl;
+
+    @PropEditor(
+            editor = CheckEditor.class,
             name = "显示主窗口",
             description= "在启动后显示主窗口"
     )
@@ -60,5 +68,11 @@ public class AppConfig extends ApplicationConfig {
         this.fastEditKey = fastEditKey;
     }
 
+    public Boolean getVersionsControl() {
+        return versionsControl;
+    }
 
+    public void setVersionsControl(Boolean versionsControl) {
+        this.versionsControl = versionsControl;
+    }
 }

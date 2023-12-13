@@ -12,10 +12,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.swdc.dependency.annotations.EventListener;
 import org.swdc.fx.font.FontSize;
 import org.swdc.fx.font.MaterialIconsService;
 import org.swdc.fx.view.AbstractView;
@@ -25,6 +27,7 @@ import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.core.service.ContentService;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
@@ -56,6 +59,9 @@ public class ArticleEditorView extends AbstractView {
 
     @Inject
     private ArticleService articleService = null;
+
+    @Inject
+    private ContentService contentService  = null;
 
     private RectPopover tablePopover;
 
@@ -288,6 +294,19 @@ public class ArticleEditorView extends AbstractView {
         return select;
     }
 
+
+    @EventListener(type = RefreshEvent.class)
+    public void onRefreshed(RefreshEvent event) {
+        if (event.getArticle() != null) {
+            Article hasOpened = getArticle(event.getArticle().getId());
+            if (hasOpened != null) {
+                Tab tab =  articleTabMap.get(hasOpened);
+                EditorContentView editor = UIUtils.fxViewByView(tab.getContent(),EditorContentView.class);
+                editor.setVersions(contentService.getVersions(hasOpened.getId()));
+            }
+        }
+    }
+
     public Tab addArticle(Article article) {
 
         Article hasOpen = getArticle(article.getId());
@@ -310,33 +329,24 @@ public class ArticleEditorView extends AbstractView {
         ArticleContent content  = Optional.ofNullable(article.getContent())
                 .orElse(articleService.getContentOf(article));
         if (content != null) {
-
-            Map<String,byte[]> resource = content.getImages();
-            if (resource != null) {
-                for (Map.Entry<String, byte[]> ent : resource.entrySet()) {
-                    editor.getImagesView().addImage(ent.getKey(), ent.getValue());
-                }
-            }
-            String source = content.getSource();
-            if(source != null) {
-                codeArea.appendText(source);
-            }
+            editor.loadArticleData(content);
         }
-        editor.setSaved();
 
         String articleSource = render.render(codeArea.getText(),editor.getImagesView().getImages());
         String renderedContext = render.renderHTML(articleSource);
-        editor.getWebView().getEngine().loadContent(renderedContext);
+
+        WebView webView = editor.getWebView();
+        webView.getEngine().loadContent(renderedContext);
 
         codeArea.textProperty().addListener(((observable, oldValue, newValue) ->{
             String source = render.render(codeArea.getText(),editor.getImagesView().getImages());
             String context = render.renderHTML(source);
-            editor.getWebView().getEngine().loadContent(context);
+            webView.getEngine().loadContent(context);
             editor.setChanged();
             tab.setText("* " + article.getTitle());
         }));
 
-        editor.getWebView().getEngine().getLoadWorker().stateProperty().addListener((observableValue, stateOld, stateNew) -> {
+        webView.getEngine().getLoadWorker().stateProperty().addListener((observableValue, stateOld, stateNew) -> {
             if (stateNew == Worker.State.SUCCEEDED) {
                 // 计算当前行
                 int currLine = codeArea.getText().substring(0,codeArea.getCaretPosition()).split("\n").length;
@@ -350,6 +360,8 @@ public class ArticleEditorView extends AbstractView {
                 editor.getWebView().getEngine().executeScript("window.scrollTo(0, document.body.clientHeight * "+scrollPos+");");
             }
         });
+
+        editor.setVersions(contentService.getVersions(article.getId()));
 
         BorderPane borderPane = (BorderPane) editor.getView();
         borderPane.setUserData(editor);
