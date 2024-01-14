@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
@@ -25,7 +24,7 @@ import org.swdc.note.ui.view.dialogs.TypeEditView;
 
 import java.util.Date;
 
-@View(stage = false,multiple = true,viewLocation = "views/main/ArticleTypeCell.fxml")
+@View(stage = false,multiple = true,viewLocation = "views/cells/ArticleTypeCell.fxml")
 public class ArticleTypeCell extends AbstractView {
 
     private ArticleType type;

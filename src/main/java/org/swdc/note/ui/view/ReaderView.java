@@ -84,18 +84,6 @@ public class ReaderView extends AbstractView {
         btn.setText(iconsService.getFontIcon(icon));
     }
 
-    public Article getArticle(Long articleId) {
-        if (articleId == null) {
-            return null;
-        }
-        Article select = articleTabMap
-                .keySet()
-                .stream()
-                .filter(k -> articleId.equals(k.getId()))
-                .findFirst()
-                .orElse(null);
-        return select;
-    }
 
     public Article getArticle(String path) {
         if (path == null || path.isEmpty() || path.isBlank()) {
@@ -104,8 +92,10 @@ public class ReaderView extends AbstractView {
         Article select = articleTabMap
                 .keySet()
                 .stream()
-                .filter(k -> k.getSingleStore() != null)
-                .filter(k -> k.getFullPath().equals(path))
+                .filter(k ->
+                    k.getSingleStore() != null && k.getFullPath().equals(path) ||
+                    k.getId().equals(path)
+                )
                 .findFirst()
                 .orElse(null);
         return select;

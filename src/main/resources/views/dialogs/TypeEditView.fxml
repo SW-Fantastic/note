@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="151.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.CreateDialogController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="151.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeEditController">
    <top>
-      <HBox alignment="BOTTOM_LEFT" prefHeight="42.0" prefWidth="439.0" BorderPane.alignment="CENTER">
+      <HBox alignment="BOTTOM_LEFT" prefHeight="49.0" prefWidth="439.0" BorderPane.alignment="CENTER">
          <padding>
             <Insets left="24.0" />
          </padding>
@@ -20,9 +20,9 @@
       </HBox>
    </top>
    <center>
-      <HBox alignment="CENTER" prefHeight="70.0" prefWidth="372.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="57.0" prefWidth="439.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField id="txtName" fx:id="txtName" prefHeight="29.0" prefWidth="356.0" styleClass="text" HBox.hgrow="ALWAYS">
+            <TextField id="txtName" fx:id="txtName" prefHeight="29.0" prefWidth="407.0" styleClass="text" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="24.0" right="24.0" />
                </HBox.margin>
@@ -31,21 +31,16 @@
       </HBox>
    </center>
    <bottom>
-      <HBox alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="439.0" spacing="6.0" BorderPane.alignment="CENTER">
+      <HBox alignment="TOP_RIGHT" prefHeight="51.0" prefWidth="439.0" spacing="6.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-               <padding>
-                  <Insets left="24.0" />
-               </padding>
-            </HBox>
             <Button mnemonicParsing="false" onAction="#onCancel" prefHeight="32.0" prefWidth="88.0" styleClass="btn-info" text="取消" />
-            <Button layoutX="294.0" layoutY="18.0" mnemonicParsing="false" onAction="#onCreate" prefHeight="32.0" prefWidth="88.0" styleClass="btn-primary" text="创建" />
+            <Button layoutX="294.0" layoutY="18.0" mnemonicParsing="false" onAction="#onSave" prefHeight="32.0" prefWidth="88.0" styleClass="btn-primary" text="确定" />
          </children>
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
          <padding>
-            <Insets right="8.0" />
+            <Insets right="24.0" />
          </padding>
       </HBox>
    </bottom>

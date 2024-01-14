@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.controlsfx.control.PopOver;
 import org.slf4j.Logger;
 import org.swdc.dependency.annotations.EventListener;
 import org.swdc.fx.FXResources;
@@ -24,12 +25,12 @@ import org.swdc.note.core.files.ExternalStorage;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.component.SearchPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.*;
 import org.swdc.note.ui.view.cells.*;
 import org.swdc.note.ui.view.dialogs.BatchExportView;
-import org.swdc.note.ui.view.dialogs.TypeCreateView;
 import org.swdc.note.ui.view.dialogs.TypeEditView;
 import org.swdc.note.ui.view.dialogs.TypeExportView;
 
@@ -38,7 +39,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.findTypeItem;
 
@@ -77,6 +77,8 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
 
     private TreeItem<ArticleType> typeRoot = new TreeItem<>();
 
+    private SearchPopover searchPopover;
+
     @Override
     protected void viewReady(URL url, ResourceBundle resourceBundle) {
         typeTree.setRoot(typeRoot);
@@ -93,10 +95,20 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         recentlyList.setCellFactory(list -> new ArticleSimpleListCell(getView().getView(ArticleSimpleCell.class)));
         recentlyList.setItems(recently);
         this.refresh(null);
+
+        this.searchPopover = new SearchPopover(this.articleService);
+        this.searchPopover.prefWidthProperty()
+                .bind(txtSearch.widthProperty());
+        this.searchPopover.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        this.searchPopover.setHideOnEscape(true);
+        this.searchPopover.setClicked(art -> {
+            txtSearch.clear();
+            readerView.addArticle(art);
+            readerView.show();
+        });
     }
 
     private void onTypeTreeClicked(MouseEvent e) {
-        TreeItem<ArticleType> typeItem = typeTree.getSelectionModel().getSelectedItem();
         Object selectedView = e.getPickResult().getIntersectedNode();
         if (e.getPickResult().getIntersectedNode() instanceof TreeCell) {
             TreeCell<ArticleType> clickedItem = (TreeCell) selectedView;
@@ -116,13 +128,15 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
             List<ArticleType> types = this.articleService.getTypes();
             List<TreeItem<ArticleType>> items = types.stream()
                     .map(UIUtils::createTypeTree)
-                    .collect(Collectors.toList());
+                    .toList();
             typeRoot.getChildren().addAll(items);
             return;
         }
+
         // 刷新分类树
         ArticleType type = event.getArticleType();
         Article article = event.getArticle();
+
         if (type.getParent() != null && article == null) {
             TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
             if (parent != null) {
@@ -176,7 +190,7 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
 
     @FXML
     public void onTypeAdded() {
-        TypeCreateView createView = getView().getView(TypeCreateView.class);
+        TypeEditView createView = getView().getView(TypeEditView.class);
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
         if (typeTreeItem == null || typeTreeItem.getValue() == null) {
             createView.setParent(null);
@@ -429,10 +443,8 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         if (txtSearch.getText().isBlank()) {
             return;
         }
-        SearchView searchView = getView().getView(SearchView.class);
-        searchView.search(txtSearch.getText());
-        searchView.show();
-        txtSearch.clear();
+        searchPopover.search(txtSearch.getText());
+        searchPopover.show(txtSearch);
     }
 
 }

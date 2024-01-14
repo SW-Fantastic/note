@@ -11,7 +11,7 @@ import org.swdc.note.ui.view.ReaderView;
 
 import java.text.SimpleDateFormat;
 
-@View(stage = false,multiple = true,viewLocation = "views/main/ArticleSimpleCell.fxml")
+@View(stage = false,multiple = true,viewLocation = "views/cells/ArticleSimpleCell.fxml")
 public class ArticleSimpleCell extends AbstractView {
 
     private Article article;

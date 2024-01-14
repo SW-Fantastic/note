@@ -165,7 +165,7 @@ public class ArticleService  {
     public void deleteType(ArticleType articleType) {
         ArticleType type = typeRepo.getOne(articleType.getId());
         if (type != null) {
-            List<String> ids = getChildTypeId(articleType,null);
+            List<String> ids = getChildTypeId(type,null);
             typeRepo.remove(type);
             for (String typeId: ids) {
                 indexorService.removeIndex(typeId);
@@ -213,15 +213,6 @@ public class ArticleService  {
                 .collect(Collectors.toList());
     }
 
-    /*public ContentFormatter getFormatter(File file, Class entityClass) {
-        List<CommonContentFormatter> formatters = getScoped(CommonContentFormatter.class);
-        for (var item : formatters) {
-            if (item.support(file.toPath()) && item.getType().equals(entityClass)) {
-                return item;
-            }
-        }
-        return null;
-    }*/
 
     public List<StorageFactory> getAllExternalStorage(Predicate<StorageFactory> predicate) {
         if (predicate != null) {

@@ -19,7 +19,7 @@ import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.ReaderView;
 
-@View(stage = false,multiple = true,viewLocation = "views/main/ArticleCell.fxml")
+@View(stage = false,multiple = true,viewLocation = "views/cells/ArticleCell.fxml")
 public class ArticleCell extends AbstractView {
 
     @Inject

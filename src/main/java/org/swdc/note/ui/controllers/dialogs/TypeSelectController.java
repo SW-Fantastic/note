@@ -11,7 +11,7 @@ import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.UIUtils;
-import org.swdc.note.ui.view.dialogs.TypeCreateView;
+import org.swdc.note.ui.view.dialogs.TypeEditView;
 import org.swdc.note.ui.view.dialogs.TypeSelectView;
 
 import java.net.URL;
@@ -85,7 +85,7 @@ public class TypeSelectController extends ViewController<TypeSelectView> {
 
     @FXML
     private void createType() {
-        TypeCreateView createView = getView().getView(TypeCreateView.class);
+        TypeEditView createView = getView().getView(TypeEditView.class);
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
         createView.setParent(typeTreeItem == null ? null : typeTreeItem.getValue());
         createView.show();

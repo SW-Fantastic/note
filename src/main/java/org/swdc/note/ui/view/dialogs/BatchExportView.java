@@ -6,7 +6,7 @@ import org.swdc.fx.view.View;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.ui.controllers.dialogs.BatchExportViewController;
 
-@View(title = "存储为",dialog = true,multiple = true,viewLocation = "views/main/BatchExportView.fxml")
+@View(title = "存储为",dialog = true,multiple = true,viewLocation = "views/dialogs/BatchExportView.fxml")
 public class BatchExportView extends AbstractView {
 
     @PostConstruct

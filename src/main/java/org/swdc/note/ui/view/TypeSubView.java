@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import org.controlsfx.control.PopOver;
 import org.swdc.fx.font.FontSize;
 import org.swdc.fx.font.MaterialIconsService;
 import org.swdc.fx.view.AbstractView;
@@ -25,13 +26,9 @@ public class TypeSubView extends AbstractView {
 
     private ContextMenu articleContextMenu;
 
+
     @PostConstruct
     public void initialize() {
-        Button btnSearch = findById("search");
-        btnSearch.setFont(iconsService.getFont(FontSize.MIDDLE));
-        btnSearch.setText(iconsService.getFontIcon("search"));
-        btnSearch.setPadding(new Insets(4,4,4,4));
-
         this.initViewToolButton("add", "add");
         this.initViewToolButton("imp","folder");
         this.initViewToolButton("help", "live_help");

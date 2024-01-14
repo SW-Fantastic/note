@@ -11,6 +11,7 @@ import org.swdc.dependency.interceptor.AspectAt;
 import org.swdc.dependency.interceptor.ProcessPoint;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.entities.CollectionType;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 
@@ -22,7 +23,6 @@ public class RefreshAspect implements EventEmitter {
     @Inject
     private Logger logger;
 
-    //@Aspect(byNameRegex = "org.swdc.note.core.service.[\\S]+Service.create[\\S]+")
     @Aspect(byNameRegex = "create[\\S]+",at = AspectAt.AROUND)
     public Object onCreate(ProcessPoint point) {
         try {
@@ -82,6 +82,17 @@ public class RefreshAspect implements EventEmitter {
                 this.emit(new RefreshEvent(type,this,RefreshType.UPDATE));
             } else if (name.contains("delete")) {
                 this.emit(new RefreshEvent(type,this,RefreshType.DELETE));
+            }
+        }
+
+        CollectionType collectionType = getParam(point,CollectionType.class);
+        if (type != null && type.getId() != null) {
+            if (name.contains("create")) {
+                this.emit(new RefreshEvent(collectionType,this,RefreshType.CREATION));
+            } else if (name.contains("save")) {
+                this.emit(new RefreshEvent(collectionType,this,RefreshType.UPDATE));
+            } else if (name.contains("delete")) {
+                this.emit(new RefreshEvent(collectionType,this,RefreshType.DELETE));
             }
         }
     }

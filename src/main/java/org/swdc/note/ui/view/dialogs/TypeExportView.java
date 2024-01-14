@@ -6,7 +6,7 @@ import org.swdc.fx.view.View;
 import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.ui.controllers.dialogs.TypeExportController;
 
-@View(title = "导出", dialog = true,multiple = true,viewLocation = "views/main/TypeExportView.fxml")
+@View(title = "导出", dialog = true,multiple = true,viewLocation = "views/dialogs/TypeExportView.fxml")
 public class TypeExportView extends AbstractView {
 
     @PostConstruct

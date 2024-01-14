@@ -10,7 +10,7 @@ import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.View;
 import org.swdc.note.ui.controllers.dialogs.SourceDialogController;
 
-@View(title = "载入",viewLocation = "views/main/SourceDialogView.fxml")
+@View(title = "载入",viewLocation = "views/dialogs/SourceDialogView.fxml")
 public class SourceDialogView extends AbstractView {
 
     @Inject

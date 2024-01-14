@@ -30,6 +30,8 @@ public class MainView extends AbstractView {
     @Inject
     private ConfigSubView configSubView;
 
+    @Inject
+    private CollectSubView collectSubView;
 
     private ToggleGroup group;
 
@@ -43,6 +45,7 @@ public class MainView extends AbstractView {
         this.group = new ToggleGroup();
         this.initViewToolButton("type", "list");
         this.initViewToolButton("conf","settings");
+        this.initViewToolButton("coll","class");
 
         group.selectedToggleProperty().addListener(this::viewToggleChange);
 
@@ -56,6 +59,7 @@ public class MainView extends AbstractView {
 
         initialSizes(typeSubView);
         initialSizes(configSubView);
+        initialSizes(collectSubView);
 
         group.selectToggle(findById("type"));
 
@@ -103,6 +107,10 @@ public class MainView extends AbstractView {
             }
             case "conf" : {
                 borderPane.setCenter(configSubView.getView());
+                break;
+            }
+            case "coll": {
+                borderPane.setCenter(collectSubView.getView());
                 break;
             }
         }

@@ -43,6 +43,16 @@ public class TypeEditController extends ViewController<TypeEditView> {
         }
         TypeEditView editView = getView();
         if (type == null) {
+            ArticleType type = new ArticleType();
+            type.setName(txtName.getText());
+            type.setParent(editView.getParent());
+            if((type = articleService.createType(type)) != null) {
+                editView.hide();
+                UIUtils.notification("分类《" + type.getName() + "》 保存成功！");
+                txtName.setText("");
+                return;
+            }
+            txtName.setText("");
             return;
         }
         type = articleService.getType(type.getId());
@@ -60,4 +70,6 @@ public class TypeEditController extends ViewController<TypeEditView> {
     public void setType(ArticleType type) {
         this.type = type;
     }
+
+
 }

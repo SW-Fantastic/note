@@ -139,6 +139,17 @@ module noteEditor {
             swdc.application.fx,
             javafx.graphics;
 
+    opens views.dialogs to
+            swdc.application.dependency,
+            swdc.application.fx,
+            javafx.graphics;
+
+    opens views.cells to
+            swdc.application.dependency,
+            swdc.application.fx,
+            javafx.graphics;
+
+
     opens icons to
             swdc.application.dependency,
             swdc.application.fx;

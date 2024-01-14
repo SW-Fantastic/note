@@ -7,8 +7,11 @@ import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.ui.controllers.dialogs.TypeEditController;
 
-@View(dialog = true,title = "修改分类",viewLocation = "views/main/TypeEditView.fxml")
+@View(dialog = true,title = "分类编辑",viewLocation = "views/dialogs/TypeEditView.fxml")
 public class TypeEditView extends AbstractView {
+
+    private ArticleType parent;
+
 
     @PostConstruct
     public void initialize() {
@@ -23,4 +26,11 @@ public class TypeEditView extends AbstractView {
         controller.setType(type);
     }
 
+    public void setParent(ArticleType parent) {
+        this.parent = parent;
+    }
+
+    public ArticleType getParent() {
+        return parent;
+    }
 }

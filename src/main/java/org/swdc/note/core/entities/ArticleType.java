@@ -33,8 +33,8 @@ public class ArticleType {
     @ManyToOne(cascade = CascadeType.DETACH)
     private ArticleType parent;
 
-    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "parent")
     @JsonIgnore
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "parent")
     private List<ArticleType> children;
 
     public String getId() {

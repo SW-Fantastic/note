@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane id="rootContainer" minWidth="850.0" prefHeight="600.0" prefWidth="920.0" styleClass="scene" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane id="rootContainer" minWidth="850.0" prefHeight="600.0" prefWidth="920.0" styleClass="scene" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
          <left>
             <VBox alignment="CENTER" prefHeight="600.0" prefWidth="57.0" spacing="8.0" styleClass="tools" BorderPane.alignment="CENTER">
                <children>
@@ -18,6 +16,7 @@
                               <Insets />
                            </VBox.margin>
                         </ToggleButton>
+                  <ToggleButton id="coll" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="集" />
                   <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
                         <ToggleButton id="conf" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="设" />
                      </children>
