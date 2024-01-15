@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="151.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeEditController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="157.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.TypeEditController">
    <top>
       <HBox alignment="BOTTOM_LEFT" prefHeight="49.0" prefWidth="439.0" BorderPane.alignment="CENTER">
          <padding>
@@ -22,7 +22,7 @@
    <center>
       <HBox alignment="CENTER" prefHeight="57.0" prefWidth="439.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField id="txtName" fx:id="txtName" prefHeight="29.0" prefWidth="407.0" styleClass="text" HBox.hgrow="ALWAYS">
+            <TextField id="txtName" fx:id="txtName" prefHeight="35.0" prefWidth="391.0" styleClass="text" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="24.0" right="24.0" />
                </HBox.margin>

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -76,5 +76,10 @@ public class CollectionType {
 
     public void setArticles(List<CollectionArticle> articles) {
         this.articles = articles;
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 }

@@ -116,36 +116,79 @@
       }
     }
 
-    .coll-types {
+    .coll-pane {
 
-        -fx-background-color: @primaryColor;
+        .tools {
 
-        .button {
-            -fx-background-color: @primaryColor;
-            -fx-background-radius: 999;
-            -fx-text-fill : #FFF;
-            &:hover {
-                -fx-effect: dropshadow(three-pass-box,#FFF, 8, 0, 0, 0);
+            .button {
+                -fx-background-color: @nothing;
+                -fx-text-fill: @primaryColor;
+                &:hover {
+                    -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                    -fx-border-style: dashed;
+                    -fx-border-width: 1;
+                    -fx-border-color: @primaryColor;
+                    -fx-border-radius: 999;
+                }
             }
+
         }
 
-        .tree-view {
+        .table-view {
             -fx-background-color: @nothing;
-            .tree-cell {
-                &:empty {
-                    -fx-background-color: @nothing;
+            .column-header-background {
+                -fx-background-color: @nothing;
+                .filler {
+                    -fx-background-color:@primaryColor;
+                    -fx-background-radius: 0;
                 }
-                &:filled {
-                    -fx-text-fill: #FFF;
-                    -fx-background-color: @primaryColor;
-                    -fx-effect: dropshadow(three-pass-box,rgba(204,204,204,0.8), 8, 0, 0, 0);
-                    -fx-padding: 8;
-                    -fx-border-width: 0 0 1 0;
-                    -fx-border-style: dashed;
-                    -fx-border-color: #FFF;
-                    &:selected {
-                        -fx-text-fill: @primaryColor;
-                        -fx-background-color: #FFF;
+            }
+            .column-header {
+                -fx-font-size: 14px;
+                -fx-background-color:#EBDFC2;
+                .label {
+                    -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                    -fx-text-fill: @primaryColor;
+                }
+            }
+        }
+        .coll-types {
+
+            -fx-background-color: @primaryColor;
+
+            .button {
+                -fx-background-color: @primaryColor;
+                -fx-background-radius: 999;
+                -fx-text-fill : #FFF;
+                &:hover {
+                    -fx-effect: dropshadow(three-pass-box,#FFF, 8, 0, 0, 0);
+                }
+            }
+
+            .tree-view {
+                -fx-background-color: @nothing;
+                .tree-cell {
+                    &:empty {
+                        -fx-background-color: @nothing;
+                    }
+                    &:filled {
+                        -fx-text-fill: #FFF;
+                        -fx-background-color: @primaryColor;
+                        -fx-effect: dropshadow(three-pass-box,rgba(204,204,204,0.8), 8, 0, 0, 0);
+                        -fx-padding: 8;
+                        -fx-border-width: 0 0 1 0;
+                        -fx-border-style: dashed;
+                        -fx-border-color: #FFF;
+                        .arrow {
+                            -fx-background-color: #FFF;
+                        }
+                        &:selected {
+                            -fx-text-fill: @primaryColor;
+                            -fx-background-color: #FFF;
+                            .arrow {
+                                -fx-background-color: @primaryColor;
+                            }
+                        }
                     }
                 }
             }

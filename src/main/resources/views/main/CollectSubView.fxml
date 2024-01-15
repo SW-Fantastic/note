@@ -12,13 +12,13 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="531.0" prefWidth="741.0" styleClass="sub-view" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.CollectionSubViewController">
    <center>
-      <SplitPane dividerPositions="0.29693140794223827" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.29693140794223827" prefHeight="200.0" prefWidth="200.0" styleClass="coll-pane" BorderPane.alignment="CENTER">
          <items>
             <VBox prefHeight="200.0" prefWidth="100.0" styleClass="coll-types">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="216.0">
                      <children>
-                        <Button id="addCollType" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" text="Add" />
+                        <Button id="addCollType" mnemonicParsing="false" onAction="#onAddType" prefHeight="36.0" prefWidth="36.0" text="Add" />
                      </children>
                      <VBox.margin>
                         <Insets />
@@ -31,18 +31,20 @@
                </children></VBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="516.0">
+                  <HBox id="collTools" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="516.0" styleClass="tools">
                      <children>
-                        <Button minHeight="36.0" minWidth="36.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" text="Button" />
+                        <Button id="fromLink" minHeight="36.0" minWidth="36.0" mnemonicParsing="false" onAction="#onAddArticle" prefHeight="36.0" prefWidth="36.0" text="Add" />
                      </children>
                      <padding>
                         <Insets right="12.0" />
                      </padding>
                   </HBox>
-                  <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="articleTableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
+                      <TableColumn fx:id="titleColumn" prefWidth="75.0" text="标题" />
+                        <TableColumn prefWidth="75.0" text="来源" />
+                      <TableColumn prefWidth="75.0" text="收录日期" />
+                        <TableColumn maxWidth="80.0" prefWidth="75.0" resizable="false" text="操作" />
                     </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

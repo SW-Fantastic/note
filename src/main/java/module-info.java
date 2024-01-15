@@ -4,6 +4,8 @@ module noteEditor {
     requires swdc.application.dependency;
     requires swdc.application.configs;
     requires swdc.application.data;
+    requires swdc.unit.remark;
+
     requires jakarta.inject;
     requires jakarta.annotation;
 
