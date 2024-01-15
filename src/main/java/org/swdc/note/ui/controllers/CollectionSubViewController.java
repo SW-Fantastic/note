@@ -85,7 +85,7 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
             List<CollectionType> typeList = collectionService.getCollectionTypes();
             List<TreeItem<CollectionType>> items = typeList
                     .stream()
-                    .map(UIUtils::createCollectTypeTree)
+                    .map(UIUtils::createTypeTree)
                     .toList();
             ObservableList<TreeItem<CollectionType>> treeItems = rootItem.getChildren();
             treeItems.clear();
@@ -97,13 +97,13 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
         CollectionType target = type.getParent();
         if (target != null) {
             // refresh the parent type
-            TreeItem<CollectionType> parentTypeNode = UIUtils.findTypeItem(collTypeTree.getRoot(),type);
+            TreeItem<CollectionType> parentTypeNode = UIUtils.findTypeItem(collTypeTree.getRoot(),target,CollectionType::getId);
             if (parentTypeNode != null) {
                 if (event.getType() == RefreshType.CREATION) {
                     parentTypeNode.getChildren()
                             .add(new TreeItem<>(type));
                 } else {
-                    TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type);
+                    TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
                     if (theItem == null) {
                         return;
                     }

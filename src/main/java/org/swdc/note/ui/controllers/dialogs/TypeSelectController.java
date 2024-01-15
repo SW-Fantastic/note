@@ -54,12 +54,12 @@ public class TypeSelectController extends ViewController<TypeSelectView> {
         // 刷新分类树
         ArticleType type = event.getArticleType();
         if (type.getParent() != null) {
-            TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
+            TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent(),ArticleType::getId);
             if (parent != null) {
                 if (event.getType() == RefreshType.CREATION) {
                     parent.getChildren().add(new TreeItem<>(type));
                 } else {
-                    TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+                    TreeItem<ArticleType> target = findTypeItem(typeRoot,type,ArticleType::getId);
                     if (target == null) {
                         return;
                     }
@@ -71,7 +71,7 @@ public class TypeSelectController extends ViewController<TypeSelectView> {
                 }
             }
         } else {
-            TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+            TreeItem<ArticleType> target = findTypeItem(typeRoot,type,ArticleType::getId);
             if (target == null && event.getType() == RefreshType.CREATION) {
                 typeRoot.getChildren().add(new TreeItem<>(type));
             } else if (event.getType() == RefreshType.UPDATE){

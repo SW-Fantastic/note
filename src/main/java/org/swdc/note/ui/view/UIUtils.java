@@ -12,11 +12,13 @@ import org.swdc.fx.view.Toast;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.entities.CollectionType;
+import org.swdc.note.core.entities.TreeEntity;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,21 +49,22 @@ public class UIUtils {
     }
 
     /**
-     * search the tree item which match the article type
-     * @param typeNode the tree note
-     * @param type the type
-     * @return the item which contains the type
+     * 在TreeView的Item中搜索特定的TreeItem
+     * @param typeNode Tree的根节点
+     * @param type 搜索的目标对象
+     * @param extractor 特征函数，用于从对象里面提取可供对比的属性，通常可直接返回对象的Id。
+     * @return 包含此对象的TreeItem。
      */
-    public static TreeItem<ArticleType> findTypeItem(TreeItem<ArticleType> typeNode, ArticleType type) {
-        if (typeNode.getValue() != null && typeNode.getValue().getId().equals(type.getId())) {
+    public static <T extends TreeEntity<T>> TreeItem<T> findTypeItem(TreeItem<T> typeNode, T type, Function<T,Object> extractor) {
+        if (typeNode.getValue() != null && extractor.apply(typeNode.getValue()).equals(extractor.apply(type))) {
             return typeNode;
         }
         if (typeNode.getChildren().size() > 0) {
-            for (TreeItem<ArticleType> item: typeNode.getChildren()) {
-                if (item.getValue().getId().equals(type.getId())) {
+            for (TreeItem<T> item: typeNode.getChildren()) {
+                if (extractor.apply(item.getValue()).equals(extractor.apply(type))) {
                     return item;
                 } else if (item.getChildren().size() > 0){
-                    TreeItem<ArticleType> nested = findTypeItem(item,type);
+                    TreeItem<T> nested = findTypeItem(item,type,extractor);
                     if (nested != null) {
                         return nested;
                     }
@@ -69,49 +72,19 @@ public class UIUtils {
             }
         }
         return null;
-    }
-
-    public static TreeItem<ArticleType> createTypeTree(ArticleType type) {
-        TreeItem<ArticleType> item = new TreeItem<>(type);
-        if (type.getChildren() != null && type.getChildren().size() > 0) {
-            for (ArticleType subType: type.getChildren()) {
-                TreeItem<ArticleType> subItem = createTypeTree(subType);
-                item.getChildren().add(subItem);
-            }
-        }
-        return item;
     }
 
     /**
-     * search the tree item which match the article type
-     * @param typeNode the tree note
-     * @param type the type
-     * @return the item which contains the type
+     * 将一个树形的数据结构创建为一个GUI的Tree对象。
+     * @param type 树形数据的根节点
+     * @return 创建完毕的JavaFX-GUI树节点
+     * @param <T> 树节点类型，必须继承TreeEntity
      */
-    public static TreeItem<CollectionType> findTypeItem(TreeItem<CollectionType> typeNode, CollectionType type) {
-        if (typeNode.getValue() != null && typeNode.getValue().getId().equals(type.getId())) {
-            return typeNode;
-        }
-        if (typeNode.getChildren().size() > 0) {
-            for (TreeItem<CollectionType> item: typeNode.getChildren()) {
-                if (item.getValue().getId().equals(type.getId())) {
-                    return item;
-                } else if (item.getChildren().size() > 0){
-                    TreeItem<CollectionType> nested = findTypeItem(item,type);
-                    if (nested != null) {
-                        return nested;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static TreeItem<CollectionType> createCollectTypeTree(CollectionType type) {
-        TreeItem<CollectionType> item = new TreeItem<>(type);
+    public static <T extends TreeEntity<T>> TreeItem<T> createTypeTree(T type) {
+        TreeItem<T> item = new TreeItem<>(type);
         if (type.getChildren() != null && !type.getChildren().isEmpty()) {
-            for (CollectionType subType: type.getChildren()) {
-                TreeItem<CollectionType> subItem = createCollectTypeTree(subType);
+            for (T subType: type.getChildren()) {
+                TreeItem<T> subItem = createTypeTree(subType);
                 item.getChildren().add(subItem);
             }
         }

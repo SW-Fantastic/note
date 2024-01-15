@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class ArticleType {
+public class ArticleType implements TreeEntity<ArticleType> {
 
     /**
      * 这里使用的是UUID，
@@ -77,6 +77,7 @@ public class ArticleType {
         this.parent = parent;
     }
 
+    @Override
     public List<ArticleType> getChildren() {
         return children;
     }

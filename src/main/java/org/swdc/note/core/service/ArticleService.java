@@ -191,15 +191,18 @@ public class ArticleService  {
         return ids;
     }
 
+    @Transactional
     public List<ArticleType> getTypes() {
         List<ArticleType> types = typeRepo.findRootTypes();
         if (types == null || types.isEmpty()) {
             return Collections.emptyList();
         }
-        return types.stream().map(StatelessHelper::stateless)
+        return types.stream()
+                .map(StatelessHelper::stateless)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<Article> getArticles(ArticleType type) {
         if (type == null) {
             return Collections.emptyList();

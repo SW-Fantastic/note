@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-public class CollectionType {
+public class CollectionType implements TreeEntity<CollectionType> {
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
@@ -54,6 +54,7 @@ public class CollectionType {
         this.date = date;
     }
 
+    @Override
     public List<CollectionType> getChildren() {
         return children;
     }

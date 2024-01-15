@@ -138,12 +138,12 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         Article article = event.getArticle();
 
         if (type.getParent() != null && article == null) {
-            TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent());
+            TreeItem<ArticleType> parent = findTypeItem(typeRoot,type.getParent(),ArticleType::getId);
             if (parent != null) {
                 if (event.getType() == RefreshType.CREATION) {
                     parent.getChildren().add(new TreeItem<>(type));
                 } else {
-                    TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+                    TreeItem<ArticleType> target = findTypeItem(typeRoot,type,ArticleType::getId);
                     if (target == null) {
                         return;
                     }
@@ -155,7 +155,7 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
                 }
             }
         } else if (article == null) {
-            TreeItem<ArticleType> target = findTypeItem(typeRoot,type);
+            TreeItem<ArticleType> target = findTypeItem(typeRoot,type,ArticleType::getId);
             if (target == null && event.getType() == RefreshType.CREATION) {
                 typeRoot.getChildren().add(new TreeItem<>(type));
             } else if (event.getType() == RefreshType.UPDATE){
