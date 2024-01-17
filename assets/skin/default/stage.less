@@ -63,6 +63,7 @@
 
   .sub-view {
     -fx-background-color: @nothing;
+
     .tree-view {
       -fx-background-color: rgba(255,255,255,0.4);
       .tree-cell:empty {
@@ -79,6 +80,77 @@
           -fx-background-color: #000;
         }
       }
+    }
+
+    .coll-pane {
+
+        .tools {
+            -fx-background-color: #FFF;
+
+            .button {
+                -fx-background-color: @nothing;
+                -fx-text-fill: @primaryColor;
+                &:hover {
+                    -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                    -fx-border-style: dashed;
+                    -fx-border-width: 1;
+                    -fx-border-color: @primaryColor;
+                    -fx-border-radius: 999;
+                }
+            }
+
+        }
+
+        .table-view {
+            -fx-background-color: rgba(255,255,255,0.6);
+            .column-header-background {
+                -fx-background-color: @nothing;
+                .filler {
+                    -fx-background-color:@primaryColor;
+                    -fx-background-radius: 0;
+                }
+            }
+            .column-header {
+                -fx-font-size: 14px;
+                -fx-background-color:@primaryColor;
+                .label {
+                    -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                    -fx-text-fill: #FFF;
+                }
+            }
+            .table-row-cell {
+
+                -fx-background-color: @nothing;
+                -fx-table-cell-border-color: rgba(255,255,255,0.6);
+
+                &:filled {
+                    -fx-padding: 2;
+                    -fx-border-color: @primaryColor;
+                    -fx-border-style: dashed;
+                    -fx-border-width: 0 0 1 0;
+                    &:selected {
+                        -fx-text-background-color: @primaryColor;
+                        -fx-background-color: #FFF;
+                        -fx-text-fill: @primaryColor;
+                    }
+                }
+            }
+        }
+
+    }
+
+    .coll-types {
+        .button {
+            -fx-background-color: @nothing;
+            -fx-text-fill: @primaryColor;
+            &:hover {
+                -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                -fx-border-style: dashed;
+                -fx-border-width: 1;
+                -fx-border-color: @primaryColor;
+                -fx-border-radius: 999;
+            }
+        }
     }
 
     .list-view {
@@ -165,32 +237,31 @@
         -fx-padding: 0 1 0 1;
       }
     }
+  }
 
-    .tab-pane {
-      .tab-view(@primaryColor);
-      .prop-sheets {
-        -fx-background: rgba(245,237,240, 0.2);
-        .tool-bar {
-          -fx-background-color: rgba(245,237,240, 0.4);
+  .tab-pane {
+        .tab-view(@primaryColor);
+        .prop-sheets {
+          -fx-background: rgba(245,237,240, 0.2);
+          .tool-bar {
+            -fx-background-color: rgba(245,237,240, 0.4);
+          }
+          .text-field{
+            .text-field-without-background(@primaryColor);
+          }
+          .button {
+            .btn-block(@primaryColor,@backgroundColor);
+          }
+          .slider {
+            .scrollable(@primaryColor);
+          }
+          .check-box {
+            .check-box(@primaryColor);
+          }
+          .combo-box {
+            .combo-box(@primaryColor, #FFF);
+          }
         }
-        .text-field{
-          .text-field-without-background(@primaryColor);
-        }
-        .button {
-          .btn-block(@primaryColor,@backgroundColor);
-        }
-        .slider {
-          .scrollable(@primaryColor);
-        }
-        .check-box {
-          .check-box(@primaryColor);
-        }
-        .combo-box {
-          .combo-box(@primaryColor, #FFF);
-        }
-      }
-    }
-
   }
 
   .search-pane {

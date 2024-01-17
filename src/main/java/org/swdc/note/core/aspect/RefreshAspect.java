@@ -11,6 +11,7 @@ import org.swdc.dependency.interceptor.AspectAt;
 import org.swdc.dependency.interceptor.ProcessPoint;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.entities.CollectionArticle;
 import org.swdc.note.core.entities.CollectionType;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
@@ -94,6 +95,11 @@ public class RefreshAspect implements EventEmitter {
             } else if (name.contains("delete")) {
                 this.emit(new RefreshEvent(collectionType,this,RefreshType.DELETE));
             }
+        }
+
+        CollectionArticle collectionArticle = getParam(point,CollectionArticle.class);
+        if (collectionArticle != null) {
+            this.emit(new RefreshEvent(collectionArticle.getType(),this,RefreshType.UPDATE));
         }
     }
 

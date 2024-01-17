@@ -10,6 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.swdc.dependency.annotations.EventListener;
 import org.swdc.fx.view.ViewController;
@@ -19,11 +20,13 @@ import org.swdc.note.core.service.CollectionService;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 import org.swdc.note.ui.view.CollectSubView;
+import org.swdc.note.ui.view.CollectionReadView;
 import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.dialogs.CollectionAddView;
 import org.swdc.note.ui.view.dialogs.TypeCollectionEditView;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -36,6 +39,9 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
     @Inject
     private CollectionAddView collectionAddView;
 
+    @Inject
+    private CollectionReadView readView;
+
     @FXML
     private TreeView<CollectionType> collTypeTree;
 
@@ -45,8 +51,12 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
     @FXML
     private TableColumn<CollectionArticle,String> titleColumn;
 
+    @FXML
+    private TableColumn<CollectionArticle, Date> dateColumn;
+
     @Override
     protected void viewReady(URL url, ResourceBundle resourceBundle) {
+
         collTypeTree.setRoot(new TreeItem<>());
         collTypeTree.setShowRoot(false);
         collTypeTree.getSelectionModel()
@@ -54,7 +64,7 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
                 .addListener(this::selectedTypeChanged);
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         refresh(null);
         getView().disableTools(true);
     }
@@ -108,13 +118,59 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
                         return;
                     }
                     if (event.getType() == RefreshType.DELETE) {
-                        parentTypeNode.getChildren().remove(theItem);
+                        parentTypeNode
+                                .getChildren()
+                                .remove(theItem);
                     } else if (event.getType() == RefreshType.UPDATE) {
                         theItem.setValue(type);
                     }
                 }
             }
+        } else if (event.getType() == RefreshType.CREATION) {
+            TreeItem<CollectionType> newType = new TreeItem<>(type);
+            collTypeTree.getRoot()
+                    .getChildren()
+                    .add(newType);
+        } else if (event.getType() == RefreshType.DELETE) {
+            TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
+            if (theItem != null) {
+                collTypeTree.getRoot()
+                        .getChildren()
+                        .remove(theItem);
+            }
         }
+
+        TreeItem<CollectionType> selected = collTypeTree.getSelectionModel().getSelectedItem();
+        if (selected == null || selected.getValue() == null) {
+            return;
+        }
+        if (selected.getValue().getId().equals(type.getId())) {
+            ObservableList<CollectionArticle> articles =  articleTableView.getItems();
+            articles.clear();
+            articles.addAll(
+                    collectionService.getArticles(type.getId())
+            );
+        }
+
+    }
+
+
+    @FXML
+    public void onTableClicked(MouseEvent mouseEvent) {
+
+        if (mouseEvent.getClickCount() <= 1) {
+            return;
+        }
+
+        CollectionArticle article = articleTableView.getSelectionModel()
+                .getSelectedItem();
+
+        if (article == null) {
+            return;
+        }
+
+        readView.addArticle(article);
+        readView.show();
 
     }
 

@@ -50,7 +50,7 @@ public class GlobalKeyListener implements NativeKeyListener {
 
     @PostConstruct
     public void initialize() {
-       /* try {
+       try {
             LogManager.getLogManager().reset();
             Logger exlogger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
             exlogger.setLevel(Level.OFF);
@@ -62,18 +62,18 @@ public class GlobalKeyListener implements NativeKeyListener {
             editorKeys = Arrays.asList(UIUtils.stringToKeyCode(keys));
         } catch (Exception e) {
             logger.error("fail to register native hook: ", e);
-        }*/
+        }
     }
 
     @PreDestroy
     public void destroy() {
-       /* try {
+       try {
             GlobalScreen.removeNativeKeyListener(this);
             GlobalScreen.unregisterNativeHook();
             logger.info("native hook has removed");
         } catch (Exception e) {
             logger.error("fail to destroy native hook", e);
-        }*/
+        }
     }
 
     @Override

@@ -109,7 +109,7 @@ public class CollectionService {
         }
         target.setType(type);
         target.setTitle(article.getTitle());
-        target = collectionRepo.save(article);
+        target = collectionRepo.save(target);
         return StatelessHelper.stateless(target);
     }
 

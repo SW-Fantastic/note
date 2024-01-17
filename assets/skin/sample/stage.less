@@ -151,6 +151,20 @@
                     -fx-text-fill: @primaryColor;
                 }
             }
+            .table-row-cell {
+                -fx-background-color: @nothing;
+                -fx-table-cell-border-color: @nothing;
+                &:filled {
+                    -fx-padding: 2;
+                    -fx-border-color: @primaryColor;
+                    -fx-border-style: dashed;
+                    -fx-border-width: 0 0 1 0;
+                    &:selected {
+                        -fx-text-background-color: @primaryColor;
+                        -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                    }
+                }
+            }
         }
         .coll-types {
 
@@ -253,38 +267,7 @@
       }
     }
 
-    .tab-pane {
-      .tab-view(#FFF,@primaryColor);
-      -fx-background-radius: 6;
-      .prop-sheets {
-        -fx-background: @backgroundColor;
-        -fx-border-style: dashed;
-        -fx-border-color: @primaryColor;
-        -fx-border-width: 0 0 0 1;
-        .label {
-          -fx-font-size: 15px;
-          -fx-text-fill: @primaryColor;
-        }
-        .tool-bar {
-          -fx-background-color: rgba(245,237,240, 0.4);
-        }
-        .text-field{
-          .text-field-bordered(@primaryColor,#FFF);
-        }
-        .button {
-          .btn-block(@primaryColor,@backgroundColor);
-        }
-        .slider {
-          .scrollable-config(@primaryColor,#FFF);
-        }
-        .check-box {
-          .check-box-without-border(@primaryColor,#FFF);
-        }
-        .combo-box {
-          .combo-box(@primaryColor,#FFF);
-        }
-      }
-    }
+
 
     .search-pane {
         -fx-background-color: rgba(255,255,255,0.4);
@@ -294,6 +277,39 @@
         -fx-border-width: 0 0 1 0;
     }
 
+  }
+
+  .tab-pane {
+        .tab-view(#FFF,@primaryColor);
+        -fx-background-radius: 6;
+        .prop-sheets {
+          -fx-background: @backgroundColor;
+          -fx-border-style: dashed;
+          -fx-border-color: @primaryColor;
+          -fx-border-width: 0 0 0 1;
+          .label {
+            -fx-font-size: 15px;
+            -fx-text-fill: @primaryColor;
+          }
+          .tool-bar {
+            -fx-background-color: rgba(245,237,240, 0.4);
+          }
+          .text-field{
+            .text-field-bordered(@primaryColor,#FFF);
+          }
+          .button {
+            .btn-block(@primaryColor,@backgroundColor);
+          }
+          .slider {
+            .scrollable-config(@primaryColor,#FFF);
+          }
+          .check-box {
+            .check-box-without-border(@primaryColor,#FFF);
+          }
+          .combo-box {
+            .combo-box(@primaryColor,#FFF);
+          }
+        }
   }
 
   .btn-primary-text {

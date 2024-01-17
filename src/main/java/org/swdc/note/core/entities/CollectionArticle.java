@@ -15,7 +15,11 @@ public class CollectionArticle {
 
     private String title;
 
+    @Column(columnDefinition = "timestamp")
     private Date createdAt;
+
+    @Column(columnDefinition = "text")
+    private String source;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     private CollectionType type;
@@ -51,5 +55,13 @@ public class CollectionArticle {
 
     public void setType(CollectionType type) {
         this.type = type;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }
