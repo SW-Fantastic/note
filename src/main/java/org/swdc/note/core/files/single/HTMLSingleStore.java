@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.swdc.dependency.annotations.MultipleImplement;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.proto.HttpURLResolver;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ContentService;
 
@@ -103,12 +102,7 @@ public class HTMLSingleStore extends AbstractSingleStore {
                 if (res == null || res.equals("")) {
                     continue;
                 }
-                if (res.startsWith("http")) {
-                    byte[] data = HttpURLResolver.loadHttpData(res);
-                    URL url = new URL(res);
-                    String fileName = url.getFile();
-                    resource.put(fileName.substring(1), data);
-                } else if (res.startsWith("file")) {
+                if (res.startsWith("file")) {
                     String path = new URL(res).getPath();
                     File localFile = new File(path);
                     byte[] data = Files.readAllBytes(Paths.get(localFile.getAbsolutePath()));

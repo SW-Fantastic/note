@@ -27,9 +27,7 @@ import org.swdc.note.config.AppConfig;
 import org.swdc.note.config.RenderConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
-import org.swdc.note.core.entities.ArticleType;
-import org.swdc.note.core.proto.HttpURLResolver;
+
 
 import javax.imageio.ImageIO;
 import java.awt.*;

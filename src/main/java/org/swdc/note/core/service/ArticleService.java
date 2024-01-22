@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.swdc.data.StatelessHelper;
 import org.swdc.data.anno.Transactional;
 import org.swdc.dependency.annotations.With;
-import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
@@ -14,7 +13,6 @@ import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.StorageFactory;
 import org.swdc.note.core.files.single.AbstractSingleStore;
-import org.swdc.note.core.proto.URLProtoResolver;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.repo.ArticleRepo;
 import org.swdc.note.core.repo.ArticleTypeRepo;
@@ -32,8 +30,6 @@ public class ArticleService  {
     @Inject
     private List<StorageFactory> storageFactories;
 
-    @Inject
-    private List<URLProtoResolver> urlProtoResolvers;
 
     @Inject
     private List<AbstractSingleStore> singleStores;
@@ -227,14 +223,6 @@ public class ArticleService  {
         }
     }
 
-    public URLProtoResolver getURLResolver(String url) {
-        for (URLProtoResolver resolver: urlProtoResolvers){
-            if (resolver.support(url)) {
-                return resolver;
-            }
-        }
-        return null;
-    }
 
     public ArticleType getType(String typeId) {
         return typeRepo.getOne(typeId);

@@ -76,10 +76,16 @@ public class TypeCollectionEditController extends ViewController<TypeCollectionE
                 RefreshType.UPDATE
         ));
         txtCollectName.setText("");
+        getView().hide();
     }
 
     public void setType(CollectionType type) {
         this.type = type;
+        if (type == null) {
+            txtCollectName.setText(null);
+            return;
+        }
+        txtCollectName.setText(type.getTitle());
     }
 
 }

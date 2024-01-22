@@ -8,7 +8,7 @@ import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.MainView;
-import org.swdc.note.ui.view.dialogs.SourceDialogView;
+import org.swdc.note.ui.view.dialogs.CollectionAddView;
 import org.swdc.note.ui.view.dialogs.TrayPopupView;
 
 import java.net.URL;
@@ -19,6 +19,10 @@ public class TrayPopupController extends ViewController<TrayPopupView> {
 
     @Inject
     private MainView mainView;
+
+    @Inject
+    private CollectionAddView collectionAddView;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -52,11 +56,10 @@ public class TrayPopupController extends ViewController<TrayPopupView> {
 
     @FXML
     public void openURL(){
+
         TrayPopupView popupView = getView();
         popupView.hide();
-
-        SourceDialogView sourceDialogView = getView().getView(SourceDialogView.class);
-        sourceDialogView.show();
+        collectionAddView.show();
 
     }
 

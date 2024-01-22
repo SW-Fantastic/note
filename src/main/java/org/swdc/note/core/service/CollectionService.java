@@ -2,9 +2,11 @@ package org.swdc.note.core.service;
 
 
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
 import org.swdc.data.StatelessHelper;
 import org.swdc.data.anno.Transactional;
 import org.swdc.dependency.annotations.With;
+import org.swdc.fx.FXResources;
 import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.entities.CollectionArticle;
@@ -12,6 +14,8 @@ import org.swdc.note.core.entities.CollectionType;
 import org.swdc.note.core.repo.CollectionRepo;
 import org.swdc.note.core.repo.CollectionTypeRepo;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +29,12 @@ public class CollectionService {
 
     @Inject
     private CollectionRepo collectionRepo;
+
+    @Inject
+    private FXResources resources;
+
+    @Inject
+    private Logger logger;
 
     @Transactional
     public CollectionType saveType(CollectionType type) {
@@ -47,12 +57,16 @@ public class CollectionService {
             }
 
             if (exists == null || exists.isEmpty()) {
-                return typeRepo.save(type);
+                return StatelessHelper.stateless(
+                        typeRepo.save(type)
+                );
             }
 
             return exists.get(0);
         } else {
-            return typeRepo.save(type);
+            return StatelessHelper.stateless(
+                    typeRepo.save(type)
+            );
         }
     }
 
@@ -111,6 +125,50 @@ public class CollectionService {
         target.setTitle(article.getTitle());
         target = collectionRepo.save(target);
         return StatelessHelper.stateless(target);
+    }
+
+    @Transactional
+    public void deleteCollectionArticle(CollectionArticle article) {
+
+        if (article == null || article.getId().isBlank()) {
+            return;
+        }
+
+        CollectionArticle theArticle = collectionRepo.getOne(article.getId());
+        collectionRepo.remove(theArticle);
+        File assetRoot = resources.getAssetsFolder();
+        File collectionsRoot = new File(assetRoot.getAbsolutePath() + File.separator + "collections");
+        if (!collectionsRoot.exists()) {
+            return;
+        }
+        try {
+            File documentFile = new File(collectionsRoot.getAbsolutePath() + File.separator + theArticle.getId());
+            Files.delete(documentFile.toPath());
+        } catch (Exception e) {
+            logger.error("Failed to remove a file: " + theArticle.getId(), e);
+        }
+
+    }
+
+    @Transactional
+    public void deleteCollectionType(CollectionType collectionType) {
+
+        if (collectionType == null || collectionType.getId() == null || collectionType.getId().isBlank()) {
+            return;
+        }
+
+        CollectionType theType = typeRepo.getOne(collectionType.getId());
+        List<CollectionType> subTypes = theType.getChildren();
+        for (CollectionType type: subTypes) {
+            deleteCollectionType(type);
+        }
+        List<CollectionArticle> articles = theType.getArticles();
+        for (CollectionArticle article: articles) {
+            deleteCollectionArticle(article);
+        }
+
+        typeRepo.remove(theType);
+
     }
 
 }

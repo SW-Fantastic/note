@@ -87,7 +87,7 @@ public class RefreshAspect implements EventEmitter {
         }
 
         CollectionType collectionType = getParam(point,CollectionType.class);
-        if (type != null && type.getId() != null) {
+        if (collectionType != null && collectionType.getId() != null) {
             if (name.contains("create")) {
                 this.emit(new RefreshEvent(collectionType,this,RefreshType.CREATION));
             } else if (name.contains("save")) {

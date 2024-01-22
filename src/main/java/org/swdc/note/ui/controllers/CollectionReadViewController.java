@@ -10,11 +10,13 @@ import org.slf4j.Logger;
 import org.swdc.fx.FXResources;
 import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.CollectionArticle;
+import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.ui.view.CollectionReadView;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,6 +30,9 @@ public class CollectionReadViewController extends ViewController<CollectionReadV
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private HTMLRender render;
 
     private Map<CollectionArticle, Tab> loaded = new ConcurrentHashMap<>();
 
@@ -69,7 +74,8 @@ public class CollectionReadViewController extends ViewController<CollectionReadV
                     getView().hide();
                 }
             });
-            webView.getEngine().loadContent(content);
+            String html = render.renderHTML(content);
+            webView.getEngine().loadContent(html);
             articlesTab.getTabs().add(tab);
             articlesTab.getSelectionModel().select(tab);
 

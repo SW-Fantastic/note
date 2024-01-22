@@ -108,8 +108,13 @@
             -fx-border-width: 0 0 1 0;
             -fx-border-style: dashed;
             -fx-border-color: @primaryColor;
+            .label {
+                -fx-text-fill: #FFF;
+            }
             &:selected {
-                -fx-text-fill: @primaryColor;
+                .label {
+                    -fx-text-fill: @primaryColor;
+                }
                 -fx-background-color: #EBDFC2;
             }
         }

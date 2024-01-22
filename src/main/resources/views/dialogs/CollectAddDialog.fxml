@@ -7,10 +7,11 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="147.0" prefWidth="458.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.CollectionAddViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="161.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.swdc.note.ui.controllers.dialogs.CollectionAddViewController">
    <top>
-      <HBox alignment="BOTTOM_LEFT" prefHeight="43.0" prefWidth="475.0" BorderPane.alignment="CENTER">
+      <HBox alignment="BOTTOM_LEFT" prefHeight="45.0" prefWidth="845.0" BorderPane.alignment="CENTER">
          <children>
             <Label text="请输入想要收集的网址(URL)：" />
          </children>
@@ -19,18 +20,26 @@
          </padding>
       </HBox>
    </top>
+   <styleClass>
+      <String fx:value="dialog-pane" />
+      <String fx:value="scene" />
+   </styleClass>
    <center>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" prefHeight="232.0" prefWidth="845.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="txtName" prefHeight="33.0" prefWidth="427.0" styleClass="text" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="txtName" minHeight="34.0" prefHeight="33.0" prefWidth="427.0" styleClass="text">
+               <VBox.margin>
+                  <Insets bottom="12.0" top="12.0" />
+               </VBox.margin>
+            </TextField>
          </children>
          <padding>
-            <Insets left="24.0" right="24.0" />
+            <Insets bottom="8.0" left="24.0" right="24.0" />
          </padding>
-      </HBox>
+      </VBox>
    </center>
    <bottom>
-      <HBox alignment="TOP_RIGHT" prefHeight="54.0" prefWidth="475.0" spacing="12.0" BorderPane.alignment="CENTER">
+      <HBox id="buttonBar" alignment="TOP_RIGHT" prefHeight="51.0" prefWidth="534.0" spacing="12.0" BorderPane.alignment="CENTER">
          <children>
             <Button mnemonicParsing="false" onAction="#onCancel" prefHeight="36.0" prefWidth="84.0" styleClass="btn-info" text="取消" />
             <Button mnemonicParsing="false" onAction="#onAccept" prefHeight="36.0" prefWidth="84.0" styleClass="btn-primary" text="确定" />
@@ -40,8 +49,4 @@
          </padding>
       </HBox>
    </bottom>
-   <styleClass>
-      <String fx:value="dialog-pane" />
-      <String fx:value="scene" />
-   </styleClass>
 </BorderPane>

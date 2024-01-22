@@ -74,9 +74,6 @@ module noteEditor {
             swdc.application.fx,
             javafx.graphics;
 
-    opens org.swdc.note.core.proto to
-            swdc.application.dependency;
-
     opens org.swdc.note.core.entities to
             swdc.application.data,
             com.fasterxml.jackson.databind,
