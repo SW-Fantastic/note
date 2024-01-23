@@ -94,6 +94,31 @@ public class CollectionService {
     }
 
     @Transactional
+    public CollectionType getTypeByHost(String host) {
+        if (host == null || host.isBlank()) {
+            return null;
+        }
+        CollectionType target = typeRepo.findByHost(host);
+        if (target == null) {
+            return null;
+        }
+        return StatelessHelper
+                .stateless(target);
+    }
+
+    public CollectionArticle getArticleById(String articleId) {
+        if (articleId == null ||articleId.isBlank()) {
+            return null;
+        }
+        CollectionArticle article = collectionRepo.getOne(articleId);
+        if (article != null) {
+            return StatelessHelper
+                    .stateless(article);
+        }
+        return null;
+    }
+
+    @Transactional
     public List<CollectionArticle> getArticles(String typeId) {
         if (typeId == null || typeId.isBlank()) {
             return Collections.emptyList();

@@ -44,44 +44,12 @@ public class ArticleSetController extends ViewController<ArticleSetView> {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //typeTree.setOnMouseClicked(e -> this.onArticleRead());
         root = new TreeItem<>();
         root.setExpanded(true);
         typeTree.setRoot(root);
         typeTree.setShowRoot(false);
         typeTree.setOnMouseClicked(this::onTreeItemClicked);
     }
-
-    /*public void onItemExport(ActionEvent event) {
-        try {
-            Article article = articles.getSelectionModel().getSelectedItem();
-            FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().addAll(articleService.getExporterFilters(false));
-            File file = chooser.showSaveDialog(null);
-            if (file == null) {
-                return;
-            }
-            FileExporter exporter = articleService.getFileExporter(file,false,true);
-            exporter.writeFile(article, file.toPath());
-        } catch (Exception e) {
-            logger.error("fail to export selected item: ", e);
-        }
-    }
-
-    public void onItemImport(ActionEvent event) {
-        try {
-            ArticleEditorView editorView = findView(ArticleEditorView.class);
-            Article article = articles.getSelectionModel().getSelectedItem();
-            if (article == null) {
-                return;
-            }
-
-            editorView.addArticle(copyItem(article));
-            editorView.show();
-        } catch (Exception e) {
-            logger.error("fail to load article for edit.",e);
-        }
-    } */
 
     private Article copyItem(Article article) throws Exception {
         Article articleEdit = new Article();

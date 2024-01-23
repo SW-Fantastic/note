@@ -39,7 +39,7 @@
                         <Insets right="12.0" />
                      </padding>
                   </HBox>
-                  <TableView fx:id="articleTableView" onMouseClicked="#onTableClicked" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="articleTableView" onDragDetected="#onTableDragDec" onDragDone="#onTableDragComplete" onMouseClicked="#onTableClicked" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="titleColumn" prefWidth="308.0000457763672" text="标题" />
                       <TableColumn fx:id="dateColumn" prefWidth="129.9998779296875" text="收录日期" />

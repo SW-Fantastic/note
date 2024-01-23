@@ -1,11 +1,9 @@
 package org.swdc.note.ui.events;
 
 import org.swdc.dependency.event.AbstractEvent;
-import org.swdc.fx.view.AbstractView;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.entities.CollectionType;
-import org.swdc.note.ui.view.cells.ArticleTypeCell;
 
 public class RefreshEvent extends AbstractEvent {
 

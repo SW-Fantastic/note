@@ -53,7 +53,6 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
     @FXML
     private TableColumn<CollectionArticle, Date> dateColumn;
 
-
     private ContextMenu articleContextMenu;
 
     private ContextMenu typeContextMenu;
@@ -219,6 +218,30 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
         readView.addArticle(article);
         readView.show();
 
+    }
+
+    @FXML
+    public void onTableDragDec() {
+        CollectionArticle article = articleTableView.getSelectionModel().getSelectedItem();
+        if (article == null) {
+            return;
+        }
+        ClipboardContent clipboardContent = new ClipboardContent();
+        clipboardContent.put(CollectTypeTreeCell.DATA_ARTICLE,article.getId());
+        Dragboard dragboard = articleTableView.startDragAndDrop(TransferMode.MOVE);
+        dragboard.setContent(clipboardContent);
+    }
+
+
+    @FXML
+    public void onTableDragComplete(DragEvent event) {
+        Dragboard dragboard = event.getDragboard();
+        if (dragboard.hasContent(CollectTypeTreeCell.DATA_ARTICLE)) {
+            ObservableList<CollectionArticle> articles = articleTableView.getItems();
+            TreeItem<CollectionType> articleTreeItem = collTypeTree.getSelectionModel().getSelectedItem();
+            articles.clear();
+            articles.addAll(collectionService.getArticles(articleTreeItem.getValue().getId()));
+        }
     }
 
     private void onAddTypeMenu(ActionEvent event) {

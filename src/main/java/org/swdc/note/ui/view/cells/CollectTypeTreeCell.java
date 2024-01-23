@@ -5,6 +5,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.*;
 import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.entities.CollectionArticle;
 import org.swdc.note.core.entities.CollectionType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.core.service.CollectionService;
@@ -15,6 +16,7 @@ public class CollectTypeTreeCell extends TreeCell<CollectionType> {
     private Label label;
 
     public static final DataFormat DATA_ARTICLE_TYPE = new DataFormat("application/x-articleType");
+    public static final DataFormat DATA_ARTICLE = new DataFormat("application/x-articleCollect");
 
     private CollectionService service;
 
@@ -41,43 +43,62 @@ public class CollectTypeTreeCell extends TreeCell<CollectionType> {
     }
 
     private void dragDropped(DragEvent event) {
+
         event.consume();
         Dragboard dragboard = event.getDragboard();
-        Object dragged = dragboard.getContent(DATA_ARTICLE_TYPE);
-        event.setDropCompleted(true);
-        if (dragged == null) {
-            return;
-        }
-        String typeId = dragged.toString();
-        CollectionType type = getItem();
-        if (type == null || type.getId().equals(typeId)) {
-            return;
-        }
-        CollectionType moved = service.getType(typeId);
 
-        TreeItem<CollectionType> parent = getTreeView().getRoot();
-        if (moved.getParent() != null) {
-            parent = UIUtils.findTypeItem(
+        if (dragboard.hasContent(DATA_ARTICLE_TYPE)) {
+
+            Object dragged = dragboard.getContent(DATA_ARTICLE_TYPE);
+
+            if (dragged == null) {
+                return;
+            }
+            String typeId = dragged.toString();
+            CollectionType type = getItem();
+            if (type == null || type.getId().equals(typeId)) {
+                return;
+            }
+            CollectionType moved = service.getType(typeId);
+
+            TreeItem<CollectionType> parent = getTreeView().getRoot();
+            if (moved.getParent() != null) {
+                parent = UIUtils.findTypeItem(
+                        getTreeView().getRoot(),
+                        moved.getParent(),
+                        CollectionType::getId
+                );
+            }
+
+            TreeItem<CollectionType> movedItem = UIUtils.findTypeItem(
                     getTreeView().getRoot(),
-                    moved.getParent(),
+                    moved,
                     CollectionType::getId
             );
+
+            if (parent != null && movedItem != null) {
+                parent.getChildren().remove(movedItem);
+            }
+
+            moved.setParent(type);
+            moved = service.saveType(moved);
+            getTreeItem().getChildren()
+                    .add(UIUtils.createTypeTree(moved));
+
+            event.setDropCompleted(true);
+
+        } else if (dragboard.hasContent(DATA_ARTICLE)) {
+
+            String articleId = dragboard.getContent(DATA_ARTICLE).toString();
+            CollectionArticle article = service.getArticleById(articleId);
+            if (!getItem().getId().equals(article.getType().getId())) {
+                article.setType(this.getItem());
+                service.saveCollection(article);
+                event.setDropCompleted(true);
+            }
+
         }
 
-        TreeItem<CollectionType> movedItem = UIUtils.findTypeItem(
-                getTreeView().getRoot(),
-                moved,
-                CollectionType::getId
-        );
-
-        if (parent != null && movedItem != null) {
-            parent.getChildren().remove(movedItem);
-        }
-
-        moved.setParent(type);
-        moved = service.saveType(moved);
-        getTreeItem().getChildren()
-                .add(UIUtils.createTypeTree(moved));
     }
 
     private void dragOver(DragEvent event) {

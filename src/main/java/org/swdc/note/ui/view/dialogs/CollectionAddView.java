@@ -31,6 +31,13 @@ public class CollectionAddView extends AbstractView {
 
     @Override
     public void show() {
-        throw new RuntimeException("invalid call, using another method instead.");
+        Stage stage = getStage();
+        CollectionAddViewController controller = getController();
+        controller.setType(null);
+        if (stage.isShowing()) {
+            stage.toFront();
+        } else {
+            stage.showAndWait();
+        }
     }
 }

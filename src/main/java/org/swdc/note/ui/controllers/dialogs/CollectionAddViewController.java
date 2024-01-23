@@ -68,6 +68,14 @@ public class CollectionAddViewController extends ViewController<CollectionAddVie
 
                 try {
 
+                    if (this.type == null) {
+                        type = collectionService.getTypeByHost(url.getHost());
+                        if (type == null) {
+                            type = new CollectionType();
+                            type.setTitle(url.getHost());
+                            type = collectionService.saveType(type);
+                        }
+                    }
                     UnitTextDocumentGenerator generator = new UnitTextDocumentGenerator(new UnitMarkdownEmbeddedStrategies());
                     UnitDocument<String> doc = generator.generateFromURL(url.toExternalForm());
 

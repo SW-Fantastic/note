@@ -20,4 +20,7 @@ public interface CollectionTypeRepo extends JPARepository<CollectionType,String>
     @SQLQuery("FROM CollectionType Where parent = null")
     List<CollectionType> findRootTypes();
 
+    @SQLQuery("FROM CollectionType Where title = :title")
+    CollectionType findByHost(@Param("host") String host);
+
 }
