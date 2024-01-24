@@ -8,7 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.controlsfx.control.PopOver;
@@ -20,7 +23,6 @@ import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
-//import org.swdc.note.core.formatter.ContentFormatter;
 import org.swdc.note.core.files.ExternalStorage;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.StorageFactory;
@@ -89,6 +91,8 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         typeTree.getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this::onTreeSelectionChange);
+        typeTree.setCellFactory(c -> new ArticleTypeTreeItem(articleService));
+
         articlesList.setCellFactory(list -> new ArticleListCell(getView().getView(ArticleCell.class)));
         articlesList.setItems(articles);
         articlesList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -156,12 +160,14 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
             }
         } else if (article == null) {
             TreeItem<ArticleType> target = findTypeItem(typeRoot,type,ArticleType::getId);
-            if (target == null && event.getType() == RefreshType.CREATION) {
-                typeRoot.getChildren().add(new TreeItem<>(type));
-            } else if (event.getType() == RefreshType.UPDATE){
-                target.setValue(type);
-            } else if (event.getType() == RefreshType.DELETE) {
-               typeRoot.getChildren().remove(target);
+            if (target != null) {
+                if (event.getType() == RefreshType.CREATION) {
+                    typeRoot.getChildren().add(new TreeItem<>(type));
+                } else if (event.getType() == RefreshType.UPDATE){
+                    target.setValue(type);
+                } else if (event.getType() == RefreshType.DELETE) {
+                    typeRoot.getChildren().remove(target);
+                }
             }
         }
         // 刷新文档列表
@@ -445,6 +451,48 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         }
         searchPopover.search(txtSearch.getText());
         searchPopover.show(txtSearch);
+    }
+
+    @FXML
+    public void onTreeDragOver(DragEvent event) {
+        event.acceptTransferModes(TransferMode.MOVE);
+    }
+
+    @FXML
+    public void onTreeDragDropped(DragEvent event) {
+        Dragboard dragboard = event.getDragboard();
+        if (dragboard.hasContent(ArticleTypeTreeItem.DATA_EDIT_TYPE)) {
+
+            String movedTypeId = dragboard.getContent(ArticleTypeTreeItem.DATA_EDIT_TYPE).toString();
+            ArticleType moved = articleService.getType(movedTypeId);
+
+            TreeItem<ArticleType> parentItem = typeTree.getRoot();
+            if (moved.getParent() != null) {
+                parentItem = UIUtils.findTypeItem(
+                        typeTree.getRoot(),
+                        moved.getParent(),
+                        ArticleType::getId
+                );
+            }
+
+            TreeItem<ArticleType> movedItem = UIUtils.findTypeItem(
+                    typeTree.getRoot(),
+                    moved,
+                    ArticleType::getId
+            );
+
+            if (parentItem != null && movedItem != null) {
+                parentItem.getChildren().remove(movedItem);
+            }
+
+            moved.setParent(null);
+            moved = articleService.saveType(moved);
+
+            typeTree.getRoot().getChildren()
+                    .add(UIUtils.createTypeTree(moved));
+
+            event.setDropCompleted(true);
+        }
     }
 
 }

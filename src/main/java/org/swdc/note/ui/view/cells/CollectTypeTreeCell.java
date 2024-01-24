@@ -4,10 +4,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.*;
-import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.entities.CollectionArticle;
 import org.swdc.note.core.entities.CollectionType;
-import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.core.service.CollectionService;
 import org.swdc.note.ui.view.UIUtils;
 

@@ -34,19 +34,14 @@ public class ArticleListCell extends ListCell<Article> {
         }
         List<String> dataList = new ArrayList<>();
         for (Article article: selection) {
-            ArticleCellDragData dragData = new ArticleCellDragData(article);
-            String data = dragData.asString();
-            if (data == null) {
-                continue;
-            }
-            dataList.add(data);
+            dataList.add(article.getId());
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
             String data = mapper.writeValueAsString(dataList);
             Dragboard dragboard = this.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
-            content.putString(data);
+            content.put(ArticleTypeTreeItem.DATA_EDIT,data);
             dragboard.setContent(content);
         } catch (Exception ex) {
             ex.printStackTrace();

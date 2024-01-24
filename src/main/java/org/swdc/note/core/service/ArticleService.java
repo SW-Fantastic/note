@@ -63,7 +63,9 @@ public class ArticleService  {
 
     @Transactional
     public ArticleType createType(ArticleType type) {
-        return this.saveType(type);
+        return StatelessHelper.stateless(
+                this.saveType(type)
+        );
     }
 
     @Transactional
@@ -74,13 +76,17 @@ public class ArticleService  {
         if (type.getId() == null) {
             List<ArticleType> typeEx = typeRepo.findByTypeName(type.getName());
             if (typeEx == null || typeEx.size() == 0) {
-                return typeRepo.save(type);
+                return StatelessHelper.stateless(
+                        typeRepo.save(type)
+                );
             }
         }
         if (type.getName() == null || type.getName().isBlank() || type.getName().isEmpty()) {
             return null;
         }
-        return typeRepo.save(type);
+        return StatelessHelper.stateless(
+                typeRepo.save(type)
+        );
     }
 
     public List<Article> searchByTitle(String title) {
@@ -109,7 +115,9 @@ public class ArticleService  {
             contentService.saveArticleContent(content);
             Article saved = articleRepo.save(articleOld);
             indexorService.updateIndex(article,content);
-            return saved;
+            return StatelessHelper.stateless(
+                    saved
+            );
         } else {
             if (article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty()) {
                 return null;
@@ -130,7 +138,9 @@ public class ArticleService  {
             contentService.saveArticleContent(content);
             indexorService.createIndex(article,content);
 
-            return saved;
+            return StatelessHelper.stateless(
+                    saved
+            );
         }
 
     }

@@ -109,7 +109,7 @@
             -fx-border-style: dashed;
             -fx-border-color: @primaryColor;
             .label {
-                -fx-text-fill: #FFF;
+                -fx-text-fill: @primaryColor;
             }
             &:selected {
                 .label {
@@ -201,8 +201,13 @@
                         .arrow {
                             -fx-background-color: #FFF;
                         }
+                        .label {
+                            -fx-text-fill: #FFF;
+                        }
                         &:selected {
-                            -fx-text-fill: @primaryColor;
+                            .label {
+                                -fx-text-fill: @primaryColor;
+                            }
                             -fx-background-color: #FFF;
                             .arrow {
                                 -fx-background-color: @primaryColor;
