@@ -22,6 +22,7 @@ import org.swdc.note.ui.view.CollectionReadView;
 import org.swdc.note.ui.view.UIUtils;
 import org.swdc.note.ui.view.cells.CollectTypeTreeCell;
 import org.swdc.note.ui.view.dialogs.CollectionAddView;
+import org.swdc.note.ui.view.dialogs.CollectionFocusView;
 import org.swdc.note.ui.view.dialogs.TypeCollectionEditView;
 
 import java.net.URL;
@@ -40,6 +41,9 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
 
     @Inject
     private CollectionReadView readView;
+
+    @Inject
+    private CollectionFocusView focusView;
 
     @FXML
     private TreeView<CollectionType> collTypeTree;
@@ -128,76 +132,72 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
 
     @EventListener(type = RefreshEvent.class)
     public void refresh(RefreshEvent event) {
-        Platform.runLater(() -> {
+        if (event == null || event.getCollectionType() == null) {
+            TreeItem<CollectionType> rootItem = collTypeTree.getRoot();
+            List<CollectionType> typeList = collectionService.getCollectionTypes();
+            List<TreeItem<CollectionType>> items = typeList
+                    .stream()
+                    .map(UIUtils::createTypeTree)
+                    .toList();
+            ObservableList<TreeItem<CollectionType>> treeItems = rootItem.getChildren();
+            treeItems.clear();
+            treeItems.addAll(items);
+            return;
+        }
 
-            if (event == null || event.getCollectionType() == null) {
-                TreeItem<CollectionType> rootItem = collTypeTree.getRoot();
-                List<CollectionType> typeList = collectionService.getCollectionTypes();
-                List<TreeItem<CollectionType>> items = typeList
-                        .stream()
-                        .map(UIUtils::createTypeTree)
-                        .toList();
-                ObservableList<TreeItem<CollectionType>> treeItems = rootItem.getChildren();
-                treeItems.clear();
-                treeItems.addAll(items);
-                return;
-            }
-
-            CollectionType type = event.getCollectionType();
-            CollectionType target = type.getParent();
-            if (target != null) {
-                // refresh the parent type
-                TreeItem<CollectionType> parentTypeNode = UIUtils.findTypeItem(collTypeTree.getRoot(),target,CollectionType::getId);
-                if (parentTypeNode != null) {
-                    if (event.getType() == RefreshType.CREATION) {
-                        parentTypeNode.getChildren()
-                                .add(new TreeItem<>(type));
-                    } else {
-                        TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
-                        if (theItem == null) {
-                            return;
-                        }
-                        if (event.getType() == RefreshType.DELETE) {
-                            parentTypeNode
-                                    .getChildren()
-                                    .remove(theItem);
-                        } else if (event.getType() == RefreshType.UPDATE) {
-                            theItem.setValue(type);
-                        }
+        CollectionType type = event.getCollectionType();
+        CollectionType target = type.getParent();
+        if (target != null) {
+            // refresh the parent type
+            TreeItem<CollectionType> parentTypeNode = UIUtils.findTypeItem(collTypeTree.getRoot(),target,CollectionType::getId);
+            if (parentTypeNode != null) {
+                if (event.getType() == RefreshType.CREATION) {
+                    parentTypeNode.getChildren()
+                            .add(new TreeItem<>(type));
+                } else {
+                    TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
+                    if (theItem == null) {
+                        return;
+                    }
+                    if (event.getType() == RefreshType.DELETE) {
+                        parentTypeNode
+                                .getChildren()
+                                .remove(theItem);
+                    } else if (event.getType() == RefreshType.UPDATE) {
+                        theItem.setValue(type);
                     }
                 }
-            } else if (event.getType() == RefreshType.CREATION) {
-                TreeItem<CollectionType> newType = new TreeItem<>(type);
+            }
+        } else if (event.getType() == RefreshType.CREATION) {
+            TreeItem<CollectionType> newType = new TreeItem<>(type);
+            collTypeTree.getRoot()
+                    .getChildren()
+                    .add(newType);
+        } else if (event.getType() == RefreshType.DELETE) {
+            TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
+            if (theItem != null) {
                 collTypeTree.getRoot()
                         .getChildren()
-                        .add(newType);
-            } else if (event.getType() == RefreshType.DELETE) {
-                TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
-                if (theItem != null) {
-                    collTypeTree.getRoot()
-                            .getChildren()
-                            .remove(theItem);
-                }
-            } else if (event.getType() == RefreshType.UPDATE) {
-                TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
-                if (theItem != null) {
-                    theItem.setValue(type);
-                }
+                        .remove(theItem);
             }
+        } else if (event.getType() == RefreshType.UPDATE) {
+            TreeItem<CollectionType> theItem = UIUtils.findTypeItem(collTypeTree.getRoot(),type,CollectionType::getId);
+            if (theItem != null) {
+                theItem.setValue(type);
+            }
+        }
 
-            TreeItem<CollectionType> selected = collTypeTree.getSelectionModel().getSelectedItem();
-            if (selected == null || selected.getValue() == null) {
-                return;
-            }
-            if (selected.getValue().getId().equals(type.getId())) {
-                ObservableList<CollectionArticle> articles =  articleTableView.getItems();
-                articles.clear();
-                articles.addAll(
-                        collectionService.getArticles(type.getId())
-                );
-            }
-
-        });
+        TreeItem<CollectionType> selected = collTypeTree.getSelectionModel().getSelectedItem();
+        if (selected == null || selected.getValue() == null) {
+            return;
+        }
+        if (selected.getValue().getId().equals(type.getId())) {
+            ObservableList<CollectionArticle> articles =  articleTableView.getItems();
+            articles.clear();
+            articles.addAll(
+                    collectionService.getArticles(type.getId())
+            );
+        }
     }
 
 
@@ -367,6 +367,15 @@ public class CollectionSubViewController extends ViewController<CollectSubView> 
             return;
         }
         collectionAddView.show(typeTreeItem.getValue());
+    }
+
+    @FXML
+    public void onFocusViewShow() {
+        if (focusView.getStage().isShowing()) {
+            focusView.getStage().toFront();
+        } else {
+            focusView.show();
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import org.swdc.dependency.event.AbstractEvent;
 import org.swdc.dependency.event.Events;
 import org.swdc.dependency.interceptor.AspectAt;
 import org.swdc.dependency.interceptor.ProcessPoint;
+import org.swdc.fx.FXResources;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.entities.CollectionArticle;
@@ -23,6 +24,9 @@ public class RefreshAspect implements EventEmitter {
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private FXResources resources;
 
     @Aspect(byNameRegex = "create[\\S]+",at = AspectAt.AROUND)
     public Object onCreate(ProcessPoint point) {

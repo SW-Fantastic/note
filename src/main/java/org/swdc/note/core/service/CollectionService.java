@@ -8,24 +8,28 @@ import org.swdc.data.anno.Transactional;
 import org.swdc.dependency.annotations.With;
 import org.swdc.fx.FXResources;
 import org.swdc.note.core.aspect.RefreshAspect;
-import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.entities.CollectionArticle;
+import org.swdc.note.core.entities.CollectionFocus;
 import org.swdc.note.core.entities.CollectionType;
+import org.swdc.note.core.repo.CollectionFocusRepo;
 import org.swdc.note.core.repo.CollectionRepo;
 import org.swdc.note.core.repo.CollectionTypeRepo;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @With(aspectBy = RefreshAspect.class)
 public class CollectionService {
 
     @Inject
     private CollectionTypeRepo typeRepo;
+
+    @Inject
+    private CollectionFocusRepo focusRepo;
 
     @Inject
     private CollectionRepo collectionRepo;
@@ -194,6 +198,78 @@ public class CollectionService {
 
         typeRepo.remove(theType);
 
+    }
+
+    @Transactional
+    public List<CollectionFocus> getFocuses() {
+        List<CollectionFocus> focusList = focusRepo.getAll();
+        if (focusList == null) {
+            return Collections.emptyList();
+        }
+        return focusList.stream()
+                .map(StatelessHelper::stateless)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CollectionFocus getFocus(String host) {
+        if (host == null || host.isBlank()) {
+            return null;
+        }
+        CollectionFocus focus = focusRepo.getCollectionFocusByMatch(host);
+        if (focus != null) {
+            return StatelessHelper
+                    .stateless(focus);
+        }
+        return null;
+    }
+
+    public CollectionFocus findFocus(String uri) {
+        if (uri == null || uri.isBlank()) {
+            return null;
+        }
+        try {
+            URL url = new URI(uri).toURL();
+            List<CollectionFocus> focusList = focusRepo.getCollectionFocusByHost(url.getHost());
+            CollectionFocus focus = null;
+            for (CollectionFocus item: focusList) {
+                if (item.isMatched(uri) ) {
+                    if (focus != null && item.getUrlMatch().length() > focus.getUrlMatch().length()) {
+                        focus = item;
+                    } else if (focus == null) {
+                        focus = item;
+                    }
+                }
+            }
+            return focus;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Transactional
+    public CollectionFocus saveFocus(String host,String match,String selector) {
+        if (match == null || match.isBlank() || selector == null ||selector.isBlank()) {
+            return null;
+        }
+        CollectionFocus focus = focusRepo.getCollectionFocusByMatch(match);
+        if (focus == null) {
+            focus = new CollectionFocus();
+            focus.setHost(host);
+        }
+        focus.setUrlMatch(match);
+        focus.setSelector(selector);
+        focus = focusRepo.save(focus);
+        return StatelessHelper
+                .stateless(focus);
+    }
+
+    public void removeFocus(CollectionFocus focus) {
+        if (focus == null || focus.getId() == null) {
+            return;
+        }
+        CollectionFocus target = focusRepo.getOne(focus.getId());
+        focusRepo.remove(target);
     }
 
 }

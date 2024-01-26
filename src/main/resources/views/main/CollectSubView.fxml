@@ -31,8 +31,9 @@
                </children></VBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <HBox id="collTools" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="516.0" styleClass="tools">
+                  <HBox id="collTools" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="516.0" spacing="8.0" styleClass="tools">
                      <children>
+                        <Button id="collFocus" minHeight="36.0" minWidth="36.0" mnemonicParsing="false" onAction="#onFocusViewShow" prefHeight="36.0" prefWidth="36.0" text="F" />
                         <Button id="fromLink" minHeight="36.0" minWidth="36.0" mnemonicParsing="false" onAction="#onAddArticle" prefHeight="36.0" prefWidth="36.0" text="Add" />
                      </children>
                      <padding>

@@ -101,41 +101,7 @@
 
         }
 
-        .table-view {
-            -fx-background-color: rgba(255,255,255,0.6);
-            .column-header-background {
-                -fx-background-color: @nothing;
-                .filler {
-                    -fx-background-color:@primaryColor;
-                    -fx-background-radius: 0;
-                }
-            }
-            .column-header {
-                -fx-font-size: 14px;
-                -fx-background-color:@primaryColor;
-                .label {
-                    -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
-                    -fx-text-fill: #FFF;
-                }
-            }
-            .table-row-cell {
 
-                -fx-background-color: @nothing;
-                -fx-table-cell-border-color: rgba(255,255,255,0.6);
-
-                &:filled {
-                    -fx-padding: 2;
-                    -fx-border-color: @primaryColor;
-                    -fx-border-style: dashed;
-                    -fx-border-width: 0 0 1 0;
-                    &:selected {
-                        -fx-text-background-color: @primaryColor;
-                        -fx-background-color: #FFF;
-                        -fx-text-fill: @primaryColor;
-                    }
-                }
-            }
-        }
 
     }
 
@@ -318,5 +284,41 @@
   .scroll-bar {
     .scrollable(@primaryColor);
   }
+
+   .table-view {
+        -fx-background-color: rgba(255,255,255,0.6);
+        .column-header-background {
+            -fx-background-color: @nothing;
+            .filler {
+                -fx-background-color:@primaryColor;
+                -fx-background-radius: 0;
+            }
+        }
+        .column-header {
+            -fx-font-size: 14px;
+            -fx-background-color:@primaryColor;
+            .label {
+                -fx-effect:dropshadow(three-pass-box,@primaryColor,12,0,0,0);
+                -fx-text-fill: #FFF;
+            }
+        }
+        .table-row-cell {
+
+            -fx-background-color: @nothing;
+            -fx-table-cell-border-color: rgba(255,255,255,0.6);
+
+            &:filled {
+                -fx-padding: 2;
+                -fx-border-color: @primaryColor;
+                -fx-border-style: dashed;
+                -fx-border-width: 0 0 1 0;
+                &:selected {
+                    -fx-text-background-color: @primaryColor;
+                    -fx-background-color: #FFF;
+                    -fx-text-fill: @primaryColor;
+                }
+            }
+        }
+   }
 
 }

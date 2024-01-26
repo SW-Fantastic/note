@@ -10,10 +10,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebView;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.jsoup.select.Evaluator;
 import org.slf4j.Logger;
 import org.swdc.fx.FXResources;
 import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.CollectionArticle;
+import org.swdc.note.core.entities.CollectionFocus;
 import org.swdc.note.core.entities.CollectionType;
 import org.swdc.note.core.service.CollectionService;
 import org.swdc.note.ui.view.UIUtils;
@@ -76,13 +82,34 @@ public class CollectionAddViewController extends ViewController<CollectionAddVie
                             type = collectionService.saveType(type);
                         }
                     }
+
+                    String urlEx = url.toExternalForm();
+                    CollectionFocus focus = collectionService.findFocus(urlEx);
+
+                    Document jsoupDoc = Jsoup.connect(urlEx).get();
+                    String title = jsoupDoc.title();
+
                     UnitTextDocumentGenerator generator = new UnitTextDocumentGenerator(new UnitMarkdownEmbeddedStrategies());
-                    UnitDocument<String> doc = generator.generateFromURL(url.toExternalForm());
+                    UnitDocument<String> doc = null;
+                    if (focus == null) {
+                        doc = generator.generateFromSource(urlEx,jsoupDoc.toString());
+                    } else {
+                        Elements elements = jsoupDoc.select(focus.getSelector());
+                        if (!elements.isEmpty()) {
+                            Document root = Jsoup.parse("<div></div>");
+                            for (Element element: elements) {
+                                root.appendChild(element);
+                            }
+                            doc = generator.generateFromSource(urlEx,root.toString());
+                        } else {
+                            doc = generator.generateFromSource(urlEx,jsoupDoc.toString());
+                        }
+                    }
 
                     CollectionArticle article = new CollectionArticle();
                     article.setType(this.type);
                     article.setSource(url.toExternalForm());
-                    article.setTitle(doc.getTitle());
+                    article.setTitle(title);
                     article = collectionService.saveCollection(article);
 
                     File assetRoot = resources.getAssetsFolder();
@@ -97,7 +124,7 @@ public class CollectionAddViewController extends ViewController<CollectionAddVie
                     fos.write(doc.getSource().getBytes(StandardCharsets.UTF_8));
                     fos.close();
                     Platform.runLater(() -> {
-                        UIUtils.notification("文档《" + doc.getTitle() + "》");
+                        UIUtils.notification("文档《" + title + "》");
                     });
 
                 } catch (Exception e) {
