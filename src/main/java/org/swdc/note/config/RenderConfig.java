@@ -20,7 +20,7 @@ public class RenderConfig extends AbstractConfig {
             resource = "12-48"
     )
     @Property("markdown.headerFontSize")
-    private Integer headerFontSize = 24;
+    private Integer headerFontSize;
 
     @PropEditor(
             editor = NumberEditor.class,
@@ -29,7 +29,7 @@ public class RenderConfig extends AbstractConfig {
             resource = "12-48"
     )
     @Property("markdown.renderFontSize")
-    private Integer renderFontSize = 14;
+    private Integer renderFontSize;
 
     @PropEditor(
             editor = CheckEditor.class,
@@ -37,7 +37,7 @@ public class RenderConfig extends AbstractConfig {
             description = "渲染字体阴影"
     )
     @Property("markdown.textShadow")
-    private Boolean textShadow = false;
+    private Boolean textShadow;
 
     public Boolean getTextShadow() {
         return textShadow;

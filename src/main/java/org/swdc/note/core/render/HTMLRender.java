@@ -27,6 +27,7 @@ import org.swdc.note.config.AppConfig;
 import org.swdc.note.config.RenderConfig;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.ui.events.ConfigRefreshEvent;
 
 
 import javax.imageio.ImageIO;
@@ -99,18 +100,19 @@ public class HTMLRender extends ContentRender {
         }
     }
 
-    /*@EventListener(ConfigRefreshEvent.class)
+    @EventListener(type = ConfigRefreshEvent.class)
     public void refreshStyles(ConfigRefreshEvent configRefreshEvent) {
-        if (!(configRefreshEvent.getData() instanceof RenderConfig)) {
+        if (!(configRefreshEvent.getMessage() instanceof RenderConfig)) {
             return;
         }
         try {
-            RenderConfig config  = (RenderConfig) configRefreshEvent.getData();
+            RenderConfig config  =  configRefreshEvent.getMessage();
             Map<String, Object> configsMap = new HashMap<>();
             configsMap.put("defaultFontSize", config.getRenderFontSize());
             configsMap.put("headerFontSize", config.getHeaderFontSize());
             configsMap.put("textshadow", config.getTextShadow());
-            String themePath = getThemeAssetsPath() + File.separator + "markdown.css";
+            Theme current = Theme.getTheme(appConfig.getTheme(),resources.getAssetsFolder());
+            String themePath = current.getThemeFolder().getAbsoluteFile() + File.separator + "markdown.css";
             String mdStyle = Files.readString(Paths.get(themePath));
             logger.info("markdown style loaded.");
             StringWriter stringWriter = new StringWriter();
@@ -124,7 +126,7 @@ public class HTMLRender extends ContentRender {
         } catch (Exception e) {
             logger.error("fail to refresh style", e);
         }
-    }*/
+    }
 
     public String render(String source, Map<String, ByteBuffer> resource) {
         // 匹配双$符，在这之间的是公式

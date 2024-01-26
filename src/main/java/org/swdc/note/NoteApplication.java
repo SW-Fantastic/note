@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SWFXApplication(splash = SplashScreen.class,icons = {
-        "icon16.png","icon24.png","icon32.png","icon48.png","icon64.png","icon72.png"
+        "icon16.png","icon24.png","icon32.png","icon64.png","icon128.png","icon256.png","icon512.png"
 },configs = AppConfig.class,assetsFolder = "./assets")
 public class NoteApplication extends FXApplication {
 
@@ -46,7 +46,6 @@ public class NoteApplication extends FXApplication {
         factory.create();
 
         FXResources resources = dependencyContext.getByClass(FXResources.class);
-
         dependencyContext.getByClass(GlobalKeyListener.class);
 
         if (SystemTray.isSupported()) {
