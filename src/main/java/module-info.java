@@ -23,14 +23,14 @@ module noteEditor {
     requires remark;
     requires nitrite;
     requires je;
-    requires undofx;
+    requires org.fxmisc.undo;
     requires reactfx;
     requires java.sql;
 
     requires org.fxmisc.richtext;
 
     // require that access loggers
-    requires flowless;
+    requires org.fxmisc.flowless;
     requires flexmark.util.data;
     requires flexmark.profile.pegdown;
     requires flexmark.util.misc;
@@ -68,6 +68,9 @@ module noteEditor {
     opens org.swdc.note.core.files.storages to
             com.fasterxml.jackson.databind,
             swdc.application.dependency;
+
+    opens org.swdc.note.ui.component.blocks to
+            com.fasterxml.jackson.databind;
 
     opens org.swdc.note to
             swdc.application.dependency,

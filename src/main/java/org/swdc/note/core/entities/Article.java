@@ -52,6 +52,9 @@ public class Article {
     @Transient
     private ArticleContent content;
 
+    @Enumerated(EnumType.STRING)
+    private ArticleEditorType editorType;
+
     @Override
     public String toString() {
         return title;
@@ -119,5 +122,13 @@ public class Article {
 
     public void setContent(ArticleContent content) {
         this.content = content;
+    }
+
+    public ArticleEditorType getEditorType() {
+        return editorType;
+    }
+
+    public void setEditorType(ArticleEditorType editorType) {
+        this.editorType = editorType;
     }
 }

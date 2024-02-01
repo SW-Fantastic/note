@@ -80,13 +80,14 @@
         -fx-padding: 0 1 0 1;
       }
       .code-area{
-        -fx-font-family: "YouYuan";
+        -fx-font-family: "Source Han Sans CN Normal";
         -fx-font-size: 16;
-        -fx-background-color: rgba(247,255,168,0.1);
+        -fx-background-color: #F4F6E5;
         -fx-background-radius: 8;
+        -fx-line-spacing: 6;
 
         .context-menu{
-          -fx-font-family: "【嵐】西良文字改+";
+          -fx-font-family: "Source Han Sans CN Normal";
           .menu-item {
             -fx-font-size: 13;
             -fx-accent: @primaryColor;
@@ -98,12 +99,12 @@
             -fx-text-fill: #FFF;
           }
         }
-
         .selection {
-          -fx-fill: rgba(166,215,194,0.4);
+          -fx-fill: rgba(166,215,194,1);
         }
         .paragraph-box {
           -fx-background-color: rgba(0,0,0,0);
+          -fx-padding:0 0 6 0;
         }
         .lineno {
           -fx-background-color: rgba(0,0,0,0);
@@ -195,6 +196,104 @@
                 }
             }
 
+        }
+    }
+}
+
+
+.block-editor-view {
+
+    .selection {
+        -fx-fill: rgba(166,215,194,1);
+    }
+
+    .edit-icon {
+        -fx-background-color: @nothing;
+        -fx-text-fill: @primaryColor;
+        &:hover {
+            -fx-background-color: @primaryColor;
+            -fx-background-radius: 999;
+            -fx-text-fill: #FFF;
+        }
+    }
+
+    -fx-background-color: rgba(247,255,168,0.1);
+    .list-view {
+        -fx-background-color: rgba(247,255,168,0.1);
+        .list-cell {
+            .text-area {
+                -fx-padding: 0;
+                -fx-font-size: 16;
+                -fx-background-color: @nothing;
+                -fx-border-color: @nothing;
+                -fx-border-style: solid;
+                -fx-border-width: 1;
+                -fx-highlight-fill: rgba(166,215,194,1);
+                .content {
+                    -fx-background-color: #F4F6E5;
+                }
+            }
+            .code-text-area {
+                -fx-effect: none;
+                -fx-border-color: @primaryColor;
+                -fx-border-style: dashed;
+                -fx-border-width: 1;
+                -fx-border-radius: 4;
+            }
+            .field-list {
+                -fx-background-color:@nothing;
+                -fx-border-color: @primaryColor;
+                -fx-border-style: dashed;
+                -fx-border-width: 0 0 1 0;
+                -fx-highlight-fill: rgba(166,215,194,1);
+            }
+            .table-view {
+                .table-row-cell {
+                    &:selected {
+                        -fx-effect:none;
+                    }
+                }
+                .column-header {
+                    -fx-border-width: 0 1 0 0;
+                    -fx-border-color: @primaryColor;
+                    -fx-border-style: dashed;
+                }
+                .text-area {
+                    -fx-effect: none;
+                    -fx-background-color: @nothing;
+                    -fx-border-color: @nothing;
+                    -fx-border-style: dashed;
+                    -fx-border-width: 1;
+                }
+                .cell-box {
+                    -fx-background-color: @nothing;
+                    -fx-border-color: @primaryColor;
+                    -fx-border-style: dashed;
+                    -fx-border-width: 0 1 0 0;
+                    &:first-child {
+                        -fx-border-width: 0 0 0 1;
+                    }
+                }
+            }
+            .header-sub {
+                -fx-padding:0;
+                -fx-font-size: 22;
+                -fx-background-color: @nothing;
+                -fx-border-color: @nothing;
+                -fx-border-style: solid;
+                -fx-border-width: 1;
+                -fx-highlight-fill: rgba(166,215,194,1);
+            }
+            .header-main {
+                -fx-padding: 0;
+                -fx-font-size: 30;
+                -fx-background-color: @nothing;
+                -fx-border-color: @nothing;
+                -fx-border-style: solid;
+                -fx-border-width: 1;
+                -fx-highlight-fill: rgba(166,215,194,1);
+            }
+            -fx-background-color: @nothing;
         }
     }
 }

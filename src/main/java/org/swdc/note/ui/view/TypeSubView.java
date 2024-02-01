@@ -4,7 +4,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import org.controlsfx.control.PopOver;
 import org.swdc.fx.font.FontSize;
 import org.swdc.fx.font.MaterialIconsService;
@@ -34,6 +36,34 @@ public class TypeSubView extends AbstractView {
         this.initViewToolButton("help", "live_help");
         this.initTypeControlMenu();
         this.initArticleContextMenu();
+
+        TypeSubViewController controller = getController();
+
+
+        MenuButton menuButton = this.findById("createDoc");
+
+        MenuItem createMarkdownItem = new MenuItem();
+        createMarkdownItem.setGraphic(createDocumentMenuCell(menuButton,"创建Markdown文档"));
+        createMarkdownItem.setOnAction(controller::onCreateDocument);
+
+        MenuItem createBlockItem = new MenuItem();
+        createBlockItem.setGraphic(createDocumentMenuCell(menuButton,"创建Block文档"));
+        createBlockItem.setOnAction(controller::onCreateBlockDocument);
+
+        menuButton.getItems().addAll(
+                createMarkdownItem,
+                createBlockItem
+        );
+
+    }
+
+    private Node createDocumentMenuCell(MenuButton menuButton, String text) {
+        HBox item = new HBox();
+        item.setPadding(new Insets(4));
+        Label label = new Label(text);
+        item.getChildren().add(label);
+        item.prefWidthProperty().bind(menuButton.widthProperty());
+        return item;
     }
 
     private void initTypeControlMenu() {

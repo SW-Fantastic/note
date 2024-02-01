@@ -206,9 +206,24 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         createView.show();
     }
 
-    @FXML
     public void onCreateDocument(ActionEvent event) {
        this.createNewDocument();
+    }
+
+    public void onCreateBlockDocument(ActionEvent event) {
+        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
+
+        ArticleBlockEditorView blockEditorView = getView().getView(ArticleBlockEditorView.class);
+        Article article = new Article();
+        article.setContent(new ArticleContent());
+        article.setCreateDate(new Date());
+        if (typeTreeItem != null && typeTreeItem.getValue() != null) {
+            article.setType(typeTreeItem.getValue());
+        }
+        article.setTitle("未命名");
+        blockEditorView.addArticle(article);
+        blockEditorView.show();
+
     }
 
     public void createNewDocument() {

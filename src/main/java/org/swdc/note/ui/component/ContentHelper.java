@@ -124,7 +124,7 @@ public class ContentHelper {
 
         if (enableAutoTip) {
             area.caretBoundsProperty().addListener((observableValue, bounds, newBounds) ->  {
-                Bounds bound = newBounds.isPresent() ? newBounds.get() : bounds.isPresent() ? bounds.get() : null;
+                Bounds bound = newBounds.orElseGet(() -> bounds.orElse(null));
                 if (bound != null) {
                     prevLocation = area.screenToLocal(bound);
                     int end = area.getCaretPosition();
@@ -138,10 +138,10 @@ public class ContentHelper {
 
                     List<KeyWord> words = content.stream()
                             .filter(item -> item.getKeyWord().startsWith(last))
-                            .collect(Collectors.toList());
+                            .toList();
                     List<KeyWord> wordKeys = keyWords.stream()
                             .filter(item -> item.getKeyWord().startsWith(last))
-                            .collect(Collectors.toList());
+                            .toList();
 
                     wordsList.getItems().clear();
                     wordsList.getItems().addAll(words);
@@ -175,10 +175,10 @@ public class ContentHelper {
                 List<KeyWord> words = keyWords
                         .stream()
                         .filter(item ->item.getKeyWord().startsWith(text))
-                        .collect(Collectors.toList());
+                        .toList();
 
                 range = new IndexRange(start,end);
-                if (word != null &&(start == end || words.size() == 0)) {
+                if (word != null &&(start == end || words.isEmpty())) {
                     area.insertText(end,word.insertAction.apply(word));
                 } else if (word != null){
                     area.replaceText(range,word.insertAction.apply(word));
@@ -206,10 +206,10 @@ public class ContentHelper {
                 List<KeyWord> words = keyWords
                         .stream()
                         .filter(item ->item.getKeyWord().startsWith(text))
-                        .collect(Collectors.toList());
+                        .toList();
 
                 range = new IndexRange(start,end);
-                if (word != null &&(start == end || words.size() == 0)) {
+                if (word != null &&(start == end || words.isEmpty())) {
                     area.insertText(end,word.insertAction.apply(word));
                 } else if (word != null){
                     area.replaceText(range,word.insertAction.apply(word));

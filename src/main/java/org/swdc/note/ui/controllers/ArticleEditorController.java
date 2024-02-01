@@ -6,12 +6,10 @@ import javafx.scene.control.*;
 import org.fxmisc.richtext.CodeArea;
 import org.slf4j.Logger;
 import org.swdc.fx.view.ViewController;
-import org.swdc.note.core.entities.Article;
-import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
-import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.entities.*;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.component.MDRichTextUtils;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
@@ -60,7 +58,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             codeArea.replaceText(rgCurr,"**内容写在这里**");
             return;
         }
-        sel = ((ArticleEditorView)getView()).reduceDesc(sel,"**");
+        sel = MDRichTextUtils.reduceDesc(sel,"**");
         codeArea.replaceText(range.getStart(),range.getEnd(),sel);
     }
 
@@ -80,7 +78,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             codeArea.replaceText(rgCurr,"*内容写在这里*");
             return;
         }
-        sel = ((ArticleEditorView)getView()).reduceDesc(sel,"*");
+        sel = MDRichTextUtils.reduceDesc(sel,"*");
         codeArea.replaceText(range.getStart(),range.getEnd(),sel);
     }
 
@@ -244,7 +242,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             codeArea.replaceText(rgCurr,"~~内容写在这里~~");
             return;
         }
-        sel = ((ArticleEditorView)getView()).reduceDesc(sel,"~~");
+        sel = MDRichTextUtils.reduceDesc(sel,"~~");
         codeArea.replaceText(range.getStart(),range.getEnd(),sel);
     }
 
@@ -311,7 +309,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
                 UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！");
                 return;
             }
-            Article saved = articleService.saveArticle(article, content);
+            Article saved = articleService.saveArticle(article, content, ArticleEditorType.MarkdownEditor);
             if(saved == null) {
                 view.alert("提示", "保存失败, 请填写必要信息。", Alert.AlertType.ERROR)
                         .showAndWait();

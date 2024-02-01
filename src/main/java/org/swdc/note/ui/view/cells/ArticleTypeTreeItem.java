@@ -93,7 +93,7 @@ public class ArticleTypeTreeItem extends TreeCell<ArticleType> {
                 for (String artId : articleIds) {
                     Article article = articleService.getArticle(artId);
                     article.setType(getItem());
-                    articleService.saveArticle(article,articleService.getContentOf(article));
+                    articleService.saveArticle(article,articleService.getContentOf(article),article.getEditorType());
                 }
                 event.setDropCompleted(true);
             } catch (Exception e) {

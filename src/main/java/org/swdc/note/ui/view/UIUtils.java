@@ -7,6 +7,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.swdc.fx.view.Toast;
 import org.swdc.note.core.entities.Article;
@@ -15,10 +17,10 @@ import org.swdc.note.core.entities.CollectionType;
 import org.swdc.note.core.entities.TreeEntity;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -172,5 +174,6 @@ public class UIUtils {
         }
         return keyCodeNativeMap.get(nativeCode);
     }
+
 
 }
