@@ -36,6 +36,7 @@ public class ListBlockCell extends ListCell<String> {
                     double height = textHolder.getLayoutBounds().getHeight() + 18;
                     field.setPrefHeight(height);
                     block.rowHeightChanged(getIndex(),height);
+                    block.blocksEditor().setChanged(true);
                 });
 
                 field.setPrefHeight(height);

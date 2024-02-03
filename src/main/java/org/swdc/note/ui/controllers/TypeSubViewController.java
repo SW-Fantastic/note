@@ -22,6 +22,7 @@ import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.files.ExternalStorage;
 import org.swdc.note.core.files.SingleStorage;
@@ -72,6 +73,9 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
 
     @Inject
     private ArticleEditorView editorView = null;
+
+    @Inject
+    private ArticleBlockEditorView blockEditorView = null;
 
     private ObservableList<Article> recently = FXCollections.observableArrayList();
 
@@ -386,9 +390,14 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
             return;
         }
         for (Article article: articles) {
-            editorView.addArticle(article);
+            if (article.getEditorType() == ArticleEditorType.BlockEditor) {
+                blockEditorView.addArticle(article);
+                blockEditorView.show();
+            } else {
+                editorView.addArticle(article);
+                editorView.show();
+            }
         }
-        editorView.show();
     }
 
     public void creatType(ActionEvent event) {

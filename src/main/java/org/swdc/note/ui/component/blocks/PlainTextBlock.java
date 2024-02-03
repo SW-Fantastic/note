@@ -33,6 +33,7 @@ public class PlainTextBlock extends ArticleBlock {
             textarea.textProperty().addListener(e -> {
                 textHolder.getLayoutBounds();
                 String text = textarea.getText();
+                blocksEditor().setChanged(true);
                 if (text.isEmpty()) {
                     remove();
                 }

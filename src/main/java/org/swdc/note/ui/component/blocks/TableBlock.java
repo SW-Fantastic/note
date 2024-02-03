@@ -63,6 +63,7 @@ public class TableBlock extends ArticleBlock {
     }
 
     public void insertColumn(int index) {
+        blocksEditor().setChanged(true);
         if (index < 0 || index > tableView.getColumns().size()) {
             tableView.getColumns().add(createTableCol());
         } else {
@@ -71,6 +72,7 @@ public class TableBlock extends ArticleBlock {
     }
 
     public void removeColumn(int index) {
+        blocksEditor().setChanged(true);
         tableView.getColumns().remove(index);
         tableView.getItems().forEach(e -> {
             e.remove(index);
@@ -81,6 +83,7 @@ public class TableBlock extends ArticleBlock {
     }
 
     public void addRow(int index) {
+        blocksEditor().setChanged(true);
         Map<Integer,String> map = new HashMap<>();
         for (int idx = 0; idx < tableView.getColumns().size(); idx ++) {
             map.put(idx,"");
@@ -94,6 +97,7 @@ public class TableBlock extends ArticleBlock {
     }
 
     public void removeRow(int index) {
+        blocksEditor().setChanged(true);
         tableView.getItems().remove(index);
         rowHeightPerColumn.remove(index);
         if (tableView.getItems().isEmpty()) {

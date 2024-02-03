@@ -14,6 +14,7 @@ public class SubHeaderBlock extends ArticleBlock {
             textField.setText("输入子标题..");
             textField.getStyleClass().add("header-sub");
             textField.textProperty().addListener(c -> {
+                blocksEditor().setChanged(true);
                 if (textField.getText().isEmpty()) {
                     remove();
                 }

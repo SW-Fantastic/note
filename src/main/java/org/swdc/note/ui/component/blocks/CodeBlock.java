@@ -28,6 +28,7 @@ public class CodeBlock extends ArticleBlock {
             textarea.setText("输入代码...");
             textarea.textProperty().addListener(e -> {
                 textHolder.getLayoutBounds();
+                blocksEditor().setChanged(true);
                 String text = textarea.getText();
                 if (text.isEmpty()) {
                     remove();

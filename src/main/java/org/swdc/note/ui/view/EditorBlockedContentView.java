@@ -2,16 +2,22 @@ package org.swdc.note.ui.view;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.BorderPane;
 import org.swdc.fx.font.MaterialIconsService;
 import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.View;
 import org.swdc.note.ui.component.ArticleBlocksEditor;
+import org.swdc.note.ui.component.blocks.BlockData;
+
+import java.util.List;
 
 @View(stage = false,viewLocation = "views/main/EditorBlockedContentView.fxml",multiple = true)
 public class EditorBlockedContentView extends AbstractView {
 
     private ArticleBlocksEditor blocksEditor;
+
+    private BooleanProperty changed;
 
     @Inject
     private MaterialIconsService iconsService;
@@ -23,13 +29,25 @@ public class EditorBlockedContentView extends AbstractView {
         pane.setCenter(blocksEditor);
 
         blocksEditor.addTextBlock(0);
+        this.changed = blocksEditor.changedProperty();
     }
 
-    public void setSource(String text) {
-        blocksEditor.setSource(text);
+    public void setSource(List<BlockData> data) {
+        blocksEditor.setData(data);
     }
-    public String getSource() {
-        return blocksEditor.getSource();
+    public List<BlockData> getSource() {
+        return blocksEditor.getData();
     }
 
+    public BooleanProperty changedProperty() {
+        return changed;
+    }
+
+    public boolean isChanged() {
+        return changed.get();
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed.set(changed);
+    }
 }

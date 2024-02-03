@@ -23,6 +23,7 @@ public class ListBlock extends ArticleBlock {
             listView = new ListView<>();
             listView.setCellFactory(c -> new ListBlockCell(this));
             listView.getItems().addListener((InvalidationListener)  e -> {
+                blocksEditor().setChanged(true);
                 resize();
             });
 

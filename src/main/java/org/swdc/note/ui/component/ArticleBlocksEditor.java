@@ -2,6 +2,7 @@ package org.swdc.note.ui.component;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ListView;
@@ -18,6 +19,8 @@ public class ArticleBlocksEditor extends BorderPane {
     private ListView<ArticleBlock> blockListView;
 
     private MaterialIconsService iconsService;
+
+    private SimpleBooleanProperty changed = new SimpleBooleanProperty();
 
     public ArticleBlocksEditor(MaterialIconsService iconsService) {
         this.iconsService = iconsService;
@@ -41,6 +44,32 @@ public class ArticleBlocksEditor extends BorderPane {
         blockListView.scrollTo(index);
     }
 
+    public List<BlockData> getData() {
+        List<BlockData> data = new ArrayList<>();
+        for (ArticleBlock block: blockListView.getItems()) {
+            data.add(block.getData());
+        }
+        return data;
+    }
+
+    public void setData(List<BlockData> data) {
+        try {
+            blockListView.getItems().clear();
+            for (BlockData item : data) {
+                Class<ArticleBlock> blockEditorType = (Class<ArticleBlock>) Class
+                        .forName(item.getType());
+                Constructor<ArticleBlock> ctor = blockEditorType.getConstructor();
+                ArticleBlock block = ctor.newInstance();
+                block.setEditor(this);
+                block.setData(item);
+                addBlock(-1,block);
+            }
+            blockListView.refresh();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getSource() {
         List<BlockData> data = new ArrayList<>();
         for (ArticleBlock block: blockListView.getItems()) {
@@ -56,19 +85,9 @@ public class ArticleBlocksEditor extends BorderPane {
 
     public void setSource(String source) {
         try {
-            blockListView.getItems().clear();
             ObjectMapper mapper = new ObjectMapper();
             JavaType type = mapper.getTypeFactory().constructParametricType(List.class,BlockData.class);
-            List<BlockData> data = mapper.readValue(source,type);
-            for (BlockData item : data) {
-                Class<ArticleBlock> blockEditorType = (Class<ArticleBlock>) Class
-                        .forName(item.getType());
-                Constructor<ArticleBlock> ctor = blockEditorType.getConstructor();
-                ArticleBlock block = ctor.newInstance();
-                block.setData(item);
-                block.setEditor(this);
-                addBlock(-1,block);
-            }
+            setData(mapper.readValue(source,type));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,6 +122,10 @@ public class ArticleBlocksEditor extends BorderPane {
         addBlock(index, new SpreadBlock());
     }
 
+    public void addImageBlock(int index) {
+        addBlock(index, new ImageBlock());
+    }
+
     public ObservableList<ArticleBlock> getBlocks() {
         return blockListView.getItems();
     }
@@ -111,4 +134,15 @@ public class ArticleBlocksEditor extends BorderPane {
         return iconsService;
     }
 
+    public SimpleBooleanProperty changedProperty() {
+        return changed;
+    }
+
+    public boolean isChanged() {
+        return changed.get();
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed.set(changed);
+    }
 }

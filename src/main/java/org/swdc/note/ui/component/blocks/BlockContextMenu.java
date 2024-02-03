@@ -64,6 +64,11 @@ public class BlockContextMenu extends ContextMenu {
             editor.addSpreadBlock(currentIndex + 1);
         });
 
+        MenuItem itemImage = new MenuItem("图片");
+        itemImage.setOnAction(e -> {
+            editor.addImageBlock(currentIndex + 1);
+        });
+
         getItems().addAll(
                 itemTrash,
                 new SeparatorMenuItem(),
@@ -73,7 +78,8 @@ public class BlockContextMenu extends ContextMenu {
                 itemList,
                 itemCodeBlock,
                 itemTableBlock,
-                itemSpread
+                itemSpread,
+                itemImage
         );
     }
 

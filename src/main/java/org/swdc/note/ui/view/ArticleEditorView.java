@@ -31,6 +31,7 @@ import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.core.service.ContentService;
 import org.swdc.note.ui.component.MDRichTextUtils;
 import org.swdc.note.ui.component.RectPopover;
+import org.swdc.note.ui.controllers.ArticleEditorController;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 
@@ -357,51 +358,11 @@ public class ArticleEditorView extends AbstractView {
                 .showAndWait()
                 .ifPresent(buttonType -> {
                     if (buttonType == ButtonType.OK) {
-                        String source = editor.getCodeArea().getText();
-                        Map<String, ByteBuffer> images = editor.getImagesView().getImages();
-                        Map<String, byte[]> imageData = new HashMap<>(images.size());
-                        for (Map.Entry<String,ByteBuffer> item :images.entrySet()) {
-                            imageData.put(item.getKey(), item.getValue().array());
-                        }
-
-                        ArticleContent content = article.getContent();
-                        if (content == null) {
-                            content = new ArticleContent();
-                        }
-                        content.setImages(imageData);
-                        content.setSource(source);
-                        if (article.getId() != null) {
-                            content.setArticleId(article.getId());
-                        }
-
-                        if (article.getSingleStore() != null) {
-                            // 文档直接从文件打开，那么保存到文件。
-                            SingleStorage storage = articleService.getSingleStoreBy(article.getSingleStore());
-                            article.setContent(content);
-                            storage.save(article,new File(article.getFullPath()));
-                            tabs.remove(tab);
-                            articleTabMap.remove(article);
-                            this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
-                        } else {
-                            if (article.getType() == null) {
-                                this.alert("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR)
-                                        .showAndWait();
-                                return;
-                            }
-                            Article saved = articleService.saveArticle(article, content, ArticleEditorType.MarkdownEditor);
-                            if(saved != null) {
-                                tabs.remove(tab);
-                                articleTabMap.remove(article);
-                                this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
-                            } else {
-                                this.alert("提示", "保存失败", Alert.AlertType.ERROR)
-                                        .showAndWait();
-                            }
-                        }
-                    } else {
-                        tabs.remove(tab);
-                        articleTabMap.remove(article);
+                        ArticleEditorController controller = getController();
+                        controller.saveArticle(article,tab);
                     }
+                    tabs.remove(tab);
+                    articleTabMap.remove(article);
                     if (tabs.size() == 0) {
                         getStage().close();
                     }

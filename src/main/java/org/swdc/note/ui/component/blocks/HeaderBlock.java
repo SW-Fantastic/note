@@ -17,6 +17,7 @@ public class HeaderBlock extends ArticleBlock {
             textField.setText("输入标题..");
             textField.getStyleClass().add("header-main");
             textField.textProperty().addListener(c -> {
+                blocksEditor().setChanged(true);
                 if (textField.getText().isEmpty()) {
                     remove();
                 }
