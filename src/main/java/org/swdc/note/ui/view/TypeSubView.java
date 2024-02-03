@@ -70,7 +70,8 @@ public class TypeSubView extends AbstractView {
         SimpleBooleanProperty typeNotSelectProp = new SimpleBooleanProperty(true);
         this.typeContextMenu = new ContextMenu();
         TypeSubViewController controller = getController();
-        MenuItem itemAdd = createMenuItem("创建文档", controller::onCreateDocument,null);
+        MenuItem itemAdd = createMenuItem("创建Markdown文档", controller::onCreateDocument,null);
+        MenuItem iteAddBlock = createMenuItem("创建Block文档",controller::onCreateBlockDocument,null);
         MenuItem itemCreate = createMenuItem("添加分类",controller::creatType, null);
         MenuItem itemDelete = createMenuItem("删除", controller::deleteType, null);
         MenuItem itemRename = createMenuItem("修改分类", controller::onModifyType,null);
@@ -79,10 +80,18 @@ public class TypeSubView extends AbstractView {
         itemDelete.disableProperty().bind(typeNotSelectProp);
         itemRename.disableProperty().bind(typeNotSelectProp);
         itemExport.disableProperty().bind(typeNotSelectProp);
+        iteAddBlock.disableProperty().bind(typeNotSelectProp);
         itemAdd.disableProperty().bind(typeNotSelectProp);
 
-        typeContextMenu.getItems().addAll(itemAdd,new SeparatorMenuItem(),
-                itemCreate, itemDelete,itemRename, itemExport);
+        typeContextMenu.getItems().addAll(
+                itemAdd,
+                iteAddBlock,
+                new SeparatorMenuItem(),
+                itemCreate,
+                itemDelete,
+                itemRename,
+                itemExport
+        );
 
         TreeView<ArticleType> typeTree = findById("typeTree");
         typeTree.getSelectionModel().selectedItemProperty().addListener((ob, item, newItem) -> {
@@ -105,7 +114,8 @@ public class TypeSubView extends AbstractView {
         MenuItem itemDelete = createMenuItem("删除", controller::deleteArticle, null);
         MenuItem itemEdit = createMenuItem("编辑", controller::editArticle, null);
         MenuItem itemExport = createMenuItem("另存为", controller::exportArticle,null);
-        MenuItem itemCreate = createMenuItem("添加文档", controller::createDocument,null);
+        MenuItem itemCreate = createMenuItem("添加Markdown文档", controller::createDocument,null);
+        MenuItem itemCreateBlock = createMenuItem("添加Block文档", controller::onCreateBlockDocument,null);
 
         itemView.disableProperty().bind(articleNotSelectProp);
         itemDelete.disableProperty().bind(articleNotSelectProp);
@@ -113,7 +123,15 @@ public class TypeSubView extends AbstractView {
         itemExport.disableProperty().bind(articleNotSelectProp);
 
         ListView<Article> articleList = findById("articleList");
-        articleContextMenu.getItems().addAll(itemView,itemEdit , itemDelete, itemExport, new SeparatorMenuItem(),itemCreate);
+        articleContextMenu.getItems().addAll(
+                itemView,
+                itemEdit,
+                itemDelete,
+                itemExport,
+                new SeparatorMenuItem(),
+                itemCreate,
+                itemCreateBlock
+        );
         articleList.getSelectionModel().selectedItemProperty().addListener((ob, item, newItem) -> {
             if (newItem == null) {
                 articleNotSelectProp.set(true);

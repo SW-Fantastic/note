@@ -28,6 +28,7 @@ import org.swdc.note.ui.component.blocks.ImageBlock;
 import org.swdc.note.ui.controllers.ArticleBlockEditorController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.swdc.note.ui.view.UIUtils.fxViewByView;
 
@@ -58,6 +59,7 @@ public class ArticleBlockEditorView extends AbstractView {
 
         stage.setWidth(stage.getMinWidth());
         stage.setHeight(stage.getMinHeight());
+        stage.setOnCloseRequest(this::closeRequest);
 
         TabPane tabPane = findById("editorTab");
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
@@ -109,6 +111,29 @@ public class ArticleBlockEditorView extends AbstractView {
                         getStage().close();
                     }
                 });
+    }
+
+    private void closeRequest(Event event) {
+        event.consume();
+        List<EditorBlockedContentView> editors = tabs.stream()
+                .map(tab->tab.getContent().getUserData())
+                .map(EditorBlockedContentView.class::cast)
+                .collect(Collectors.toList());
+        long unsaved = editors.stream().filter(v->!v.isChanged()).count();
+        if (unsaved > 0) {
+            alert("关闭","继续关闭将会失去所有未保存内容，继续吗？", Alert.AlertType.CONFIRMATION)
+                    .showAndWait().ifPresent(btn -> {
+                        if (btn == ButtonType.OK) {
+                            tabs.clear();
+                            articleTabMap.clear();
+                            this.hide();
+                        }
+                    });
+        } else {
+            tabs.clear();
+            articleTabMap.clear();
+            this.hide();
+        }
     }
 
     public void onTabChange(Observable observable, Tab oldVal, Tab newTab) {

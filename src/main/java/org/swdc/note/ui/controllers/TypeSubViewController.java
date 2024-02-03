@@ -211,29 +211,17 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
     }
 
     public void onCreateDocument(ActionEvent event) {
-       this.createNewDocument();
+       this.createNewDocument(ArticleEditorType.MarkdownEditor);
     }
 
     public void onCreateBlockDocument(ActionEvent event) {
-        TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
-
-        ArticleBlockEditorView blockEditorView = getView().getView(ArticleBlockEditorView.class);
-        Article article = new Article();
-        article.setContent(new ArticleContent());
-        article.setCreateDate(new Date());
-        if (typeTreeItem != null && typeTreeItem.getValue() != null) {
-            article.setType(typeTreeItem.getValue());
-        }
-        article.setTitle("未命名");
-        blockEditorView.addArticle(article);
-        blockEditorView.show();
-
+        createNewDocument(ArticleEditorType.BlockEditor);
     }
 
-    public void createNewDocument() {
+
+    public void createNewDocument(ArticleEditorType editorType) {
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
 
-        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
         Article article = new Article();
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
@@ -241,8 +229,16 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
             article.setType(typeTreeItem.getValue());
         }
         article.setTitle("未命名");
-        editorView.addArticle(article);
-        editorView.show();
+        if (editorType == ArticleEditorType.BlockEditor) {
+            ArticleBlockEditorView blockEditorView = getView().getView(ArticleBlockEditorView.class);
+            blockEditorView.addArticle(article);
+            blockEditorView.show();
+        } else {
+            ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
+            editorView.addArticle(article);
+            editorView.show();
+        }
+
     }
 
     @FXML
