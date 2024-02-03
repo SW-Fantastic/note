@@ -6,12 +6,10 @@ import javafx.scene.control.*;
 import org.fxmisc.richtext.CodeArea;
 import org.slf4j.Logger;
 import org.swdc.fx.view.ViewController;
-import org.swdc.note.core.entities.Article;
-import org.swdc.note.core.entities.ArticleContent;
-import org.swdc.note.core.entities.ArticleResource;
-import org.swdc.note.core.entities.ArticleType;
+import org.swdc.note.core.entities.*;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.component.MDRichTextUtils;
 import org.swdc.note.ui.component.RectPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
@@ -60,7 +58,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             codeArea.replaceText(rgCurr,"**内容写在这里**");
             return;
         }
-        sel = ((ArticleEditorView)getView()).reduceDesc(sel,"**");
+        sel = MDRichTextUtils.reduceDesc(sel,"**");
         codeArea.replaceText(range.getStart(),range.getEnd(),sel);
     }
 
@@ -80,7 +78,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             codeArea.replaceText(rgCurr,"*内容写在这里*");
             return;
         }
-        sel = ((ArticleEditorView)getView()).reduceDesc(sel,"*");
+        sel = MDRichTextUtils.reduceDesc(sel,"*");
         codeArea.replaceText(range.getStart(),range.getEnd(),sel);
     }
 
@@ -244,7 +242,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             codeArea.replaceText(rgCurr,"~~内容写在这里~~");
             return;
         }
-        sel = ((ArticleEditorView)getView()).reduceDesc(sel,"~~");
+        sel = MDRichTextUtils.reduceDesc(sel,"~~");
         codeArea.replaceText(range.getStart(),range.getEnd(),sel);
     }
 
@@ -271,17 +269,15 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
         codeArea.replaceText(codeArea.getSelection(),sb.toString());
     }
 
-    @FXML
-    private void onToolSave() {
-        ArticleEditorView view = getView();
-        Article article = view.getEditingArticle();
-        Tab select = articlesTab.getSelectionModel().getSelectedItem();
-        if (select == null) {
+    public void saveArticle(Article target,Tab editing) {
+
+        if (target == null || editing == null) {
             return;
         }
-        EditorContentView editor = fxViewByView(select.getContent(), EditorContentView.class);
+        ArticleEditorView view = getView();
+        Article article = getView().getArticle(target.getId());
+        EditorContentView editor = fxViewByView(editing.getContent(), EditorContentView.class);
         String source = editor.getCodeArea().getText();
-        ArticleResource resource = new ArticleResource();
         if (article.getType() == null && article.getSingleStore() == null) {
             view.alert("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR)
                     .showAndWait();
@@ -292,7 +288,6 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
         for (Map.Entry<String,ByteBuffer> item :images.entrySet()) {
             imageData.put(item.getKey(), item.getValue().array());
         }
-        resource.setImages(imageData);
         ArticleContent content = articleService.getContentOf(article);
         if (content == null) {
             content = new ArticleContent();
@@ -307,17 +302,17 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
                 storage.save(article,new File(article.getFullPath()));
                 editor.setSaved();
                 getView().emit(new RefreshEvent(article, getView(), RefreshType.UPDATE));
-                select.setText(article.getTitle());
+                editing.setText(article.getTitle());
                 UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！");
                 return;
             }
-            Article saved = articleService.saveArticle(article, content);
+            Article saved = articleService.saveArticle(article, content, ArticleEditorType.MarkdownEditor);
             if(saved == null) {
                 view.alert("提示", "保存失败, 请填写必要信息。", Alert.AlertType.ERROR)
                         .showAndWait();
             } else {
                 editor.setSaved();
-                select.setText(article.getTitle());
+                editing.setText(article.getTitle());
                 UIUtils.notification("文档《" + article.getTitle() + "》 保存成功！");
                 this.getView().emit(new RefreshEvent(article,getView(), RefreshType.UPDATE));
             }
@@ -328,6 +323,17 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
                     .showAndWait();
             logger.error("fail to save article ", e);
         }
+    }
+
+    @FXML
+    private void onToolSave() {
+        ArticleEditorView view = getView();
+        Article article = view.getEditingArticle();
+        Tab select = articlesTab.getSelectionModel().getSelectedItem();
+        if (select == null) {
+            return;
+        }
+        saveArticle(article,select);
     }
 
     @FXML

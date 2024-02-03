@@ -8,11 +8,13 @@ import javafx.scene.control.ButtonType;
 import org.swdc.dependency.annotations.EventListener;
 import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.ui.component.TypeListPopover;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
+import org.swdc.note.ui.view.ArticleBlockEditorView;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.ReaderView;
 
@@ -27,6 +29,9 @@ public class ReadViewController extends ViewController<ReaderView> {
 
     @Inject
     private ArticleEditorView articleEditorView;
+
+    @Inject
+    private ArticleBlockEditorView blockEditorView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,9 +64,14 @@ public class ReadViewController extends ViewController<ReaderView> {
         if (article == null ||(article.getId() == null && article.getSingleStore() == null)) {
             return;
         }
-        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
-        editorView.addArticle(article);
-        editorView.show();
+        if (article.getEditorType() == ArticleEditorType.BlockEditor) {
+            blockEditorView.addArticle(article);
+            blockEditorView.show();
+        } else {
+            articleEditorView.addArticle(article);
+            articleEditorView.show();
+        }
+
     }
 
     @FXML

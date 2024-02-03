@@ -15,7 +15,9 @@ import org.swdc.fx.font.MaterialIconsService;
 import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.service.ArticleService;
+import org.swdc.note.ui.view.ArticleBlockEditorView;
 import org.swdc.note.ui.view.ArticleEditorView;
 import org.swdc.note.ui.view.ReaderView;
 
@@ -24,6 +26,9 @@ public class ArticleCell extends AbstractView {
 
     @Inject
     private ArticleEditorView editorView = null;
+
+    @Inject
+    private ArticleBlockEditorView blockEditorView = null;
 
     @Inject
     private ReaderView readerView = null;
@@ -56,12 +61,17 @@ public class ArticleCell extends AbstractView {
 
     private void deleteArticle(ActionEvent event) {
         articleService.deleteArticle(article);
-        //this.emit(new RefreshEvent(article.getType(), this, RefreshType.DELETE));
     }
 
     private void editArticle(ActionEvent event) {
-        editorView.show();
-        editorView.addArticle(article);
+        if (article.getEditorType() == ArticleEditorType.BlockEditor) {
+            blockEditorView.addArticle(article);
+            blockEditorView.show();
+        } else {
+            editorView.addArticle(article);
+            editorView.show();
+        }
+
     }
 
     private void readArticle(ActionEvent event) {

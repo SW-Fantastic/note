@@ -9,6 +9,7 @@ import org.swdc.dependency.annotations.With;
 import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.files.StorageFactory;
@@ -94,11 +95,11 @@ public class ArticleService  {
     }
 
     @Transactional
-    public Article saveArticle(Article article, ArticleContent content) {
+    public Article saveArticle(Article article, ArticleContent content, ArticleEditorType editorType) {
         if (article.getId() != null) {
 
             Article articleOld = articleRepo.getOne(article.getId());
-
+            articleOld.setEditorType(editorType);
             if (!(article.getTitle() == null || article.getTitle().isBlank() || article.getTitle().isEmpty())) {
                 articleOld.setTitle(article.getTitle());
             }
@@ -126,6 +127,7 @@ public class ArticleService  {
                 return null;
             }
             String desc = render.generateDesc(content);
+            article.setEditorType(editorType);
             article.setDesc(desc);
             article.setCreateDate(new Date());
             if (content.getSource() == null || content.getSource().isEmpty() || content.getSource().isBlank()) {

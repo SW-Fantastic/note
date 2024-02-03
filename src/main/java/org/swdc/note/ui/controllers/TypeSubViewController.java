@@ -22,6 +22,7 @@ import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.ViewController;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.files.ExternalStorage;
 import org.swdc.note.core.files.SingleStorage;
@@ -72,6 +73,9 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
 
     @Inject
     private ArticleEditorView editorView = null;
+
+    @Inject
+    private ArticleBlockEditorView blockEditorView = null;
 
     private ObservableList<Article> recently = FXCollections.observableArrayList();
 
@@ -206,15 +210,18 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         createView.show();
     }
 
-    @FXML
     public void onCreateDocument(ActionEvent event) {
-       this.createNewDocument();
+       this.createNewDocument(ArticleEditorType.MarkdownEditor);
     }
 
-    public void createNewDocument() {
+    public void onCreateBlockDocument(ActionEvent event) {
+        createNewDocument(ArticleEditorType.BlockEditor);
+    }
+
+
+    public void createNewDocument(ArticleEditorType editorType) {
         TreeItem<ArticleType> typeTreeItem = typeTree.getSelectionModel().getSelectedItem();
 
-        ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
         Article article = new Article();
         article.setContent(new ArticleContent());
         article.setCreateDate(new Date());
@@ -222,8 +229,16 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
             article.setType(typeTreeItem.getValue());
         }
         article.setTitle("未命名");
-        editorView.addArticle(article);
-        editorView.show();
+        if (editorType == ArticleEditorType.BlockEditor) {
+            ArticleBlockEditorView blockEditorView = getView().getView(ArticleBlockEditorView.class);
+            blockEditorView.addArticle(article);
+            blockEditorView.show();
+        } else {
+            ArticleEditorView editorView = getView().getView(ArticleEditorView.class);
+            editorView.addArticle(article);
+            editorView.show();
+        }
+
     }
 
     @FXML
@@ -371,9 +386,14 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
             return;
         }
         for (Article article: articles) {
-            editorView.addArticle(article);
+            if (article.getEditorType() == ArticleEditorType.BlockEditor) {
+                blockEditorView.addArticle(article);
+                blockEditorView.show();
+            } else {
+                editorView.addArticle(article);
+                editorView.show();
+            }
         }
-        editorView.show();
     }
 
     public void creatType(ActionEvent event) {

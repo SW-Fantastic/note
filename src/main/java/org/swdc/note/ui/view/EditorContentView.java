@@ -112,53 +112,10 @@ public class EditorContentView extends AbstractView {
     }
 
 
-    /**
-     * 如果inputRequest为null，那么MAC系统将会出现无法输入中文的问题。
-     */
-    private static class InputMethodRequestsObject implements InputMethodRequests {
-
-        private CodeArea area;
-
-        InputMethodRequestsObject(CodeArea area){
-            this.area = area;
-        }
-
-        @Override
-        public Point2D getTextLocation(int offset) {
-            Optional<Bounds> bounds = area.getCaretBounds();
-            if (bounds.isPresent()){
-                Bounds pos = bounds.get();
-                return new Point2D(pos.getMinX(),pos.getMinY());
-            }
-            return new Point2D(0,0);
-        }
-
-        @Override
-        public int getLocationOffset(int x, int y) {
-            return 0;
-        }
-
-        @Override
-        public void cancelLatestCommittedText() {
-
-        }
-
-        @Override
-        public String getSelectedText() {
-            return area.getSelectedText();
-        }
-    }
-
     @PostConstruct
     public void initialize() {
         BorderPane borderPane = findById("editor");
         CodeArea codeArea = new CodeArea();
-        codeArea.setInputMethodRequests(new InputMethodRequestsObject(codeArea));
-        codeArea.setOnInputMethodTextChanged(e->{
-            if(e.getCommitted() != null){
-                codeArea.insertText(codeArea.getCaretPosition(),e.getCommitted());
-            }
-        });
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.getStyleClass().add("code-area");
 
@@ -173,7 +130,7 @@ public class EditorContentView extends AbstractView {
             List<ContentHelper.KeyWord> imagesKeyWord = images
                     .stream()
                     .map(s -> new ContentHelper.KeyWord("![","图片: " + s, self-> "![description][" + s + "]"))
-                    .collect(Collectors.toList());
+                    .toList();
             list.addAll(imagesKeyWord);
         });
 

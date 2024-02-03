@@ -24,11 +24,14 @@ import org.swdc.fx.view.AbstractView;
 import org.swdc.fx.view.View;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.files.SingleStorage;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ArticleService;
 import org.swdc.note.core.service.ContentService;
+import org.swdc.note.ui.component.MDRichTextUtils;
 import org.swdc.note.ui.component.RectPopover;
+import org.swdc.note.ui.controllers.ArticleEditorController;
 import org.swdc.note.ui.events.RefreshEvent;
 import org.swdc.note.ui.events.RefreshType;
 
@@ -49,6 +52,7 @@ import static org.swdc.note.ui.view.UIUtils.fxViewByView;
 public class ArticleEditorView extends AbstractView {
 
     private Map<Article, Tab> articleTabMap = new HashMap<>();
+
     private ObservableList<Tab> tabs = FXCollections.observableArrayList();
 
     @Inject
@@ -65,53 +69,6 @@ public class ArticleEditorView extends AbstractView {
 
     private RectPopover tablePopover;
 
-    private static final String[] KEYWORDS = new String[] {
-            "toc","TOC","target"
-    };
-    // 匹配字符串
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    // 匹配高亮的单词
-    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    // 匹配小括号
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    // 匹配markdown的#
-    private static final String TITLE_PATTERN = "[#]{1,6}\\s\\S+\\n";
-    // 匹配等号和减号（markdown的分割线）
-    private static final String SP_PATTERN = "[=]+|[-]+|>\\s";
-    // 匹配代码块
-    private static final String CODE_PATTERN = "[`]{3}[\\S]*\\b|[`]{3}";
-    // 匹配大括号
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    // 匹配中括号
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    // 匹配列表
-    private static final String LIST_PATTERN = "[0-9]([1-9])?[.]\\s|\\*[.]\\s";
-    // 匹配表格
-    private static final String TABLE_PATTERN = "(\\|([ \\S\\|]*\\|))";
-    // 匹配任务列表
-    private static final String TASK_PATTERN = "[-]\\s\\[([x]?|[\\s]?)\\]";
-    // 加粗，斜体，删除线
-    private static final String DESC_PATTERN = "([*]{2}[\\S]+[\\s\\S]?[*]{2})|([*][\\S]+[\\s\\S]?[*]|([~]{2})[\\S]+[\\s\\S]?[~]{2})|([`][\\S]+[\\s\\S]?[`])";
-    // 匹配注释
-    private static final String COMMENT_PATTERN = "([<][!][-]{2}[\\s\\S]*)|([-]{2}[>])";
-
-    private static final String FUNCTEX_PATTERN ="\\$[^$]+\\$";
-
-    private static final Pattern PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    + "|(?<PAREN>" + PAREN_PATTERN + ")"
-                    + "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-                    + "|(?<CODE>" + CODE_PATTERN + ")"
-                    + "|(?<LIST>" + LIST_PATTERN + ")"
-                    + "|(?<STRING>" + STRING_PATTERN + ")"
-                    + "|(?<TABLE>" + TABLE_PATTERN + ")"
-                    + "|(?<TASK>" + TASK_PATTERN + ")"
-                    + "|(?<SP>" + SP_PATTERN + ")"
-                    + "|(?<DESC>" + DESC_PATTERN + ")"
-                    + "|(?<FUNCTEX>" + FUNCTEX_PATTERN + ")"
-                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
-                    + "|(?<TITLE>" + TITLE_PATTERN + ")");
 
     @PostConstruct
     public void initialize() {
@@ -324,7 +281,7 @@ public class ArticleEditorView extends AbstractView {
         CodeArea codeArea = editor.getCodeArea();
         codeArea.setWrapText(true);
         codeArea.plainTextChanges().successionEnds(Duration.ofMillis(500))
-                .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
+                .subscribe(ignore -> codeArea.setStyleSpans(0, MDRichTextUtils.computeHighlighting(codeArea.getText())));
 
         ArticleContent content  = Optional.ofNullable(article.getContent())
                 .orElse(articleService.getContentOf(article));
@@ -401,87 +358,18 @@ public class ArticleEditorView extends AbstractView {
                 .showAndWait()
                 .ifPresent(buttonType -> {
                     if (buttonType == ButtonType.OK) {
-                        String source = editor.getCodeArea().getText();
-                        Map<String, ByteBuffer> images = editor.getImagesView().getImages();
-                        Map<String, byte[]> imageData = new HashMap<>(images.size());
-                        for (Map.Entry<String,ByteBuffer> item :images.entrySet()) {
-                            imageData.put(item.getKey(), item.getValue().array());
-                        }
-
-                        ArticleContent content = article.getContent();
-                        if (content == null) {
-                            content = new ArticleContent();
-                        }
-                        content.setImages(imageData);
-                        content.setSource(source);
-                        if (article.getId() != null) {
-                            content.setArticleId(article.getId());
-                        }
-
-                        if (article.getSingleStore() != null) {
-                            // 文档直接从文件打开，那么保存到文件。
-                            SingleStorage storage = articleService.getSingleStoreBy(article.getSingleStore());
-                            article.setContent(content);
-                            storage.save(article,new File(article.getFullPath()));
-                            tabs.remove(tab);
-                            articleTabMap.remove(article);
-                            this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
-                        } else {
-                            if (article.getType() == null) {
-                                this.alert("提示","请设置分类，然后重新保存。", Alert.AlertType.ERROR)
-                                        .showAndWait();
-                                return;
-                            }
-                            Article saved = articleService.saveArticle(article, content);
-                            if(saved != null) {
-                                tabs.remove(tab);
-                                articleTabMap.remove(article);
-                                this.emit(new RefreshEvent(article, this, RefreshType.UPDATE));
-                            } else {
-                                this.alert("提示", "保存失败", Alert.AlertType.ERROR)
-                                        .showAndWait();
-                            }
-                        }
-                    } else {
-                        tabs.remove(tab);
-                        articleTabMap.remove(article);
+                        ArticleEditorController controller = getController();
+                        controller.saveArticle(article,tab);
                     }
+                    tabs.remove(tab);
+                    articleTabMap.remove(article);
                     if (tabs.size() == 0) {
                         getStage().close();
                     }
                 });
     }
 
-    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        Matcher matcher = PATTERN.matcher(text);
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
 
-        while(matcher.find()) {
-            String styleClass =
-                    matcher.group("KEYWORD") != null ? "md-keyword" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("BRACE") != null ? "brace" :
-                    matcher.group("BRACKET") != null ? "bracket" :
-                    matcher.group("CODE") != null ? "md-code":
-                    matcher.group("FUNCTEX") != null ? "md-code":
-                    matcher.group("LIST") != null ? "md-list":
-                    matcher.group("TASK") != null ? "md-keyword":
-                    matcher.group("TABLE") != null ? "md-table":
-                    matcher.group("STRING") != null ? "string" :
-                    matcher.group("DESC") != null ? "string":
-                    matcher.group("COMMENT") != null ? "comment":
-                    matcher.group("SP") != null ? "md-sp":
-                    matcher.group("TITLE") != null ? "md-keyword":
-                    "text-normal";
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
-    }
 
     public static double getScreenX(Node node) {
         return  node.localToScreen(0,0).getX();
@@ -491,17 +379,6 @@ public class ArticleEditorView extends AbstractView {
         return node.localToScreen(0,0).getY();
     }
 
-
-    public String reduceDesc(String text,String prefix){
-        Pattern pattern = Pattern.compile(DESC_PATTERN);
-        if(pattern.matcher(text).matches()){
-            text = text.replaceAll("[*]","");
-            text = text.replaceAll("[~]","");
-        }else{
-            text = prefix + text + prefix;
-        }
-        return text.replaceAll("\\s","");
-    }
 
     public RectPopover getTablePopover() {
         return tablePopover;
