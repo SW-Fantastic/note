@@ -75,7 +75,9 @@
         -fx-text-fill: @darkPrimaryColor;
       }
       .tree-cell:selected {
-        -fx-background-color: rgba(255,255,255,0.6);
+        -fx-background-color: @primaryColor;
+        -fx-text-fill: #FFF;
+        -fx-text-background-color: #FFF;
         .arrow {
           -fx-background-color: #000;
         }
@@ -251,6 +253,9 @@
 
   .btn-primary{
     .btn-block(@primaryColor,#FFF);
+    & >.label {
+        -fx-text-fill: #FFF;
+    }
   }
 
   .btn-info {

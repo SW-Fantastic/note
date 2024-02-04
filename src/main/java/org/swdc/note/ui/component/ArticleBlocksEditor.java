@@ -31,7 +31,7 @@ public class ArticleBlocksEditor extends BorderPane {
         setCenter(blockListView);
     }
 
-    private void addBlock(int index,ArticleBlock block) {
+    public void addBlock(int index,ArticleBlock block) {
         block.setEditor(this);
         if (index < 0 || index >= blockListView.getItems().size()) {
             blockListView.getItems().add(block);

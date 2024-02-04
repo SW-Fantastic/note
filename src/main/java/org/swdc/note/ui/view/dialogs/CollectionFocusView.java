@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.swdc.fx.font.FontSize;
 import org.swdc.fx.font.MaterialIconsService;
 import org.swdc.fx.view.AbstractView;
@@ -19,6 +20,9 @@ public class CollectionFocusView extends AbstractView {
 
     @PostConstruct
     public void init() {
+        Stage stage = getStage();
+        stage.setMinWidth(820);
+        stage.setMinHeight(500);
         setupIcon(findById("add"),"add");
         setupIcon(findById("delete"),"delete");
     }

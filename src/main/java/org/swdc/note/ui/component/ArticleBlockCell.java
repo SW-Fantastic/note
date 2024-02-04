@@ -3,8 +3,13 @@ package org.swdc.note.ui.component;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -25,6 +30,8 @@ public class ArticleBlockCell extends ListCell<ArticleBlock> {
     private ArticleBlocksEditor editor;
 
     private BlockContextMenu contextMenu;
+
+    private static final DataFormat blockDragFormat = new DataFormat("application/x-block-editor-block");
 
     public ArticleBlockCell(ArticleBlocksEditor editor, MaterialIconsService iconsService) {
         this.iconsService = iconsService;
@@ -51,6 +58,30 @@ public class ArticleBlockCell extends ListCell<ArticleBlock> {
                 move.setPadding(new Insets(4));
                 move.setFont(iconsService.getFont(FontSize.SMALL));
                 move.setText(iconsService.getFontIcon("apps"));
+                move.setOnDragDetected(e -> {
+                    Dragboard dragboard = content.startDragAndDrop(TransferMode.MOVE);
+                    ClipboardContent clipboardContent = new ClipboardContent();
+                    clipboardContent.put(blockDragFormat,this.getIndex());
+                    dragboard.setContent(clipboardContent);
+                    dragboard.setDragView(content.snapshot(new SnapshotParameters(),null));
+                });
+
+                content.setOnDragOver(e -> {
+                    e.acceptTransferModes(TransferMode.MOVE);
+                });
+
+                content.setOnDragDropped(e -> {
+                    Dragboard dragboard = e.getDragboard();
+                    if (!dragboard.hasContent(blockDragFormat)) {
+                        return;
+                    }
+                    int index = Integer.parseInt(
+                            dragboard.getContent(blockDragFormat).toString()
+                    );
+                    ArticleBlock block = getListView().getItems().remove(index);
+                    editor.addBlock(getIndex(),block);
+                    e.setDropCompleted(true);
+                });
 
                 Button add = new Button();
                 add.getStyleClass().add("edit-icon");
