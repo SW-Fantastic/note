@@ -59,9 +59,9 @@ public class ListBlock extends ArticleBlock {
 
     @Override
     protected String generate() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder("\n");
         for (String line: listView.getItems()) {
-            builder.append(" - ").append(line).append("\n");
+            builder.append("\n - ").append(line);
         }
         return builder.toString();
     }

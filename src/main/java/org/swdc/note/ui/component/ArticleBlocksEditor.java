@@ -118,6 +118,10 @@ public class ArticleBlocksEditor extends BorderPane {
         addBlock(index, new TableBlock());
     }
 
+    public void addReferenceBlock(int index) {
+        addBlock(index,new ReferenceBlock());
+    }
+
     public void addSpreadBlock(int index) {
         addBlock(index, new SpreadBlock());
     }

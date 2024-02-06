@@ -156,24 +156,44 @@ public class TableBlock extends ArticleBlock {
 
     @Override
     protected String generate() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder("\n");
+        boolean hasMoreRows = tableView.getItems().size() >= 2;
+        Map<Integer,String> mapHeader = tableView.getItems().getFirst();
         for (int idx = 0; idx < tableView.getColumns().size(); idx ++) {
             if (idx == 0) {
                 builder.append("|");
             }
-            builder.append(":-:|");
+            builder.append(mapHeader.get(idx)).append("|");
         }
         builder.append("\n");
-        for (int rowIdx = 0; rowIdx < tableView.getItems().size(); rowIdx ++) {
-            Map<Integer,String> map = tableView.getItems().get(rowIdx);
+
+        for (int idx = 0; idx < tableView.getColumns().size(); idx ++) {
+            if (idx == 0) {
+                builder.append("|");
+            }
+            builder.append(":-----:|");
+        }
+        builder.append("\n");
+        if (hasMoreRows) {
+            for (int rowIdx = 1; rowIdx < tableView.getItems().size(); rowIdx ++) {
+                Map<Integer,String> map = tableView.getItems().get(rowIdx);
+                for (int idx = 0; idx < tableView.getColumns().size(); idx ++) {
+                    if (idx == 0) {
+                        builder.append("|");
+                    }
+                    builder.append(map.get(idx)).append("|");
+                }
+                builder.append("\n");
+            }
+        } else {
             for (int idx = 0; idx < tableView.getColumns().size(); idx ++) {
                 if (idx == 0) {
                     builder.append("|");
                 }
-                builder.append(map.get(idx)).append("|");
+                builder.append(" (Blank) ").append("|");
             }
-            builder.append("\n");
         }
+
         return builder.toString();
     }
 
