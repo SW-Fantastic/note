@@ -17,6 +17,7 @@
                            </VBox.margin>
                         </ToggleButton>
                   <ToggleButton id="coll" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="集" />
+                  <ToggleButton id="topic" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="段" />
                   <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS" />
                         <ToggleButton id="conf" mnemonicParsing="false" prefHeight="38.0" prefWidth="38.0" text="设" />
                      </children>

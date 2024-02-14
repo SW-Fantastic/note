@@ -205,6 +205,150 @@
         -fx-padding: 0 1 0 1;
       }
     }
+
+    .topic-pane {
+
+        -fx-background-color: #FFF;
+        -fx-text-fill: @primaryColor;
+
+        .tagsList {
+            -fx-background-color: @nothing;
+            .cell {
+                -fx-background-color: @nothing;
+                &:filled {
+                    &:selected{
+                        .tag-cell {
+                            -fx-text-background-color: @primaryColor;
+                            -fx-background-color: @backgroundColor;
+                            -fx-text-fill: @primaryColor;
+                            -fx-background-radius: 120;
+                            .button {
+                                -fx-background-color: @nothing;
+                                -fx-text-fill: @primaryColor;
+                                &:hover {
+                                    -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+                                }
+                            }
+                        }
+                    }
+                     .tag-cell {
+                        -fx-border-style: dashed;
+                        -fx-border-width: 1;
+                        -fx-border-radius: 120;
+                        -fx-border-color: @primaryColor;
+                        -fx-text-background-color: @primaryColor;
+                    }
+                    .button {
+                        -fx-background-color: @nothing;
+                        -fx-text-fill: @primaryColor;
+                        &:hover {
+                            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    .topic-content {
+
+        -fx-background-color: rgba(255,255,255,0.6);
+
+        .text-field {
+
+            -fx-background-color: #FFF;
+            -fx-background-radius: 0;
+            -fx-border-radius: 0;
+            -fx-border-style: solid;
+            -fx-border-color: @nothing;
+            -fx-border-width: 0;
+            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+        }
+
+        .text-area {
+
+            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+            -fx-background-color: @nothing;
+            .content {
+                -fx-background-color:  #F4F6E5;
+            }
+        }
+
+        .list-articles {
+            -fx-border-style: dashed;
+            -fx-border-width: 1;
+            -fx-border-radius: 8;
+            -fx-border-color: @primaryColor;
+            -fx-background-color: @nothing;
+            .cell {
+                -fx-text-background-color: @primaryColor;
+                -fx-background-color: @nothing;
+                .short-cell {
+                    -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+                    -fx-background-color: #FFF;
+                    .button {
+                        -fx-background-color: @nothing;
+                        -fx-text-fill: @primaryColor;
+                        &:hover {
+                            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+                        }
+                    }
+                    .text-area {
+                        -fx-background-color: @nothing;
+                        -fx-effect: none;
+                        .content {
+                            -fx-background-color:  #FFF;
+                        }
+                    }
+                    .list-view {
+                        -fx-background-color: @nothing;
+                        .cell {
+                            -fx-background-color: @nothing;
+                            &:filled {
+                                -fx-background-color: @primaryColor;
+                                -fx-background-radius: 8;
+                                -fx-text-fill: #FFF;
+                            }
+                        }
+                    }
+                    .bottom {
+                        -fx-border-width: 1 0 0 0;
+                        -fx-border-color: #CFCFCF;
+                        -fx-border-style: solid;
+                    }
+                }
+            }
+        }
+
+        .list-topics {
+
+            .cell {
+
+                -fx-font-size: 12;
+                -fx-background-color: @nothing;
+                &:filled {
+
+                    -fx-border-style: dashed;
+                    -fx-border-width: 1;
+                    -fx-border-radius: 8;
+                    -fx-border-color: @primaryColor;
+                    -fx-text-background-color: @primaryColor;
+
+                    .button {
+                        -fx-background-color: @nothing;
+                        -fx-text-fill: @primaryColor;
+                        &:hover {
+                            -fx-effect: dropshadow(three-pass-box,@primaryColor, 8, 0, 0, 0);
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
   }
 
   .tab-pane {

@@ -16,7 +16,9 @@ public class EntityManagerProviderImpl extends EMFProvider {
                 ArticleType.class,
                 CollectionType.class,
                 CollectionArticle.class,
-                CollectionFocus.class
+                CollectionFocus.class,
+                ShortArticle.class,
+                ShortArticleTag.class
         );
     }
 }

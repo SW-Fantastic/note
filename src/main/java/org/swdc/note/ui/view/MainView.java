@@ -33,6 +33,9 @@ public class MainView extends AbstractView {
     @Inject
     private CollectSubView collectSubView;
 
+    @Inject
+    private TopicSubView topicSubView;
+
     private ToggleGroup group;
 
     private SimpleDoubleProperty subViewWidth = new SimpleDoubleProperty();
@@ -43,9 +46,10 @@ public class MainView extends AbstractView {
     @PostConstruct
     public void initialize() {
         this.group = new ToggleGroup();
-        this.initViewToolButton("type", "list");
+        this.initViewToolButton("type", "apps");
         this.initViewToolButton("conf","settings");
         this.initViewToolButton("coll","class");
+        this.initViewToolButton("topic","textsms");
 
         group.selectedToggleProperty().addListener(this::viewToggleChange);
 
@@ -60,6 +64,7 @@ public class MainView extends AbstractView {
         initialSizes(typeSubView);
         initialSizes(configSubView);
         initialSizes(collectSubView);
+        initialSizes(topicSubView);
 
         group.selectToggle(findById("type"));
 
@@ -90,7 +95,7 @@ public class MainView extends AbstractView {
             return;
         }
         toggleButton.setPadding(new Insets(4,4,4,4));
-        toggleButton.setFont(iconsService.getFont(FontSize.MIDDLE_SMALL));
+        toggleButton.setFont(iconsService.getFont(FontSize.MIDDLE));
         toggleButton.setText(iconsService.getFontIcon(icon));
         group.getToggles().add(toggleButton);
     }
@@ -111,6 +116,10 @@ public class MainView extends AbstractView {
             }
             case "coll": {
                 borderPane.setCenter(collectSubView.getView());
+                break;
+            }
+            case "topic": {
+                borderPane.setCenter(topicSubView.getView());
                 break;
             }
         }
