@@ -275,7 +275,7 @@ public class ArticleEditorController extends ViewController<ArticleEditorView> {
             return;
         }
         ArticleEditorView view = getView();
-        Article article = getView().getArticle(target.getId());
+        Article article = getView().getArticle(editing);
         EditorContentView editor = fxViewByView(editing.getContent(), EditorContentView.class);
         String source = editor.getCodeArea().getText();
         if (article.getType() == null && article.getSingleStore() == null) {

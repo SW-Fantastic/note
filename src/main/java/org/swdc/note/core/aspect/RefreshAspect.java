@@ -1,6 +1,7 @@
 package org.swdc.note.core.aspect;
 
 import jakarta.inject.Inject;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.swdc.dependency.EventEmitter;
 import org.swdc.dependency.annotations.Aspect;

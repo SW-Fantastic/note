@@ -165,13 +165,13 @@ public class TypeSubViewController extends ViewController<TypeSubView> {
         } else if (article == null) {
             TreeItem<ArticleType> target = findTypeItem(typeRoot,type,ArticleType::getId);
             if (target != null) {
-                if (event.getType() == RefreshType.CREATION) {
-                    typeRoot.getChildren().add(new TreeItem<>(type));
-                } else if (event.getType() == RefreshType.UPDATE){
+                if (event.getType() == RefreshType.UPDATE){
                     target.setValue(type);
                 } else if (event.getType() == RefreshType.DELETE) {
                     typeRoot.getChildren().remove(target);
                 }
+            } else if (event.getType() == RefreshType.CREATION) {
+                typeRoot.getChildren().add(new TreeItem<>(type));
             }
         }
         // 刷新文档列表

@@ -249,17 +249,24 @@ public class ArticleBlockEditorView extends AbstractView {
         return select;
     }
 
-    public Article getEditingArticle() {
-        TabPane tabPane = findById("editorTab");
-        Tab tab  = tabPane.getSelectionModel().getSelectedItem();
-        if (tab == null) {
+    public Article getArticle(Tab theEditorTab) {
+        if (theEditorTab == null) {
             return null;
         }
         Map.Entry<Article, Tab> entry = articleTabMap.entrySet()
                 .stream()
-                .filter(ent -> ent.getValue() == tab)
+                .filter(ent -> ent.getValue() == theEditorTab)
                 .findFirst().orElse(null);
+        if (entry == null) {
+            return null;
+        }
         return entry.getKey();
+    }
+
+    public Article getEditingArticle() {
+        TabPane tabPane = findById("editorTab");
+        Tab tab  = tabPane.getSelectionModel().getSelectedItem();
+        return getArticle(tab);
     }
 
     public void refresh() {

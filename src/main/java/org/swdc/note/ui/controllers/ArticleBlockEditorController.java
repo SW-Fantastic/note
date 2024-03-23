@@ -47,7 +47,7 @@ public class ArticleBlockEditorController extends ViewController<ArticleBlockEdi
             return;
         }
         ArticleBlockEditorView view = getView();
-        Article article = view.getArticle(target.getId());
+        Article article = view.getArticle(tab);
         EditorBlockedContentView editor = fxViewByView(tab.getContent(), EditorBlockedContentView.class);
         List<BlockData> source = editor.getSource();
         if (article.getType() == null && article.getSingleStore() == null) {
