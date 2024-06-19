@@ -32,6 +32,10 @@ public class CodeBlock extends ArticleBlock {
                 String text = textarea.getText();
                 if (text.isEmpty()) {
                     remove();
+                } else {
+                    if (this.blocksEditor() != null) {
+                        this.blocksEditor().doFocus(this);
+                    }
                 }
             });
         }

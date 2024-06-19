@@ -32,6 +32,8 @@ public class ReferenceBlock extends ArticleBlock {
                 String text = textarea.getText();
                 if (text.isEmpty()) {
                     remove();
+                } else {
+                    blocksEditor().doFocus(this);
                 }
             });
         }

@@ -36,6 +36,8 @@ public class PlainTextBlock extends ArticleBlock {
                 blocksEditor().setChanged(true);
                 if (text.isEmpty()) {
                     remove();
+                } else {
+                    blocksEditor().doFocus(this);
                 }
             });
         }

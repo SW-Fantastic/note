@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -119,7 +120,7 @@ public class ArticleBlockEditorView extends AbstractView {
                 .map(tab->tab.getContent().getUserData())
                 .map(EditorBlockedContentView.class::cast)
                 .collect(Collectors.toList());
-        long unsaved = editors.stream().filter(v->!v.isChanged()).count();
+        long unsaved = editors.stream().filter(EditorBlockedContentView::isChanged).count();
         if (unsaved > 0) {
             alert("关闭","继续关闭将会失去所有未保存内容，继续吗？", Alert.AlertType.CONFIRMATION)
                     .showAndWait().ifPresent(btn -> {
@@ -215,12 +216,14 @@ public class ArticleBlockEditorView extends AbstractView {
         if (!contentData.isEmpty()) {
             editor.setSource(contentData);
         }
-        editor.changedProperty().addListener(e -> {
-            if (editor.isChanged()) {
+
+        editor.setOnChanged(v -> {
+            if (v) {
                 tab.setText(article.getTitle() + " * ");
             } else {
                 tab.setText(article.getTitle());
             }
+            return v;
         });
 
         BorderPane borderPane = (BorderPane) editor.getView();
@@ -232,6 +235,8 @@ public class ArticleBlockEditorView extends AbstractView {
 
         articleTabMap.put(article, tab);
         tabs.add(tab);
+
+        Platform.runLater(() -> editor.setChanged(false));
 
         return tab;
     }

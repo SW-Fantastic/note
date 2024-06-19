@@ -67,6 +67,10 @@ public class BlockTableCell extends TableCell<Map<Integer,String>,String> {
                     if (!theRow.containsKey(columnIndex) || !field.getText().equals(theRow.get(columnIndex))) {
                         theRow.put(columnIndex,field.getText());
                     }
+                    if (block.blocksEditor() != null) {
+                        block.blocksEditor()
+                                .doFocus(block);
+                    }
                 });
 
                 HBox.setHgrow(field, Priority.ALWAYS);

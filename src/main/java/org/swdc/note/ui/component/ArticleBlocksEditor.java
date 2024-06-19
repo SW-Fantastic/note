@@ -5,14 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.ListView;
+import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import org.swdc.fx.font.MaterialIconsService;
 import org.swdc.note.ui.component.blocks.*;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class ArticleBlocksEditor extends BorderPane {
 
@@ -20,7 +24,11 @@ public class ArticleBlocksEditor extends BorderPane {
 
     private MaterialIconsService iconsService;
 
-    private SimpleBooleanProperty changed = new SimpleBooleanProperty();
+    private boolean changed;
+
+    private Function<Boolean,Boolean> onChanged;
+
+    private PlaceholderBlock placeholderBlock = new PlaceholderBlock();
 
     public ArticleBlocksEditor(MaterialIconsService iconsService) {
         this.iconsService = iconsService;
@@ -31,17 +39,35 @@ public class ArticleBlocksEditor extends BorderPane {
         setCenter(blockListView);
     }
 
+    public void doFocus(ArticleBlock block) {
+        int index = blockListView.getItems()
+                .indexOf(block);
+        Region region = (Region) block.getEditor();
+        if (index == blockListView.getItems().size() - 1 || region.getHeight() > blockListView.getHeight()) {
+            blockListView.scrollTo(placeholderBlock);
+        } else {
+            blockListView.scrollTo(index + 1);
+        }
+    }
+
     public void addBlock(int index,ArticleBlock block) {
         block.setEditor(this);
-        if (index < 0 || index >= blockListView.getItems().size()) {
-            blockListView.getItems().add(block);
+        List<ArticleBlock> blocks = blockListView.getItems();
+        if (index < 0 || index >= blocks.size()) {
+            blocks.add(block);
             blockListView.refresh();
             blockListView.scrollTo(index);
             return;
         }
-        blockListView.getItems().add(index,block);
+        blocks.add(index,block);
         blockListView.refresh();
-        blockListView.scrollTo(index);
+        if (!blocks.contains(placeholderBlock)) {
+            blocks.add(placeholderBlock);
+        } else {
+            blocks.remove(placeholderBlock);
+            blocks.add(placeholderBlock);
+        }
+        blockListView.scrollTo(placeholderBlock);
     }
 
     public List<BlockData> getData() {
@@ -138,15 +164,20 @@ public class ArticleBlocksEditor extends BorderPane {
         return iconsService;
     }
 
-    public SimpleBooleanProperty changedProperty() {
+
+    public boolean isChanged() {
         return changed;
     }
 
-    public boolean isChanged() {
-        return changed.get();
+    public void setChanged(boolean changed) {
+        if (this.onChanged != null) {
+            this.changed = this.onChanged.apply(changed);
+        } else {
+            this.changed = changed;
+        }
     }
 
-    public void setChanged(boolean changed) {
-        this.changed.set(changed);
+    public void setOnChanged(Function<Boolean, Boolean> onChanged) {
+        this.onChanged = onChanged;
     }
 }

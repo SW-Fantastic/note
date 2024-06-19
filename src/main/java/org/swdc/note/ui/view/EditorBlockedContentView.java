@@ -11,25 +11,25 @@ import org.swdc.note.ui.component.ArticleBlocksEditor;
 import org.swdc.note.ui.component.blocks.BlockData;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @View(stage = false,viewLocation = "views/main/EditorBlockedContentView.fxml",multiple = true)
 public class EditorBlockedContentView extends AbstractView {
 
     private ArticleBlocksEditor blocksEditor;
 
-    private BooleanProperty changed;
-
     @Inject
     private MaterialIconsService iconsService;
 
     @PostConstruct
     public void init() {
+
         blocksEditor = new ArticleBlocksEditor(iconsService);
         BorderPane pane = findById("editorPane");
         pane.setCenter(blocksEditor);
-
         blocksEditor.addTextBlock(0);
-        this.changed = blocksEditor.changedProperty();
+
     }
 
     public void setSource(List<BlockData> data) {
@@ -39,15 +39,15 @@ public class EditorBlockedContentView extends AbstractView {
         return blocksEditor.getData();
     }
 
-    public BooleanProperty changedProperty() {
-        return changed;
-    }
-
     public boolean isChanged() {
-        return changed.get();
+        return blocksEditor.isChanged();
     }
 
     public void setChanged(boolean changed) {
-        this.changed.set(changed);
+        this.blocksEditor.setChanged(changed);
+    }
+
+    public void setOnChanged(Function<Boolean, Boolean> onChanged) {
+        this.blocksEditor.setOnChanged(onChanged);
     }
 }
