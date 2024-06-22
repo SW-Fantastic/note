@@ -33,7 +33,7 @@ public class ReferenceBlock extends ArticleBlock {
                 if (text.isEmpty()) {
                     remove();
                 } else {
-                    blocksEditor().doFocus(this);
+                    blocksEditor().doFocus(this, 0);
                 }
             });
         }

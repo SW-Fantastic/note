@@ -20,7 +20,7 @@ public class CodeBlock extends ArticleBlock {
             textHolder.textProperty().bind(textarea.textProperty());
             textHolder.fontProperty().bind(textarea.fontProperty());
             textHolder.layoutBoundsProperty().addListener(c -> {
-                textarea.setPrefHeight(textHolder.getLayoutBounds().getHeight() + 20);
+                textarea.setPrefHeight(textHolder.getLayoutBounds().getHeight() + 24);
             });
 
             textarea.setPrefHeight(lineHeight);
@@ -34,7 +34,13 @@ public class CodeBlock extends ArticleBlock {
                     remove();
                 } else {
                     if (this.blocksEditor() != null) {
-                        this.blocksEditor().doFocus(this);
+                        int pos = textarea.getCaretPosition();
+                        if (pos > 0 && pos < text.length()) {
+                            int lines = textarea.getText(0,pos).split("\n").length;
+                            blocksEditor().doFocus(this, lines * textHolder.getFont().getSize());
+                        } else {
+                            blocksEditor().doFocus(this, 0);
+                        }
                     }
                 }
             });

@@ -1,7 +1,9 @@
 package org.swdc.note.ui.component.blocks;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import org.swdc.note.ui.component.MDRichTextUtils;
 
@@ -24,7 +26,7 @@ public class PlainTextBlock extends ArticleBlock {
             textHolder.fontProperty().bind(textarea.fontProperty());
             textHolder.wrappingWidthProperty().bind(textarea.widthProperty().subtract(40));
             textHolder.layoutBoundsProperty().addListener(c -> {
-                textarea.setPrefHeight(textHolder.getLayoutBounds().getHeight() + 20);
+                textarea.setPrefHeight(textHolder.getLayoutBounds().getHeight() + 24);
             });
 
             textarea.setPrefHeight(lineHeight);
@@ -37,7 +39,13 @@ public class PlainTextBlock extends ArticleBlock {
                 if (text.isEmpty()) {
                     remove();
                 } else {
-                    blocksEditor().doFocus(this);
+                    int pos = textarea.getCaretPosition();
+                    if (pos > 0 && pos < text.length()) {
+                        int lines = textarea.getText(0,pos).split("\n").length;
+                        blocksEditor().doFocus(this, lines * textHolder.getFont().getSize());
+                    } else {
+                        blocksEditor().doFocus(this, 0);
+                    }
                 }
             });
         }
@@ -51,7 +59,7 @@ public class PlainTextBlock extends ArticleBlock {
 
     @Override
     protected String generate() {
-        return textarea.getText();
+        return "<p>" + textarea.getText().replace("\n","<br>") + "</p>";
     }
 
     @Override
@@ -59,6 +67,10 @@ public class PlainTextBlock extends ArticleBlock {
         if (textarea == null) {
             getEditor();
         }
-        textarea.setText(data.getContent().toString());
+        textarea.setText(data.getContent().toString()
+                .replace("</p>","")
+                .replace("<p>","")
+                .replace("<br>","\n")
+        );
     }
 }

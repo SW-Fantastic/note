@@ -1,5 +1,7 @@
 package org.swdc.note.core.files.single;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
 import jakarta.inject.Inject;
@@ -12,8 +14,11 @@ import org.slf4j.Logger;
 import org.swdc.dependency.annotations.MultipleImplement;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.entities.ArticleEditorType;
 import org.swdc.note.core.render.HTMLRender;
 import org.swdc.note.core.service.ContentService;
+import org.swdc.note.ui.component.blocks.BlockData;
+import org.swdc.note.ui.component.blocks.ImageBlock;
 
 import java.io.File;
 import java.net.URL;
@@ -21,10 +26,7 @@ import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @MultipleImplement(AbstractSingleStore.class)
 public class HTMLSingleStore extends AbstractSingleStore {
@@ -59,7 +61,39 @@ public class HTMLSingleStore extends AbstractSingleStore {
 
         ArticleContent content = Optional.ofNullable(article.getContent())
                 .orElse(contentService.getArticleContent(article.getId()));
-        String rendered = htmlRender.renderHTML(htmlRender.renderBytes(content.getSource(), content.getImages()));
+
+        String rendered = "";
+
+        if (article.getEditorType() == ArticleEditorType.BlockEditor) {
+            String blockData = content.getSource();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JavaType type = mapper.getTypeFactory()
+                        .constructParametricType(List.class, BlockData.class);
+
+                List<BlockData> data = mapper.readValue(blockData,type);
+                Map<String,byte[]> images = content.getImages();
+
+                StringBuilder builder = new StringBuilder();
+                for (BlockData item : data) {
+                    if (ImageBlock.class.getName().equals(item.getType())) {
+                        Map<String,String> header = (Map<String, String>) item.getContent();
+                        String name = header.get("name");
+                        if (images.containsKey(name)) {
+                            builder.append("\n![desc][" + name + "]\n");
+                        }
+                    } else {
+                        builder.append("\n").append(item.getSource());
+                    }
+                }
+                String source = htmlRender.renderBytes(builder.toString(),images);
+                rendered = htmlRender.renderHTML(source);
+            } catch (Exception e) {
+                logger.error("failed to load content : ", e);
+            }
+        } else {
+            rendered = htmlRender.renderHTML(htmlRender.renderBytes(content.getSource(), content.getImages()));
+        }
 
         try {
             if (Files.exists(target.toPath())) {

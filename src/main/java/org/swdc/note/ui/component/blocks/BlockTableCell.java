@@ -69,7 +69,7 @@ public class BlockTableCell extends TableCell<Map<Integer,String>,String> {
                     }
                     if (block.blocksEditor() != null) {
                         block.blocksEditor()
-                                .doFocus(block);
+                                .doFocus(block, 0);
                     }
                 });
 

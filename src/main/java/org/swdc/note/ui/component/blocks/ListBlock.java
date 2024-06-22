@@ -25,7 +25,7 @@ public class ListBlock extends ArticleBlock {
             listView.getItems().addListener((InvalidationListener)  e -> {
                 blocksEditor().setChanged(true);
                 resize();
-                blocksEditor().doFocus(this);
+                blocksEditor().doFocus(this,0);
             });
 
             listView.getItems().add("<编辑列表>");

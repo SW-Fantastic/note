@@ -18,7 +18,7 @@ public class SubHeaderBlock extends ArticleBlock {
                 if (textField.getText().isEmpty()) {
                     remove();
                 } else {
-                    blocksEditor().doFocus(this);
+                    blocksEditor().doFocus(this, 0);
                 }
             });
         }

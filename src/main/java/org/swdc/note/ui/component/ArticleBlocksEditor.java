@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import org.swdc.fx.font.MaterialIconsService;
@@ -39,15 +41,17 @@ public class ArticleBlocksEditor extends BorderPane {
         setCenter(blockListView);
     }
 
-    public void doFocus(ArticleBlock block) {
+    public void doFocus(ArticleBlock block, double offsetY) {
         int index = blockListView.getItems()
                 .indexOf(block);
-        Region region = (Region) block.getEditor();
-        if (index == blockListView.getItems().size() - 1 || region.getHeight() > blockListView.getHeight()) {
-            blockListView.scrollTo(placeholderBlock);
-        } else {
-            blockListView.scrollTo(index + 1);
+
+        ListViewSkin<ArticleBlock> skin = (ListViewSkin<ArticleBlock>) blockListView.getSkin();
+        if (skin == null){
+            return;
         }
+        VirtualFlow flow = (VirtualFlow) skin.getChildren().get(0);
+        flow.scrollPixels(flow.getCell(index).getLayoutY() + offsetY);
+
     }
 
     public void addBlock(int index,ArticleBlock block) {
