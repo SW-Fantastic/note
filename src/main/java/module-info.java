@@ -17,11 +17,10 @@ module noteEditor {
     requires javafx.web;
     requires javafx.swing;
 
-    requires java.persistence;
+    requires jakarta.persistence;
     requires org.hibernate.orm.core;
     requires org.apache.tika.core;
     requires remark;
-    requires nitrite;
     requires je;
     requires org.fxmisc.undo;
     requires reactfx;
@@ -48,6 +47,8 @@ module noteEditor {
     requires epublib.core;
     requires lucene.core;
     requires ik.analyzer;
+    requires org.dizitart.no2;
+    requires org.dizitart.no2.mvstore;
 
     opens org.swdc.note.core to
             swdc.application.dependency;
@@ -80,7 +81,7 @@ module noteEditor {
     opens org.swdc.note.core.entities to
             swdc.application.data,
             com.fasterxml.jackson.databind,
-            nitrite,
+            org.dizitart.no2,
             org.hibernate.orm.core;
 
     opens org.swdc.note.ui.controllers to

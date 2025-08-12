@@ -1,9 +1,9 @@
 package org.swdc.note.core.entities;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import org.swdc.note.core.files.SingleStorage;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -17,7 +17,7 @@ public class Article {
      * 或者在NoSQL上面使用。
      */
     @Id
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     @GeneratedValue(generator = "uuid")
     private String Id;
 

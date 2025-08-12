@@ -1,9 +1,10 @@
 package org.swdc.note.core.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
+
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
 public class CollectionType implements TreeEntity<CollectionType> {
 
     @Id
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     @GeneratedValue(generator = "uuid")
     private String id;
 

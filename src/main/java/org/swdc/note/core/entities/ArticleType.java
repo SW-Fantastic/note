@@ -3,7 +3,9 @@ package org.swdc.note.core.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
+
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +19,7 @@ public class ArticleType implements TreeEntity<ArticleType> {
      * 或者在NoSQL上面使用。
      */
     @Id
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     @GeneratedValue(generator = "uuid")
     private String id;
 

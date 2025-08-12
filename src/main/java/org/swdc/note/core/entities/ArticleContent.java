@@ -1,6 +1,7 @@
 package org.swdc.note.core.entities;
 
-import org.dizitart.no2.objects.Id;
+
+import org.dizitart.no2.repository.annotations.Id;
 
 import java.util.Map;
 

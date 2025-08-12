@@ -1,15 +1,15 @@
 package org.swdc.note.core.entities;
 
-import org.hibernate.annotations.GenericGenerator;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 public class CollectionArticle {
 
     @Id
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     @GeneratedValue(generator = "uuid")
     private String id;
 

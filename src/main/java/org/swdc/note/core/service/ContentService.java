@@ -4,13 +4,17 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import org.dizitart.no2.*;
-import org.dizitart.no2.objects.ObjectRepository;
-import org.dizitart.no2.objects.filters.ObjectFilters;
+import org.dizitart.no2.filters.FluentFilter;
+import org.dizitart.no2.index.IndexOptions;
+import org.dizitart.no2.index.IndexType;
+import org.dizitart.no2.mvstore.MVStoreModule;
+import org.dizitart.no2.repository.ObjectRepository;
 import org.swdc.data.StatelessHelper;
 import org.swdc.dependency.annotations.With;
 import org.swdc.note.config.AppConfig;
 import org.swdc.note.core.aspect.RefreshAspect;
 import org.swdc.note.core.entities.ArticleContent;
+import org.swdc.note.core.nitire.JacksonMapperModule;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -32,18 +36,23 @@ public class ContentService  {
 
     @PostConstruct
     public void initialize() {
-        documentDB = Nitrite.builder()
-                .compressed()
-                .filePath(new File("./data/articleContent.db"))
-                .openOrCreate();
 
+        MVStoreModule module = MVStoreModule.withConfig()
+                .filePath(new File("./data/articleContent.db"))
+                .compressHigh(true)
+                .build();
+
+        documentDB = Nitrite.builder()
+                .loadModule(module)
+                .loadModule(new JacksonMapperModule())
+                .openOrCreate();
 
         contentRepo = documentDB.getRepository(ArticleContent.class);
         if (!contentRepo.hasIndex("id")) {
-            contentRepo.createIndex("id", IndexOptions.indexOptions(IndexType.Unique));
+            contentRepo.createIndex(IndexOptions.indexOptions(IndexType.UNIQUE), "id");
         }
         if (!contentRepo.hasIndex("articleId")) {
-            contentRepo.createIndex("articleId",IndexOptions.indexOptions(IndexType.NonUnique));
+            contentRepo.createIndex(IndexOptions.indexOptions(IndexType.NON_UNIQUE),"articleId");
         }
     }
 
@@ -53,7 +62,7 @@ public class ContentService  {
     }
 
     public ArticleContent getArticleContent(String articleId) {
-        List<ArticleContent> contents =  contentRepo.find(ObjectFilters.eq("articleId",articleId))
+        List<ArticleContent> contents =  contentRepo.find(FluentFilter.where("articleId").eq(articleId))
                 .toList();
         if (contents.size() > 0) {
             return contents.stream()
@@ -66,15 +75,13 @@ public class ContentService  {
     }
 
     public List<ArticleContent> getVersions(String articleId) {
-        return contentRepo.find(ObjectFilters.and(
-                ObjectFilters.eq("articleId",articleId)
-        )).toList();
+        return contentRepo.find(
+                FluentFilter.where("articleId").eq(articleId)
+        ).toList();
 
     }
 
     public ArticleContent saveArticleContent(ArticleContent content) {
-
-        documentDB.compact();
 
         String uuid = UUID.randomUUID().toString();
         if (content.getId() == null) {
@@ -127,19 +134,17 @@ public class ContentService  {
     }
 
     public int removeContent(String articleId) {
-        int effect = contentRepo.remove(ObjectFilters.eq("articleId",articleId))
+        int effect = contentRepo.remove(FluentFilter.where("articleId").eq(articleId))
                 .getAffectedCount();
         documentDB.commit();
-        documentDB.compact();
         return effect;
     }
 
     public int removeByType(String typeId) {
         int effect = contentRepo
-                .remove(ObjectFilters.eq("typeId",typeId))
+                .remove(FluentFilter.where("typeId").eq(typeId))
                 .getAffectedCount();
         documentDB.commit();
-        documentDB.compact();
         return effect;
     }
 

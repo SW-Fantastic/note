@@ -1,7 +1,7 @@
 package org.swdc.note.core.entities;
 
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.regex.Pattern;

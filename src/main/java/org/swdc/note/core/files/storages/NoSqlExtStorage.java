@@ -3,15 +3,17 @@ package org.swdc.note.core.files.storages;
 import jakarta.inject.Inject;
 import javafx.stage.FileChooser;
 import org.dizitart.no2.Nitrite;
-import org.dizitart.no2.objects.Id;
-import org.dizitart.no2.objects.ObjectRepository;
-import org.dizitart.no2.objects.filters.ObjectFilters;
+import org.dizitart.no2.filters.FluentFilter;
+import org.dizitart.no2.mvstore.MVStoreModule;
+import org.dizitart.no2.repository.ObjectRepository;
+import org.dizitart.no2.repository.annotations.Id;
 import org.swdc.dependency.annotations.MultipleImplement;
 import org.swdc.dependency.annotations.Prototype;
 import org.swdc.note.core.entities.Article;
 import org.swdc.note.core.entities.ArticleContent;
 import org.swdc.note.core.entities.ArticleType;
 import org.swdc.note.core.files.ExternalStorage;
+import org.swdc.note.core.nitire.JacksonMapperModule;
 import org.swdc.note.core.service.ContentService;
 
 import java.io.File;
@@ -121,8 +123,14 @@ public class NoSqlExtStorage implements ExternalStorage {
     @Override
     public boolean open(File file) {
         try {
-            this.nitrite = Nitrite.builder()
+
+            MVStoreModule module = MVStoreModule.withConfig()
                     .filePath(file)
+                    .build();
+
+            this.nitrite = Nitrite.builder()
+                    .loadModule(module)
+                    .loadModule(new JacksonMapperModule())
                     .openOrCreate();
 
             typeRepository = nitrite.getRepository(ExArticleType.class);
@@ -143,7 +151,7 @@ public class NoSqlExtStorage implements ExternalStorage {
     @Override
     public List<ArticleType> loadContents() {
         return typeRepository
-                .find(ObjectFilters.eq("parentId",null))
+                .find(FluentFilter.where("parentId").eq(null))
                 .toList()
                 .stream()
                 .map(type -> this.mapExtType(type,null))
@@ -182,10 +190,12 @@ public class NoSqlExtStorage implements ExternalStorage {
 
     private String addArticleInternal(Article article, String typeId) {
 
-        ExArticle stored = articleRepository.find(ObjectFilters.and(
-                ObjectFilters.eq("articleId",article.getId()),
-                ObjectFilters.eq("typeId",typeId)))
-                .firstOrDefault();
+        ;
+        ExArticle stored = articleRepository.find(
+                FluentFilter.where("articleId")
+                        .eq(article.getId())
+                        .and(FluentFilter.where(typeId).eq(typeId))
+                ).firstOrNull();
 
         if (stored == null) {
             stored = new ExArticle();
@@ -205,11 +215,12 @@ public class NoSqlExtStorage implements ExternalStorage {
     }
 
     private ExArticleType getTypeInternal(String id,String parentId, String name) {
-        return typeRepository.find(ObjectFilters.and(
-                ObjectFilters.eq("typeId", id),
-                ObjectFilters.eq("name",name),
-                ObjectFilters.eq("parentId",parentId)))
-                .firstOrDefault();
+
+        return typeRepository.find(FluentFilter.where("typeId").eq(id).and(
+                        FluentFilter.where("name").eq(name).and(
+                                FluentFilter.where("parentId").eq(parentId)
+                        )
+                )).firstOrNull();
     }
 
     @Override
@@ -268,8 +279,9 @@ public class NoSqlExtStorage implements ExternalStorage {
         List<ArticleType> child = new ArrayList<>();
 
         // 枚举子分类，并且进行处理
+
         List<ExArticleType> childs = typeRepository
-                .find(ObjectFilters.eq("parentId",type.getTypeId()))
+                .find(FluentFilter.where("parentId").eq(type.getTypeId()))
                 .toList();
 
         for (ExArticleType articleType: childs){
@@ -277,7 +289,7 @@ public class NoSqlExtStorage implements ExternalStorage {
         }
 
         List<ExArticle> articles = articleRepository
-                .find(ObjectFilters.eq("typeId",type.getTypeId())).toList();
+                .find(FluentFilter.where("typeId").eq(type.getTypeId())).toList();
 
         Set<Article> articleSet = new HashSet<>();
 
@@ -296,9 +308,10 @@ public class NoSqlExtStorage implements ExternalStorage {
 
     @Override
     public ArticleContent getContent(String articleId) {
+
         return contentRepository
-                .find(ObjectFilters.eq("articleId",articleId))
-                .firstOrDefault();
+                .find(FluentFilter.where("articleId").eq(articleId))
+                .firstOrNull();
     }
 
     @Override
